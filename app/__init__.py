@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -21,7 +21,8 @@ def create_app(config_class=Config):
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
-    socketio.init_app(app, cors_allowed_origins="*", async_mode='threading')
+    allowed_origins = os.environ.get('CORS_ORIGINS', 'http://localhost:5050').split(',')
+    socketio.init_app(app, cors_allowed_origins=allowed_origins, async_mode='threading')
     csrf.init_app(app)
 
     login_manager.login_view = 'auth.login'
@@ -35,29 +36,27 @@ def create_app(config_class=Config):
     from app.routes.admin import admin as admin_bp
     from app.routes.clinic import clinic as clinic_bp
     from app.routes.doctor import doctor as doctor_bp
-    from app.routes.patient import patient_bp
-    from app.routes.videocall import videocall_bp
-    from app.routes.chatbot import chatbot_bp
     from app.routes.api import api_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(clinic_bp, url_prefix='/clinic')
     app.register_blueprint(doctor_bp)
-    app.register_blueprint(patient_bp)
-    app.register_blueprint(videocall_bp, url_prefix='/videocall')
-    app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
     app.register_blueprint(api_bp, url_prefix='/api')
 
     from app.models import User
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))
+        return db.session.get(User, int(user_id))
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('auth.login'))
 
     @app.context_processor
     def inject_now():
-        from datetime import datetime
-        return {'now': datetime.utcnow()}
+        from datetime import datetime, timezone
+        return {'now': datetime.now(timezone.utc)}
 
     return app
