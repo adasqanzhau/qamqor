@@ -9,7 +9,7 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
 from app import db
-from app.models import User, Clinic
+from app.models import User, Clinic, Appointment, VideoCall, ClinicSpecialization, Review
 from app.forms import DoctorForm, ClinicForm
 
 clinic = Blueprint('clinic', __name__)
@@ -25,10 +25,17 @@ def clinic_admin_required(f):
     return decorated_function
 
 
+ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+
+
 def save_avatar(file):
-    """Save an uploaded avatar file and return the filename."""
+    """Save an uploaded avatar file and return the filename, or None if invalid."""
     filename = secure_filename(file.filename)
+    if not filename or '.' not in filename:
+        return None
     ext = filename.rsplit('.', 1)[-1].lower()
+    if ext not in ALLOWED_IMAGE_EXTENSIONS:
+        return None
     unique_name = f"{uuid.uuid4().hex}.{ext}"
     upload_folder = current_app.config['UPLOAD_FOLDER']
     os.makedirs(upload_folder, exist_ok=True)
@@ -44,7 +51,7 @@ def save_avatar(file):
 @login_required
 @clinic_admin_required
 def dashboard():
-    clinic_obj = Clinic.query.get_or_404(current_user.clinic_id)
+    clinic_obj = db.session.get(Clinic, current_user.clinic_id) or abort(404)
 
     doctors_count = User.query.filter_by(
         clinic_id=clinic_obj.id, role='doctor', is_active=True
@@ -91,7 +98,7 @@ def dashboard():
 @clinic_admin_required
 def doctors():
     doctors_list = User.query.filter_by(
-        clinic_id=current_user.clinic_id, role='doctor'
+        clinic_id=current_user.clinic_id, role='doctor', is_active=True
     ).order_by(User.created_at.desc()).all()
     return render_template('clinic/doctors.html', doctors=doctors_list)
 
@@ -138,7 +145,7 @@ def add_doctor():
 def edit_doctor(doctor_id):
     doctor = User.query.filter_by(
         id=doctor_id, role='doctor', clinic_id=current_user.clinic_id
-    ).first_or_404()
+    ).first() or abort(404)
 
     form = DoctorForm(obj=doctor)
     if form.validate_on_submit():
@@ -179,7 +186,7 @@ def edit_doctor(doctor_id):
 def delete_doctor(doctor_id):
     doctor = User.query.filter_by(
         id=doctor_id, role='doctor', clinic_id=current_user.clinic_id
-    ).first_or_404()
+    ).first() or abort(404)
 
     doctor.is_active = False
     db.session.commit()
@@ -243,7 +250,7 @@ def appointments():
 @login_required
 @clinic_admin_required
 def settings():
-    clinic_obj = Clinic.query.get_or_404(current_user.clinic_id)
+    clinic_obj = db.session.get(Clinic, current_user.clinic_id) or abort(404)
     form = ClinicForm(obj=clinic_obj)
 
     if form.validate_on_submit():
@@ -276,7 +283,7 @@ def settings():
 @login_required
 @clinic_admin_required
 def statistics():
-    clinic_obj = Clinic.query.get_or_404(current_user.clinic_id)
+    clinic_obj = db.session.get(Clinic, current_user.clinic_id) or abort(404)
 
     # Total counts
     total_doctors = User.query.filter_by(
