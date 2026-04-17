@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, abort
@@ -6,10 +7,16 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
 from app import db
-from app.models import User, Clinic, Appointment, VideoCall, ClinicSpecialization, Notification
+from app.models import (
+    User, Clinic, Appointment, VideoCall, ClinicSpecialization, Notification,
+    Prescription, MedicalRecord, Review, ChatMessage,
+)
 from app.forms import ClinicForm, ProfileForm
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
+
+
+ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'svg'}
 
 
 def superadmin_required(f):
@@ -26,15 +33,60 @@ def superadmin_required(f):
 
 
 def save_logo(file):
-    """Save an uploaded logo file and return the stored filename with 'clinics/' prefix."""
-    filename = secure_filename(file.filename)
-    # Add timestamp to avoid collisions
-    name, ext = os.path.splitext(filename)
-    filename = f"{name}_{int(datetime.now(timezone.utc).replace(tzinfo=None).timestamp())}{ext}"
+    """Save an uploaded clinic logo and return the stored filename (without subdir prefix)."""
+    if not file or not getattr(file, 'filename', ''):
+        return None
+    original = secure_filename(file.filename) or 'logo'
+    ext = original.rsplit('.', 1)[-1].lower() if '.' in original else ''
+    if ext not in ALLOWED_IMAGE_EXTENSIONS:
+        return None
+    filename = f"{uuid.uuid4().hex}.{ext}"
     upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'clinics')
     os.makedirs(upload_dir, exist_ok=True)
     file.save(os.path.join(upload_dir, filename))
     return filename
+
+
+def _wipe_user(user):
+    """Remove all records that reference the given user so it can be hard-deleted.
+
+    Ordering matters: we must expunge rows that SQLAlchemy will later try to
+    cascade-delete BEFORE issuing the bulk DELETEs — otherwise the session ends up
+    with stale references and raises StaleDataError / FK violations on PostgreSQL.
+
+    Strategy:
+      1. Load every Appointment the user is involved in and delete it through the
+         session so SQLAlchemy's 'all, delete-orphan' cascade removes the attached
+         VideoCall / Prescription / Review consistently.
+      2. Flush to push those DELETEs to the database immediately.
+      3. Bulk-DELETE any orphan rows that still reference the user directly
+         (prescriptions/reviews/medical records where the user is mentioned outside
+         an appointment, notifications, chat messages).
+      4. Flush again so the session is clean before the caller deletes the user.
+    """
+    # --- 1. Delete appointments via the session so cascades fire ---
+    appts = Appointment.query.filter(
+        db.or_(Appointment.patient_id == user.id, Appointment.doctor_id == user.id)
+    ).all()
+    for appt in appts:
+        db.session.delete(appt)
+    db.session.flush()
+
+    # --- 2. Clean up any rows still pointing at the user ---
+    # (Normally these are already gone via the cascade above, but we protect
+    # against data where doctor/patient fields were set without an appointment.)
+    Prescription.query.filter(
+        db.or_(Prescription.patient_id == user.id, Prescription.doctor_id == user.id)
+    ).delete(synchronize_session=False)
+    Review.query.filter(
+        db.or_(Review.patient_id == user.id, Review.doctor_id == user.id)
+    ).delete(synchronize_session=False)
+    MedicalRecord.query.filter(
+        db.or_(MedicalRecord.patient_id == user.id, MedicalRecord.doctor_id == user.id)
+    ).delete(synchronize_session=False)
+    Notification.query.filter_by(user_id=user.id).delete(synchronize_session=False)
+    ChatMessage.query.filter_by(user_id=user.id).delete(synchronize_session=False)
+    db.session.flush()
 
 
 # ---------------------------------------------------------------------------
@@ -160,12 +212,6 @@ def edit_clinic(clinic_id):
     clinic = db.session.get(Clinic, clinic_id) or abort(404)
     form = ClinicForm(obj=clinic)
 
-    # Remove admin fields — they are only needed when creating a new clinic
-    del form.admin_email
-    del form.admin_password
-    del form.admin_first_name
-    del form.admin_last_name
-
     if form.validate_on_submit():
         clinic.name = form.name.data
         clinic.description = form.description.data
@@ -197,9 +243,31 @@ def edit_clinic(clinic_id):
 def delete_clinic(clinic_id):
     clinic = db.session.get(Clinic, clinic_id) or abort(404)
     name = clinic.name
-    db.session.delete(clinic)
-    db.session.commit()
-    flash(f'Клиника "{name}" удалена.', 'warning')
+
+    try:
+        # Wipe dependent data for every user tied to this clinic. We do NOT delete
+        # the users themselves here — the Clinic.users relationship has
+        # cascade='all, delete-orphan', so `db.session.delete(clinic)` below will
+        # remove them cleanly once their appointments / prescriptions / etc. are gone.
+        members = User.query.filter(User.clinic_id == clinic.id).all()
+        for member in members:
+            _wipe_user(member)
+
+        # Also wipe any appointments that reference this clinic but whose
+        # participants somehow aren't in `members` (defensive — data drift).
+        stray_appts = Appointment.query.filter_by(clinic_id=clinic.id).all()
+        for appt in stray_appts:
+            db.session.delete(appt)
+        db.session.flush()
+
+        # Finally drop the clinic. Cascade handles users + specializations.
+        db.session.delete(clinic)
+        db.session.commit()
+        flash(f'Клиника "{name}" удалена.', 'warning')
+    except Exception as exc:
+        db.session.rollback()
+        current_app.logger.exception('Failed to delete clinic %s', clinic_id)
+        flash(f'Не удалось удалить клинику: {exc}', 'danger')
     return redirect(url_for('admin.clinics'))
 
 
@@ -340,9 +408,15 @@ def delete_user(user_id):
         flash('Нельзя удалить суперадмина.', 'danger')
         return redirect(url_for('admin.users'))
     name = user.full_name
-    db.session.delete(user)
-    db.session.commit()
-    flash(f'Пользователь "{name}" удален.', 'warning')
+    try:
+        _wipe_user(user)
+        db.session.delete(user)
+        db.session.commit()
+        flash(f'Пользователь "{name}" удалён.', 'warning')
+    except Exception as exc:
+        db.session.rollback()
+        current_app.logger.exception('Failed to delete user %s', user_id)
+        flash(f'Не удалось удалить пользователя: {exc}', 'danger')
     return redirect(url_for('admin.users'))
 
 

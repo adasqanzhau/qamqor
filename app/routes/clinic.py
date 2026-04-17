@@ -9,8 +9,8 @@ from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
 from app import db
-from app.models import User, Clinic, Appointment, VideoCall, ClinicSpecialization, Review
-from app.forms import DoctorForm, ClinicForm
+from app.models import User, Clinic, Appointment, VideoCall, ClinicSpecialization, Review, Notification
+from app.forms import DoctorForm, ClinicForm, ProfileForm
 
 clinic = Blueprint('clinic', __name__)
 
@@ -26,21 +26,34 @@ def clinic_admin_required(f):
 
 
 ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+ALLOWED_LOGO_EXTENSIONS = {'jpg', 'jpeg', 'png', 'svg'}
 
 
-def save_avatar(file):
-    """Save an uploaded avatar file and return the filename, or None if invalid."""
+def _save_image(file, subdir, allowed):
+    """Save an uploaded image under static/uploads/<subdir>/. Returns bare filename or None."""
+    if not file or not getattr(file, 'filename', ''):
+        return None
     filename = secure_filename(file.filename)
     if not filename or '.' not in filename:
         return None
     ext = filename.rsplit('.', 1)[-1].lower()
-    if ext not in ALLOWED_IMAGE_EXTENSIONS:
+    if ext not in allowed:
         return None
     unique_name = f"{uuid.uuid4().hex}.{ext}"
-    upload_folder = current_app.config['UPLOAD_FOLDER']
-    os.makedirs(upload_folder, exist_ok=True)
-    file.save(os.path.join(upload_folder, unique_name))
+    upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], subdir)
+    os.makedirs(upload_dir, exist_ok=True)
+    file.save(os.path.join(upload_dir, unique_name))
     return unique_name
+
+
+def save_avatar(file):
+    """Save a doctor avatar and return the bare filename."""
+    return _save_image(file, 'avatars', ALLOWED_IMAGE_EXTENSIONS)
+
+
+def save_logo(file):
+    """Save a clinic logo and return the bare filename."""
+    return _save_image(file, 'clinics', ALLOWED_LOGO_EXTENSIONS)
 
 
 # ---------------------------------------------------------------------------
@@ -57,10 +70,20 @@ def dashboard():
         clinic_id=clinic_obj.id, role='doctor', is_active=True
     ).count()
 
+    # Count patients: those assigned to this clinic OR who have appointments here
+    patients_by_clinic = db.session.query(User.id).filter(
+        User.clinic_id == clinic_obj.id, User.role == 'patient'
+    )
+    patients_by_appointment = (
+        db.session.query(Appointment.patient_id)
+        .filter(Appointment.clinic_id == clinic_obj.id)
+    )
     patients_count = (
         db.session.query(User.id)
-        .join(Appointment, Appointment.patient_id == User.id)
-        .filter(Appointment.clinic_id == clinic_obj.id)
+        .filter(db.or_(
+            User.id.in_(patients_by_clinic),
+            User.id.in_(patients_by_appointment),
+        ))
         .distinct()
         .count()
     )
@@ -128,8 +151,10 @@ def add_doctor():
         )
         doctor.set_password(form.password.data)
 
-        if form.avatar.data:
-            doctor.avatar = save_avatar(form.avatar.data)
+        if form.avatar.data and getattr(form.avatar.data, 'filename', ''):
+            saved = save_avatar(form.avatar.data)
+            if saved:
+                doctor.avatar = saved
 
         db.session.add(doctor)
         db.session.commit()
@@ -169,8 +194,10 @@ def edit_doctor(doctor_id):
         if form.password.data:
             doctor.set_password(form.password.data)
 
-        if form.avatar.data:
-            doctor.avatar = save_avatar(form.avatar.data)
+        if form.avatar.data and getattr(form.avatar.data, 'filename', ''):
+            saved = save_avatar(form.avatar.data)
+            if saved:
+                doctor.avatar = saved
 
         db.session.commit()
         flash('Данные врача обновлены.', 'success')
@@ -238,7 +265,10 @@ def appointments():
         except ValueError:
             pass
 
-    appointments_list = query.order_by(Appointment.scheduled_time.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    appointments_list = query.order_by(
+        Appointment.scheduled_time.desc()
+    ).paginate(page=page, per_page=20, error_out=False)
     return render_template('clinic/appointments.html', appointments=appointments_list)
 
 
@@ -265,8 +295,10 @@ def settings():
         clinic_obj.working_hours_start = form.working_hours_start.data
         clinic_obj.working_hours_end = form.working_hours_end.data
 
-        if form.logo.data:
-            clinic_obj.logo = save_avatar(form.logo.data)
+        if form.logo.data and getattr(form.logo.data, 'filename', ''):
+            new_logo = save_logo(form.logo.data)
+            if new_logo:
+                clinic_obj.logo = new_logo
 
         db.session.commit()
         flash('Настройки клиники обновлены.', 'success')
@@ -376,3 +408,47 @@ def statistics():
         avg_rating=avg_rating,
         top_doctors=top_doctors,
     )
+
+
+# ---------------------------------------------------------------------------
+# Profile
+# ---------------------------------------------------------------------------
+
+@clinic.route('/profile', methods=['GET', 'POST'])
+@login_required
+@clinic_admin_required
+def profile():
+    form = ProfileForm(obj=current_user)
+
+    if form.validate_on_submit():
+        current_user.first_name = form.first_name.data.strip()
+        current_user.last_name = form.last_name.data.strip()
+        current_user.phone = form.phone.data.strip() if form.phone.data else None
+
+        if form.avatar.data and getattr(form.avatar.data, 'filename', ''):
+            saved = save_avatar(form.avatar.data)
+            if saved:
+                current_user.avatar = saved
+
+        db.session.commit()
+        flash('Профиль обновлён.', 'success')
+        return redirect(url_for('clinic.profile'))
+
+    return render_template('clinic/profile.html', form=form)
+
+
+# ---------------------------------------------------------------------------
+# Notifications
+# ---------------------------------------------------------------------------
+
+@clinic.route('/notifications')
+@login_required
+@clinic_admin_required
+def notifications():
+    all_notifications = (
+        Notification.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Notification.created_at.desc())
+        .all()
+    )
+    return render_template('clinic/notifications.html', notifications=all_notifications)
