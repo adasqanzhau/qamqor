@@ -101,7 +101,7 @@
                             <tbody>
                                 {% for appointment in today_appointments %}
                                 <tr>
-                                    <td>{{ appointment.appointment_date.strftime('%H:%M') }}</td>
+                                    <td>{{ appointment.scheduled_time.strftime('%H:%M') }}</td>
                                     <td>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</td>
                                     <td>
                                         {% if appointment.symptoms %}
@@ -115,6 +115,8 @@
                                             <span class="badge bg-primary">Запланирована</span>
                                         {% elif appointment.status == 'in_progress' %}
                                             <span class="badge bg-warning text-dark">В процессе</span>
+                                        {% elif appointment.status == 'awaiting_report' %}
+                                            <span class="badge bg-orange text-white" style="background-color: #f97316;">Ожидает отчёт</span>
                                         {% elif appointment.status == 'completed' %}
                                             <span class="badge bg-success">Завершена</span>
                                         {% elif appointment.status == 'cancelled' %}
@@ -132,8 +134,25 @@
                                             <a href="{{ url_for('doctor.start_video_call', appointment_id=appointment.id) }}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-video me-1"></i>Продолжить
                                             </a>
+                                        {% elif appointment.status == 'awaiting_report' %}
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('doctor.create_prescription', appointment_id=appointment.id) }}" class="btn btn-primary" title="Рецепт">
+                                                    <i class="fas fa-prescription"></i>
+                                                </a>
+                                                <a href="{{ url_for('doctor.patient_detail', patient_id=appointment.patient.id) }}" class="btn btn-info text-white" title="Мед.карта">
+                                                    <i class="fas fa-file-medical"></i>
+                                                </a>
+                                                <form method="POST" action="{{ url_for('doctor.update_appointment_status', appointment_id=appointment.id) }}" class="d-inline">
+                                                    <input type="hidden" name="status" value="completed">
+                                                    <button type="submit" class="btn btn-success" title="Завершить приём">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         {% elif appointment.status == 'completed' %}
-                                            <span class="text-muted small">Завершена</span>
+                                            <a href="{{ url_for('doctor.patient_detail', patient_id=appointment.patient.id) }}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-eye me-1"></i>Просмотр
+                                            </a>
                                         {% else %}
                                             <span class="text-muted small">-</span>
                                         {% endif %}
@@ -169,8 +188,8 @@
                                 <div>
                                     <h6 class="mb-1">{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</h6>
                                     <small class="text-muted">
-                                        <i class="fas fa-calendar me-1"></i>{{ appointment.appointment_date.strftime('%d.%m.%Y') }}
-                                        <i class="fas fa-clock ms-2 me-1"></i>{{ appointment.appointment_date.strftime('%H:%M') }}
+                                        <i class="fas fa-calendar me-1"></i>{{ appointment.scheduled_time.strftime('%d.%m.%Y') }}
+                                        <i class="fas fa-clock ms-2 me-1"></i>{{ appointment.scheduled_time.strftime('%H:%M') }}
                                     </small>
                                 </div>
                                 <div>
@@ -178,6 +197,8 @@
                                         <span class="badge bg-primary">Запланирована</span>
                                     {% elif appointment.status == 'in_progress' %}
                                         <span class="badge bg-warning text-dark">В процессе</span>
+                                    {% elif appointment.status == 'awaiting_report' %}
+                                        <span class="badge text-white" style="background-color: #f97316;">Ожидает отчёт</span>
                                     {% elif appointment.status == 'completed' %}
                                         <span class="badge bg-success">Завершена</span>
                                     {% elif appointment.status == 'cancelled' %}

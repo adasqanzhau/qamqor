@@ -80,6 +80,11 @@
 
                         <!-- Personal Info -->
                         <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input type="email" class="form-control" value="{{ current_user.email }}" disabled readonly>
+                                <div class="form-text">Email нельзя изменить</div>
+                            </div>
                             <div class="col-md-6">
                                 <label for="first_name" class="form-label fw-semibold">Имя</label>
                                 {{ form.first_name(class="form-control", placeholder="Введите имя") }}

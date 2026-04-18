@@ -94,6 +94,8 @@
                                 <span class="badge bg-primary rounded-pill px-3 py-2">Запланирована</span>
                             {% elif appointment.status == 'in_progress' %}
                                 <span class="badge bg-warning text-dark rounded-pill px-3 py-2">В процессе</span>
+                            {% elif appointment.status == 'awaiting_report' %}
+                                <span class="badge text-white rounded-pill px-3 py-2" style="background-color: #f97316;">Врач готовит отчёт</span>
                             {% elif appointment.status == 'completed' %}
                                 <span class="badge bg-success rounded-pill px-3 py-2">Завершена</span>
                             {% elif appointment.status == 'cancelled' %}
@@ -109,7 +111,7 @@
                                     <i class="fas fa-video me-1"></i>Присоединиться
                                 </a>
                             {% elif appointment.status == 'scheduled' %}
-                                <form method="POST" action="{{ url_for('patient.appointments', appointment_id=appointment.id) }}"
+                                <form method="POST" action="{{ url_for('patient.cancel_appointment', appointment_id=appointment.id) }}"
                                       class="d-inline" onsubmit="return confirm('Вы уверены, что хотите отменить запись?')">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">

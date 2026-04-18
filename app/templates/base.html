@@ -25,7 +25,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('auth.login') }}">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('landing') }}">
                 <i class="fas fa-heartbeat me-2"></i>
                 <span class="fw-bold">MediPlatform</span>
             </a>
@@ -163,7 +163,7 @@
                                 </div>
                             </div>
                             <div class="notification-footer text-center py-2 border-top">
-                                <a href="{{ url_for('patient.notifications') if current_user.is_authenticated and current_user.role == 'patient' else '#' }}" class="text-decoration-none small">Все уведомления</a>
+                                <a href="{% if current_user.role == 'patient' %}{{ url_for('patient.notifications') }}{% elif current_user.role == 'superadmin' %}{{ url_for('admin.notifications') }}{% elif current_user.role == 'doctor' %}{{ url_for('doctor.notifications') }}{% elif current_user.role == 'clinic_admin' %}{{ url_for('clinic.notifications') }}{% else %}#{% endif %}" class="text-decoration-none small">Все уведомления</a>
                             </div>
                         </div>
                     </li>
@@ -179,7 +179,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                             <li>
-                                <a class="dropdown-item" href="{% if current_user.role == 'doctor' %}{{ url_for('doctor.profile') }}{% elif current_user.role == 'patient' %}{{ url_for('patient.profile') }}{% else %}#{% endif %}">
+                                <a class="dropdown-item" href="{% if current_user.role == 'doctor' %}{{ url_for('doctor.profile') }}{% elif current_user.role == 'patient' %}{{ url_for('patient.profile') }}{% elif current_user.role == 'superadmin' %}{{ url_for('admin.profile') }}{% elif current_user.role == 'clinic_admin' %}{{ url_for('clinic.profile') }}{% else %}#{% endif %}">
                                     <i class="fas fa-user me-2 text-primary"></i> Профиль
                                 </a>
                             </li>
@@ -244,15 +244,11 @@
 
     <!-- Footer -->
     <footer class="app-footer">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="mb-0">&copy; {{ now.year if now is defined else '2026' }} <strong>MediPlatform</strong>. Все права защищены.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-muted me-3"><i class="fas fa-shield-alt me-1"></i>Политика конфиденциальности</a>
-                    <a href="#" class="text-muted"><i class="fas fa-file-contract me-1"></i>Условия использования</a>
-                </div>
+        <div class="container text-center">
+            <p class="mb-2">&copy; {{ now.year if now is defined else '2026' }} <strong>MediPlatform</strong>. Все права защищены.</p>
+            <div>
+                <a href="#" class="text-muted me-3"><i class="fas fa-shield-alt me-1"></i>Политика конфиденциальности</a>
+                <a href="#" class="text-muted"><i class="fas fa-file-contract me-1"></i>Условия использования</a>
             </div>
         </div>
     </footer>
