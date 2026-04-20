@@ -9,7 +9,6 @@ app = create_app()
 
 def _seed_demo_data():
     """Create demo accounts if the database is empty (first deploy)."""
-    # Skip if superadmin already exists
     if User.query.filter_by(email='admin@qamqor.kz').first():
         return
 
@@ -80,7 +79,6 @@ def _seed_demo_data():
     db.session.commit()
 
 
-# Auto-create tables and seed demo data on startup
 with app.app_context():
     db.create_all()
     _seed_demo_data()

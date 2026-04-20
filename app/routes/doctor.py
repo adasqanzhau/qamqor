@@ -55,10 +55,6 @@ def _save_avatar(file_storage):
     return unique_name
 
 
-# ---------------------------------------------------------------------------
-# Dashboard
-# ---------------------------------------------------------------------------
-
 @doctor.route('/dashboard')
 @login_required
 @doctor_required
@@ -102,11 +98,6 @@ def dashboard():
         unique_patients=total_patients,
     )
 
-
-# ---------------------------------------------------------------------------
-# Appointments list with filtering
-# ---------------------------------------------------------------------------
-
 @doctor.route('/appointments')
 @login_required
 @doctor_required
@@ -139,10 +130,6 @@ def appointments():
     )
 
 
-# ---------------------------------------------------------------------------
-# Update appointment status
-# ---------------------------------------------------------------------------
-
 @doctor.route('/appointments/<int:appointment_id>/status', methods=['POST'])
 @login_required
 @doctor_required
@@ -168,18 +155,13 @@ def update_appointment_status(appointment_id):
     flash('Статус приёма обновлён.', 'success')
     return redirect(url_for('doctor.appointments'))
 
-
-# ---------------------------------------------------------------------------
-# Patient detail (before consultation)
-# ---------------------------------------------------------------------------
-
 @doctor.route('/patients/<int:patient_id>')
 @login_required
 @doctor_required
 def patient_detail(patient_id):
     patient = db.session.get(User, patient_id) or abort(404)
 
-    # Ensure the doctor actually has appointments with this patient
+
     has_appointment = Appointment.query.filter_by(
         doctor_id=current_user.id, patient_id=patient_id
     ).first()
@@ -190,7 +172,6 @@ def patient_detail(patient_id):
         patient_id=patient_id
     ).order_by(MedicalRecord.created_at.desc()).all()
 
-    # All appointments with this patient (for prescription history + active work)
     appointment_history = (
         Appointment.query
         .filter_by(doctor_id=current_user.id, patient_id=patient_id)
@@ -206,10 +187,6 @@ def patient_detail(patient_id):
     )
 
 
-# ---------------------------------------------------------------------------
-# Video call — redirect to the videocall blueprint
-# ---------------------------------------------------------------------------
-
 @doctor.route('/appointments/<int:appointment_id>/video')
 @login_required
 @doctor_required
@@ -219,11 +196,10 @@ def start_video_call(appointment_id):
     if appointment.doctor_id != current_user.id:
         abort(403)
 
-    # If a videocall already exists, go straight to it
+
     if appointment.videocall:
         return redirect(url_for('videocall.room', room_id=appointment.videocall.room_id))
 
-    # Create a new VideoCall using fields that actually exist in the model
     room_id = str(uuid.uuid4())
     video_call = VideoCall(
         appointment_id=appointment_id,
@@ -241,10 +217,6 @@ def start_video_call(appointment_id):
     return redirect(url_for('videocall.room', room_id=room_id))
 
 
-# ---------------------------------------------------------------------------
-# Prescriptions
-# ---------------------------------------------------------------------------
-
 @doctor.route('/appointments/<int:appointment_id>/prescription', methods=['GET', 'POST'])
 @login_required
 @doctor_required
@@ -258,8 +230,6 @@ def create_prescription(appointment_id):
         flash('Рецепт можно создать только для активного или завершённого приёма.', 'warning')
         return redirect(url_for('doctor.appointments'))
 
-    # One prescription per appointment — allow editing the existing one instead
-    # of creating duplicates.
     existing = appointment.prescription
     form = PrescriptionForm(obj=existing) if existing else PrescriptionForm()
 
@@ -280,7 +250,6 @@ def create_prescription(appointment_id):
             )
             db.session.add(prescription)
 
-            # Auto-create a medical record so the prescription appears in patient's med card
             record_content = f'Диагноз: {form.diagnosis.data or "—"}'
             if form.medications.data:
                 record_content += f'\nНазначения: {form.medications.data}'
@@ -313,17 +282,12 @@ def create_prescription(appointment_id):
     )
 
 
-# ---------------------------------------------------------------------------
-# Medical records
-# ---------------------------------------------------------------------------
-
 @doctor.route('/patients/<int:patient_id>/medical-record', methods=['GET', 'POST'])
 @login_required
 @doctor_required
 def create_medical_record(patient_id):
     patient = db.session.get(User, patient_id) or abort(404)
 
-    # Verify the doctor has an appointment with this patient
     has_appointment = Appointment.query.filter_by(
         doctor_id=current_user.id, patient_id=patient_id
     ).first()
@@ -364,10 +328,6 @@ def create_medical_record(patient_id):
     )
 
 
-# ---------------------------------------------------------------------------
-# Reviews
-# ---------------------------------------------------------------------------
-
 @doctor.route('/reviews')
 @login_required
 @doctor_required
@@ -382,10 +342,6 @@ def reviews():
 
     return render_template('doctor/reviews.html', reviews=doctor_reviews, avg_rating=avg_rating)
 
-
-# ---------------------------------------------------------------------------
-# Profile
-# ---------------------------------------------------------------------------
 
 @doctor.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -411,11 +367,6 @@ def profile():
         return redirect(url_for('doctor.profile'))
 
     return render_template('doctor/profile.html', form=form)
-
-
-# ---------------------------------------------------------------------------
-# Notifications
-# ---------------------------------------------------------------------------
 
 @doctor.route('/notifications')
 @login_required

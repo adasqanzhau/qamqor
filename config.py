@@ -2,7 +2,6 @@ import os
 import secrets
 from dotenv import load_dotenv
 
-# Load .env file (local dev); then .env.production (Railway/prod)
 load_dotenv()
 load_dotenv('.env.production', override=True)
 
@@ -11,7 +10,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-only-insecure-key-change-in-production'
     basedir = os.path.abspath(os.path.dirname(__file__))
 
-    # Railway PostgreSQL uses postgres:// but SQLAlchemy requires postgresql://
+
     _db_url = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'mediplatform.db'))
     if _db_url.startswith('postgres://'):
         _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
