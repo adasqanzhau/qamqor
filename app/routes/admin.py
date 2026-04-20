@@ -1,6 +1,6 @@
 import os
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, abort
 from flask_login import login_required, current_user
@@ -36,12 +36,17 @@ def save_logo(file):
     """Save an uploaded clinic logo and return the stored filename (without subdir prefix)."""
     if not file or not getattr(file, 'filename', ''):
         return None
-    original = secure_filename(file.filename) or 'logo'
-    ext = original.rsplit('.', 1)[-1].lower() if '.' in original else ''
+    original = secure_filename(file.filename) or ''
+    if '.' not in original:
+        return None
+    ext = original.rsplit('.', 1)[-1].lower()
     if ext not in ALLOWED_IMAGE_EXTENSIONS:
         return None
     filename = f"{uuid.uuid4().hex}.{ext}"
-    upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'clinics')
+    upload_dir = os.path.join(
+        current_app.config.get('UPLOAD_FOLDER') or os.path.join(current_app.root_path, 'static', 'uploads'),
+        'clinics',
+    )
     os.makedirs(upload_dir, exist_ok=True)
     file.save(os.path.join(upload_dir, filename))
     return filename
@@ -177,8 +182,10 @@ def create_clinic():
         )
 
         # Handle logo upload
-        if form.logo.data and form.logo.data.filename:
-            clinic.logo = save_logo(form.logo.data)
+        if form.logo.data and getattr(form.logo.data, 'filename', ''):
+            saved_logo = save_logo(form.logo.data)
+            if saved_logo:
+                clinic.logo = saved_logo
 
         db.session.add(clinic)
         db.session.flush()  # get clinic.id before creating admin user
@@ -213,23 +220,30 @@ def edit_clinic(clinic_id):
     form = ClinicForm(obj=clinic)
 
     if form.validate_on_submit():
-        clinic.name = form.name.data
-        clinic.description = form.description.data
-        clinic.address = form.address.data
-        clinic.phone = form.phone.data
-        clinic.email = form.email.data
-        clinic.website = form.website.data
-        clinic.primary_color = form.primary_color.data or clinic.primary_color
-        clinic.secondary_color = form.secondary_color.data or clinic.secondary_color
-        clinic.working_hours_start = form.working_hours_start.data or clinic.working_hours_start
-        clinic.working_hours_end = form.working_hours_end.data or clinic.working_hours_end
+        try:
+            clinic.name = form.name.data
+            clinic.description = form.description.data
+            clinic.address = form.address.data
+            clinic.phone = form.phone.data
+            clinic.email = form.email.data
+            clinic.website = form.website.data
+            clinic.primary_color = form.primary_color.data or clinic.primary_color
+            clinic.secondary_color = form.secondary_color.data or clinic.secondary_color
+            clinic.working_hours_start = form.working_hours_start.data or clinic.working_hours_start
+            clinic.working_hours_end = form.working_hours_end.data or clinic.working_hours_end
 
-        if form.logo.data and form.logo.data.filename:
-            clinic.logo = save_logo(form.logo.data)
+            if form.logo.data and getattr(form.logo.data, 'filename', ''):
+                saved_logo = save_logo(form.logo.data)
+                if saved_logo:
+                    clinic.logo = saved_logo
 
-        db.session.commit()
-        flash(f'Клиника "{clinic.name}" обновлена.', 'success')
-        return redirect(url_for('admin.clinics'))
+            db.session.commit()
+            flash(f'Клиника "{clinic.name}" обновлена.', 'success')
+            return redirect(url_for('admin.clinics'))
+        except Exception as exc:
+            db.session.rollback()
+            current_app.logger.exception('Failed to update clinic %s', clinic_id)
+            flash(f'Не удалось обновить клинику: {exc}', 'danger')
 
     return render_template('admin/clinic_form.html', form=form, title='Редактирование клиники', clinic=clinic)
 
@@ -334,13 +348,12 @@ def analytics():
     total_appointments = Appointment.query.count()
     total_videocalls = VideoCall.query.count()
 
-    # Appointments by status
-    appointments_by_status = (
+    # Appointments by status — template expects `status_stats`
+    status_stats = dict(
         db.session.query(Appointment.status, db.func.count(Appointment.id))
         .group_by(Appointment.status)
         .all()
     )
-    appointments_by_status = dict(appointments_by_status)
 
     # Appointments over last 30 days
     thirty_days_ago = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=30)
@@ -363,6 +376,44 @@ def analytics():
         .all()
     )
 
+    # Monthly data for last 6 months
+    RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
+                 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
+    monthly_data = []
+    today_d = date.today()
+    for i in range(5, -1, -1):
+        month = today_d.month - i
+        year = today_d.year
+        while month <= 0:
+            month += 12
+            year -= 1
+        month_start = datetime(year, month, 1)
+        if month == 12:
+            month_end = datetime(year + 1, 1, 1)
+        else:
+            month_end = datetime(year, month + 1, 1)
+
+        apt_count = Appointment.query.filter(
+            Appointment.created_at >= month_start,
+            Appointment.created_at < month_end,
+        ).count()
+        new_pats = User.query.filter(
+            User.role == 'patient',
+            User.created_at >= month_start,
+            User.created_at < month_end,
+        ).count()
+        new_docs = User.query.filter(
+            User.role == 'doctor',
+            User.created_at >= month_start,
+            User.created_at < month_end,
+        ).count()
+        monthly_data.append({
+            'label': f'{RU_MONTHS[month - 1]} {year}',
+            'appointments': apt_count,
+            'new_patients': new_pats,
+            'new_doctors': new_docs,
+        })
+
     return render_template(
         'admin/analytics.html',
         total_clinics=total_clinics,
@@ -371,10 +422,11 @@ def analytics():
         total_patients=total_patients,
         total_appointments=total_appointments,
         total_videocalls=total_videocalls,
-        appointments_by_status=appointments_by_status,
+        status_stats=status_stats,
         recent_appointments_count=recent_appointments_count,
         new_users_count=new_users_count,
         top_clinics=top_clinics,
+        monthly_data=monthly_data,
     )
 
 
