@@ -1,8 +1,4 @@
-/* ============================================
-   MediPlatform — Custom Styles
-   ============================================ */
-
-/* ---------- CSS Custom Properties ---------- */
+/* CSS Custom */
 :root {
     --primary: #2563eb;
     --primary-dark: #1d4ed8;
@@ -36,7 +32,7 @@
     --navbar-height: 64px;
 }
 
-/* ---------- Global ---------- */
+/*  Global  */
 * {
     margin: 0;
     padding: 0;
@@ -66,7 +62,7 @@ a:hover {
     color: var(--primary-dark);
 }
 
-/* ---------- Custom Scrollbar ---------- */
+/*  Custom Scrollbar  */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -85,15 +81,32 @@ a:hover {
     background: var(--text-light);
 }
 
-/* ---------- Navbar ---------- */
+/*  Navbar  */
 .navbar {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--accent) 100%);
     backdrop-filter: blur(20px);
     box-shadow: var(--shadow-md);
-    height: var(--navbar-height);
+    min-height: var(--navbar-height);
     z-index: 1050;
     border: none;
     padding: 0 1rem;
+}
+
+/* Mobile collapsed menu */
+@media (max-width: 991.98px) {
+    .navbar .navbar-collapse {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        border-radius: 0 0 var(--radius) var(--radius);
+        padding: 0.75rem 1rem;
+        margin: 0.5rem -1rem -0.5rem;
+    }
+    .navbar .navbar-collapse .nav-link {
+        padding: 0.6rem 1rem !important;
+        border-radius: var(--radius-sm);
+    }
+    .navbar .navbar-collapse .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
 }
 
 .navbar-brand {
@@ -164,7 +177,7 @@ a:hover {
     color: #fff;
 }
 
-/* ---------- Notification Dropdown ---------- */
+/*  Notification Dropdown  */
 .notification-dropdown {
     width: 380px;
     max-height: 480px;
@@ -250,7 +263,7 @@ a:hover {
     color: var(--primary);
 }
 
-/* ---------- Flash Messages ---------- */
+/*  Flash Messages  */
 .flash-container {
     position: fixed;
     top: calc(var(--navbar-height) + 12px);
@@ -283,14 +296,14 @@ a:hover {
     to { transform: translateX(100%); opacity: 0; }
 }
 
-/* ---------- Main Content ---------- */
+/*  Main Content  */
 .main-content {
     flex: 1;
     padding: 24px 0;
     min-height: calc(100vh - var(--navbar-height) - 80px);
 }
 
-/* ---------- Sidebar ---------- */
+/*  Sidebar  */
 .dashboard-wrapper {
     display: flex;
     min-height: calc(100vh - var(--navbar-height));
@@ -367,7 +380,7 @@ a:hover {
     min-height: calc(100vh - var(--navbar-height));
 }
 
-/* ---------- Page Header ---------- */
+/*  Page Header  */
 .page-header {
     margin-bottom: 28px;
 }
@@ -385,7 +398,7 @@ a:hover {
     margin: 0;
 }
 
-/* ---------- Cards ---------- */
+/*  Cards  */
 .card {
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -412,7 +425,7 @@ a:hover {
     padding: 20px;
 }
 
-/* ---------- Stats Cards ---------- */
+/*  Stats Cards  */
 .stat-card {
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -477,7 +490,7 @@ a:hover {
 .stat-card .stat-change.up { color: var(--secondary); }
 .stat-card .stat-change.down { color: var(--danger); }
 
-/* ---------- Tables ---------- */
+/*  Tables  */
 .table-container {
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -521,7 +534,7 @@ a:hover {
     border-bottom: none;
 }
 
-/* ---------- Badges ---------- */
+/*  Badges  */
 .badge {
     font-weight: 600;
     font-size: 0.75rem;
@@ -551,7 +564,7 @@ a:hover {
 .badge.bg-active { background: #d1fae5 !important; color: #065f46; }
 .badge.bg-inactive { background: #f1f5f9 !important; color: #475569; }
 
-/* ---------- Forms ---------- */
+/*  Forms  */
 .form-control,
 .form-select {
     border: 1.5px solid var(--border);
@@ -597,7 +610,7 @@ textarea.form-control {
     resize: vertical;
 }
 
-/* ---------- Buttons ---------- */
+/*  Buttons  */
 .btn {
     font-weight: 600;
     font-size: 0.9rem;
@@ -664,7 +677,7 @@ textarea.form-control {
     font-size: 1rem;
 }
 
-/* ---------- Video Call Room ---------- */
+/*  Video Call Room  */
 .video-room {
     height: calc(100vh - var(--navbar-height));
     display: flex;
@@ -773,7 +786,7 @@ textarea.form-control {
     background: #dc2626;
 }
 
-/* ---------- Chat Interface ---------- */
+/*  Chat Interface  */
 .chat-container {
     display: flex;
     flex-direction: column;
@@ -904,7 +917,7 @@ textarea.form-control {
     flex-shrink: 0;
 }
 
-/* ---------- Health Tracker ---------- */
+/*  Health Tracker  */
 .health-metric-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -968,7 +981,7 @@ textarea.form-control {
 .metric-status.warning { background: #fef3c7; color: #92400e; }
 .metric-status.danger { background: #fee2e2; color: #991b1b; }
 
-/* ---------- Star Rating ---------- */
+/*  Star Rating  */
 .star-rating {
     display: inline-flex;
     flex-direction: row-reverse;
@@ -1007,7 +1020,7 @@ textarea.form-control {
     color: #d1d5db;
 }
 
-/* ---------- Loading Spinner ---------- */
+/*  Loading Spinner  */
 .spinner-overlay {
     position: fixed;
     top: 0;
@@ -1073,7 +1086,7 @@ textarea.form-control {
     font-size: 0.9rem;
 }
 
-/* ---------- Doctor Card ---------- */
+/*  Doctor Card  */
 .doctor-card {
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -1100,7 +1113,7 @@ textarea.form-control {
     margin: 0 auto;
 }
 
-/* ---------- Appointment Card ---------- */
+/*  Appointment Card  */
 .appointment-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -1143,7 +1156,7 @@ textarea.form-control {
     font-weight: 600;
 }
 
-/* ---------- Footer ---------- */
+/*  Footer  */
 .app-footer {
     background: #1e293b;
     color: rgba(255, 255, 255, 0.6);
@@ -1161,7 +1174,7 @@ textarea.form-control {
     color: rgba(255, 255, 255, 0.85);
 }
 
-/* ---------- Empty State ---------- */
+/*  Empty State  */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -1186,7 +1199,7 @@ textarea.form-control {
     margin: 0 auto;
 }
 
-/* ---------- Avatar ---------- */
+/*  Avatar  */
 .avatar {
     width: 40px;
     height: 40px;
@@ -1205,7 +1218,7 @@ textarea.form-control {
 .avatar-lg { width: 56px; height: 56px; font-size: 1.2rem; }
 .avatar-xl { width: 80px; height: 80px; font-size: 1.8rem; }
 
-/* ---------- Confirm Dialog ---------- */
+/*  Confirm Dialog  */
 .confirm-dialog-overlay {
     position: fixed;
     top: 0;
@@ -1255,7 +1268,7 @@ textarea.form-control {
     margin: 0 auto 16px;
 }
 
-/* ---------- Responsive ---------- */
+/*  Responsive  */
 @media (max-width: 991.98px) {
     .sidebar {
         transform: translateX(-100%);

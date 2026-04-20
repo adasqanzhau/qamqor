@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %}AI Ассистент - MediPlatform{% endblock %}
+{% block title %}AI Ассистент - Qamqor{% endblock %}
 
 {% block extra_css %}
-<!-- Markdown renderer + XSS sanitizer -->
 <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
 <style>
@@ -26,7 +25,6 @@
         overflow: hidden;
     }
 
-    /* ── Chat header ── */
     .chat-header {
         padding: 16px 24px;
         background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
@@ -79,7 +77,6 @@
         background: rgba(255,255,255,.25);
     }
 
-    /* ── Messages area ── */
     .chat-messages {
         flex: 1;
         overflow-y: auto;
@@ -99,7 +96,6 @@
         border-radius: 4px;
     }
 
-    /* Message bubbles */
     .message-row {
         display: flex;
         max-width: 80%;
@@ -125,17 +121,12 @@
         border-radius: 18px;
         font-size: .92rem;
         line-height: 1.5;
-        /* `overflow-wrap: break-word` only breaks when a single token overflows
-           — keeping normal word boundaries. The old `word-break: break-word`
-           was splitting short Russian words character-by-character. */
         overflow-wrap: break-word;
         word-break: normal;
         position: relative;
         max-width: 100%;
     }
 
-    /* Preserve newlines in user input (Shift+Enter) without affecting markdown
-       rendering in assistant bubbles. */
     .message-row.user .message-bubble {
         white-space: pre-wrap;
     }
@@ -188,7 +179,6 @@
         text-align: left;
     }
 
-    /* Typing indicator */
     .typing-indicator {
         display: flex;
         align-items: center;
@@ -217,7 +207,6 @@
         30% { transform: translateY(-6px); }
     }
 
-    /* Welcome state */
     .chat-welcome {
         text-align: center;
         color: #78909c;
@@ -243,7 +232,6 @@
         margin: 8px auto 0;
     }
 
-    /* ── Input area ── */
     .chat-input-area {
         padding: 16px 20px;
         background: #fff;
@@ -304,7 +292,6 @@
         transform: none;
     }
 
-    /* ── Markdown rendering inside assistant bubbles ── */
     .message-row.assistant .message-bubble p {
         margin: 0 0 0.45em;
     }
@@ -359,7 +346,6 @@
         margin: 0.5em 0;
     }
 
-    /* ── Responsive ── */
     @media (max-width: 768px) {
         .chat-wrapper {
             border-radius: 0;
@@ -380,7 +366,6 @@
 {% block content %}
 <div class="chat-page">
     <div class="chat-wrapper">
-        <!-- Header -->
         <div class="chat-header">
             <div class="chat-header-info">
                 <div class="chat-avatar">
@@ -396,7 +381,6 @@
             </button>
         </div>
 
-        <!-- Messages -->
         <div class="chat-messages" id="chatMessages">
             {% if chat_history and chat_history|length > 0 %}
                 {% for msg in chat_history %}
@@ -423,7 +407,6 @@
             {% endif %}
         </div>
 
-        <!-- Input -->
         <div class="chat-input-area">
             <div class="chat-input-wrapper">
                 <textarea class="chat-input" id="chatInput" rows="1"
@@ -442,7 +425,6 @@
 (function() {
     'use strict';
 
-    // ── Markdown renderer ──
     marked.setOptions({ gfm: true, breaks: true });
 
     function renderMarkdown(text) {
@@ -454,7 +436,6 @@
         });
     }
 
-    // Render markdown in history messages loaded from server
     document.querySelectorAll('.message-bubble[data-markdown]').forEach(function(el) {
         el.innerHTML = renderMarkdown(el.textContent);
     });
@@ -467,16 +448,13 @@
 
     let isSending = false;
 
-    // Scroll to bottom on load
     scrollToBottom();
 
-    // ── Auto-resize textarea ──
     chatInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
 
-    // ── Send on Enter (Shift+Enter for new line) ──
     chatInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -488,7 +466,6 @@
         sendMessage();
     });
 
-    // ── Send message ──
     async function sendMessage() {
         const text = chatInput.value.trim();
         if (!text || isSending) return;
@@ -496,17 +473,13 @@
         isSending = true;
         btnSend.disabled = true;
 
-        // Remove welcome
         if (chatWelcome) chatWelcome.remove();
 
-        // Add user bubble
         appendMessage('user', text);
 
-        // Clear input
         chatInput.value = '';
         chatInput.style.height = 'auto';
 
-        // Show typing indicator
         const typingEl = showTypingIndicator();
 
         try {
@@ -522,10 +495,8 @@
 
             const data = await response.json();
 
-            // Remove typing indicator
             typingEl.remove();
 
-            // Add assistant message
             appendMessage('assistant', data.response || data.message || 'Нет ответа.');
 
         } catch (err) {
@@ -539,7 +510,6 @@
         chatInput.focus();
     }
 
-    // ── Append message bubble ──
     function appendMessage(role, text) {
         const now = new Date();
         const time = String(now.getHours()).padStart(2, '0') + ':' +
@@ -577,7 +547,6 @@
         scrollToBottom();
     }
 
-    // ── Typing indicator ──
     function showTypingIndicator() {
         const row = document.createElement('div');
         row.className = 'message-row assistant';
@@ -599,14 +568,12 @@
         return row;
     }
 
-    // ── Scroll to bottom ──
     function scrollToBottom() {
         requestAnimationFrame(function() {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         });
     }
 
-    // ── Clear history ──
     btnClear.addEventListener('click', async function() {
         if (!confirm('Вы уверены, что хотите очистить историю чата?')) return;
 

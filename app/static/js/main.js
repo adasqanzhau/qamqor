@@ -1,20 +1,9 @@
-/**
- * MediPlatform — Main JavaScript
- */
-
 document.addEventListener('DOMContentLoaded', function () {
-
-    // ==========================================
-    // Notifications
-    // ==========================================
 
     const notificationBadge = document.getElementById('notificationCount');
     const notificationList = document.getElementById('notificationList');
     const markAllReadBtn = document.getElementById('markAllRead');
 
-    /**
-     * Fetch unread notification count and update the badge.
-     */
     function fetchNotificationCount() {
         fetch('/api/notifications/count')
             .then(function (res) { return res.json(); })
@@ -32,13 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(function () { /* silent */ });
     }
 
-    // Initial fetch + poll every 30 seconds
     fetchNotificationCount();
     setInterval(fetchNotificationCount, 30000);
 
-    /**
-     * Load notifications into the dropdown when it's opened.
-     */
     var notifDropdownEl = document.getElementById('notificationsDropdown');
     if (notifDropdownEl) {
         notifDropdownEl.addEventListener('show.bs.dropdown', function () {
@@ -60,33 +45,40 @@ document.addEventListener('DOMContentLoaded', function () {
                         '</div>';
                     return;
                 }
+                var TYPE_MAP = {
+                    info:    { cls: 'info',    icon: 'fa-info-circle' },
+                    success: { cls: 'message', icon: 'fa-check-circle' },
+                    warning: { cls: 'alert',   icon: 'fa-exclamation-triangle' },
+                    danger:  { cls: 'alert',   icon: 'fa-exclamation-circle' },
+                };
                 var html = '';
                 items.forEach(function (n) {
-                    var iconClass = 'info';
-                    var iconName = 'fa-info-circle';
-                    if (n.type === 'appointment') { iconClass = 'appointment'; iconName = 'fa-calendar-check'; }
-                    else if (n.type === 'message') { iconClass = 'message'; iconName = 'fa-comment'; }
-                    else if (n.type === 'alert') { iconClass = 'alert'; iconName = 'fa-exclamation-triangle'; }
-
+                    var meta = TYPE_MAP[n.type] || TYPE_MAP.info;
                     html +=
-                        '<div class="notification-item' + (n.read ? '' : ' unread') + '" data-id="' + n.id + '">' +
-                            '<div class="notif-icon ' + iconClass + '">' +
-                                '<i class="fas ' + iconName + '"></i>' +
+                        '<div class="notification-item' + (n.read ? '' : ' unread') + '" ' +
+                             'data-id="' + n.id + '" ' +
+                             'data-link="' + (n.link ? escapeHtml(n.link) : '') + '">' +
+                            '<div class="notif-icon ' + meta.cls + '">' +
+                                '<i class="fas ' + meta.icon + '"></i>' +
                             '</div>' +
                             '<div class="notif-text">' +
-                                '<p>' + escapeHtml(n.message) + '</p>' +
+                                '<p>' + escapeHtml(n.title || '') + '</p>' +
+                                '<p class="text-muted small mb-0">' + escapeHtml(n.message) + '</p>' +
                                 '<div class="notif-time">' + formatDateRu(n.created_at) + '</div>' +
                             '</div>' +
                         '</div>';
                 });
                 notificationList.innerHTML = html;
 
-                // Click handler to mark individual notification as read
                 notificationList.querySelectorAll('.notification-item').forEach(function (item) {
                     item.addEventListener('click', function () {
                         var id = this.getAttribute('data-id');
-                        markNotificationRead(id);
+                        var link = this.getAttribute('data-link');
                         this.classList.remove('unread');
+                        markNotificationRead(id);
+                        if (link) {
+                            window.location.href = link;
+                        }
                     });
                 });
             })
@@ -115,10 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ==========================================
-    // Bootstrap Tooltips & Popovers
-    // ==========================================
-
     var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     tooltipTriggerList.forEach(function (el) {
         new bootstrap.Tooltip(el);
@@ -128,10 +116,6 @@ document.addEventListener('DOMContentLoaded', function () {
     popoverTriggerList.forEach(function (el) {
         new bootstrap.Popover(el);
     });
-
-    // ==========================================
-    // Auto-dismiss Flash Messages
-    // ==========================================
 
     var flashAlerts = document.querySelectorAll('.flash-alert');
     flashAlerts.forEach(function (alert) {
@@ -144,29 +128,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 5000);
     });
 
-    // ==========================================
-    // Smooth Scroll
-    // ==========================================
-
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {
-            var target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            var href = this.getAttribute('href');
+            if (!href || href === '#' || href.length < 2) return;
+            if (this.hasAttribute('data-bs-toggle') || this.hasAttribute('data-bs-dismiss')) return;
+            try {
+                var target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } catch (err) {
             }
         });
     });
 
-    // ==========================================
-    // Confirm Delete Dialog
-    // ==========================================
-
-    /**
-     * Show a confirm-delete dialog. Returns a Promise that resolves to true/false.
-     * Usage:
-     *   confirmDelete('Вы уверены, что хотите удалить эту запись?').then(function(ok) { ... });
-     */
     window.confirmDelete = function (message, title) {
         return new Promise(function (resolve) {
             var overlay = document.createElement('div');
@@ -203,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
-    // Wire up elements with data-confirm-delete attribute
     document.querySelectorAll('[data-confirm-delete]').forEach(function (el) {
         el.addEventListener('click', function (e) {
             e.preventDefault();
@@ -217,17 +193,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ==========================================
-    // Format Dates to Russian Locale
-    // ==========================================
+    document.querySelectorAll('form[data-confirm-delete-form]').forEach(function (form) {
+        var confirmed = false;
+        form.addEventListener('submit', function (e) {
+            if (confirmed) return;
+            e.preventDefault();
+            var msg = form.getAttribute('data-confirm-message') || 'Вы уверены? Это действие нельзя отменить.';
+            confirmDelete(msg).then(function (ok) {
+                if (ok) {
+                    confirmed = true;
+                    form.submit();
+                }
+            });
+        });
+    });
 
     var MONTHS_RU_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
     var MONTHS_RU = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
 
-    /**
-     * Format ISO date string to Russian locale.
-     * E.g. "2026-03-22T14:30:00" => "22 марта 2026, 14:30"
-     */
     window.formatDateRu = formatDateRu;
 
     function formatDateRu(dateStr) {
@@ -242,9 +225,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return day + ' ' + month + ' ' + year + ', ' + hours + ':' + mins;
     }
 
-    /**
-     * Format date short: "22 мар"
-     */
     window.formatDateShortRu = function (dateStr) {
         if (!dateStr) return '';
         var d = new Date(dateStr);
@@ -252,15 +232,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return d.getDate() + ' ' + MONTHS_RU_SHORT[d.getMonth()];
     };
 
-    // Auto-format elements with data-date attribute
     document.querySelectorAll('[data-date]').forEach(function (el) {
         var raw = el.getAttribute('data-date');
         el.textContent = formatDateRu(raw);
     });
-
-    // ==========================================
-    // Star Rating Widget
-    // ==========================================
 
     document.querySelectorAll('.star-rating').forEach(function (widget) {
         var inputs = widget.querySelectorAll('input[type="radio"]');
@@ -302,10 +277,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
-
-    // ==========================================
-    // Utility: Escape HTML
-    // ==========================================
 
     function escapeHtml(str) {
         if (!str) return '';

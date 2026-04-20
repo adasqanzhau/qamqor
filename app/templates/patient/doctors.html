@@ -13,10 +13,7 @@
         transform: translateY(-6px);
         box-shadow: 0 0.75rem 2rem rgba(0,0,0,0.12) !important;
     }
-    /* Make card body a flex column so the "Записаться" button always sits at
-       the bottom regardless of how much content (specialization, experience,
-       rating) is above it. This keeps cards visually consistent between
-       doctors with and without avatars. */
+    
     .doctor-card .card-body {
         display: flex;
         flex-direction: column;
@@ -67,7 +64,6 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <!-- Heading -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1"><i class="fas fa-user-md me-2 text-primary"></i>Наши врачи</h2>
@@ -75,7 +71,6 @@
         </div>
     </div>
 
-    <!-- Search & Filter -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" action="{{ url_for('patient.doctors') }}">
@@ -110,13 +105,11 @@
         </div>
     </div>
 
-    <!-- Doctors Grid -->
     <div class="row g-4">
         {% for doctor in doctors %}
         <div class="col-xl-4 col-md-6">
             <div class="card doctor-card shadow-sm h-100">
                 <div class="card-body text-center p-4">
-                    <!-- Avatar -->
                     <div class="mb-3 d-flex justify-content-center">
                         {% if doctor.avatar %}
                         <img src="{{ url_for('static', filename='uploads/avatars/' + doctor.avatar) }}"
@@ -128,18 +121,15 @@
                         {% endif %}
                     </div>
 
-                    <!-- Name & Specialization -->
                     <h5 class="fw-bold mb-1">{{ doctor.first_name }} {{ doctor.last_name }}</h5>
                     <p class="text-primary mb-2">{{ doctor.specialization or 'Врач' }}</p>
 
-                    <!-- Experience -->
                     {% if doctor.experience_years %}
                     <p class="text-muted small mb-2">
                         <i class="fas fa-briefcase me-1"></i>Стаж: {{ doctor.experience_years }} лет
                     </p>
                     {% endif %}
 
-                    <!-- Price -->
                     {% if doctor.consultation_price %}
                     <p class="mb-2">
                         <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">
@@ -148,7 +138,6 @@
                     </p>
                     {% endif %}
 
-                    <!-- Rating -->
                     <div class="star-rating mb-3">
                         {% set rating = doctor.received_reviews|length %}
                         {% set avg = (doctor.received_reviews | sum(attribute='rating') / rating) if rating > 0 else 0 %}
@@ -164,7 +153,6 @@
                         <span class="text-muted small ms-1">({{ rating }})</span>
                     </div>
 
-                    <!-- Book Button -->
                     <div class="book-btn-wrap">
                         <a href="{{ url_for('patient.book_appointment', doctor_id=doctor.id) }}"
                            class="btn btn-primary w-100">
