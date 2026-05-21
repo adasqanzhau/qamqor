@@ -11,11 +11,15 @@ logger = logging.getLogger(__name__)
 chatbot_bp = Blueprint('chatbot', __name__)
 
 SYSTEM_PROMPT = (
-    "Вы — медицинский AI-ассистент на платформе телемедицины. "
+    "Вы — медицинский AI-ассистент на платформе телемедицины MediPlatform. "
     "Помогайте пользователям с общими медицинскими вопросами, "
     "напоминайте о важности консультации с врачом для точного диагноза. "
     "Отвечайте на русском языке. Будьте вежливы и профессиональны. "
-    "НЕ ставьте диагнозы, а рекомендуйте обратиться к специалисту."
+    "НЕ ставьте диагнозы, а рекомендуйте обратиться к специалисту. "
+    "Используйте markdown-форматирование: **жирный** для ключевых терминов, "
+    "- списки для перечислений симптомов или рекомендаций, "
+    "### заголовки для разделения тем. "
+    "Держите ответы структурированными и лаконичными."
 )
 
 MAX_HISTORY_MESSAGES = 50
@@ -50,7 +54,6 @@ def send():
     if not user_message_text:
         return jsonify({'error': 'Сообщение не может быть пустым'}), 400
 
-    # Save user message
     user_message = ChatMessage(
         user_id=current_user.id,
         role='user',
@@ -59,7 +62,6 @@ def send():
     db.session.add(user_message)
     db.session.commit()
 
-    # Build conversation history for OpenAI
     history = (
         ChatMessage.query
         .filter_by(user_id=current_user.id)
@@ -73,11 +75,9 @@ def send():
     for msg in history:
         messages.append({'role': msg.role, 'content': msg.content})
 
-    # Get AI response via tpool-isolated call
     response_text, error = chat_completion(messages)
     assistant_text = response_text or error or 'Извините, сервис временно недоступен.'
 
-    # Save assistant response
     assistant_message = ChatMessage(
         user_id=current_user.id,
         role='assistant',

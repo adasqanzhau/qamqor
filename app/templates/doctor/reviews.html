@@ -4,12 +4,10 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-star me-2"></i>Мои отзывы</h2>
     </div>
 
-    <!-- Average Rating -->
     <div class="card shadow-sm mb-4">
         <div class="card-body text-center py-4">
             <h5 class="text-muted mb-2">Средняя оценка</h5>
@@ -44,7 +42,6 @@
         </div>
     </div>
 
-    <!-- Reviews List -->
     {% if reviews %}
         <div class="row g-4">
             {% for review in reviews %}

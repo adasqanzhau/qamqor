@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Видеоконсультация - MediPlatform{% endblock %}
+{% block title %}Видеоконсультация - Qamqor{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Hide navbar and footer for immersive video experience */
     .navbar, .app-footer, .flash-container {
         display: none !important;
     }
@@ -20,7 +19,6 @@
         overflow: hidden;
     }
 
-    /* ── Video layout ── */
     .videocall-container {
         position: fixed;
         inset: 0;
@@ -29,7 +27,6 @@
         flex-direction: column;
     }
 
-    /* Top participant bar */
     .participant-bar {
         position: absolute;
         top: 0;
@@ -163,7 +160,6 @@
         backdrop-filter: blur(4px);
     }
 
-    /* ── Control bar ── */
     .control-bar {
         position: absolute;
         bottom: 0;
@@ -234,7 +230,6 @@
         background: rgba(59, 130, 246, .9);
     }
 
-    /* ── Transcription panel ── */
     .transcription-panel {
         position: absolute;
         top: 0;
@@ -314,7 +309,6 @@
         color: #fff;
     }
 
-    /* ── Connection status ── */
     .connection-status {
         position: absolute;
         top: 70px;
@@ -356,13 +350,20 @@
         100% { opacity: 0; display: none; }
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
         .local-video-wrapper {
-            width: 140px;
-            height: 105px;
+            width: 120px;
+            height: 160px;
             bottom: 100px;
             right: 12px;
+        }
+
+        #localVideo {
+            object-fit: cover;
+        }
+
+        #remoteVideo {
+            object-fit: contain;
         }
 
         .transcription-panel {
@@ -384,16 +385,31 @@
             padding: 12px 16px;
         }
     }
+
+    @media (max-width: 768px) and (orientation: portrait) {
+        .video-area {
+            flex-direction: column;
+        }
+
+        #remoteVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .local-video-wrapper {
+            width: 100px;
+            height: 140px;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Hidden data -->
 <input type="hidden" id="roomId" value="{{ call.room_id }}">
 <input type="hidden" id="appointmentId" value="{{ call.appointment_id }}">
 
 <div class="videocall-container">
-    <!-- Top bar: participants & timer -->
     <div class="participant-bar">
         <div class="d-flex align-items-center gap-4">
             <div>
@@ -414,12 +430,10 @@
         </div>
     </div>
 
-    <!-- Connection status -->
     <div class="connection-status connecting" id="connectionStatus">
         <i class="fas fa-spinner fa-spin me-2"></i> Подключение...
     </div>
 
-    <!-- Video area -->
     <div class="video-area">
         <video id="remoteVideo" autoplay playsinline></video>
 
@@ -428,14 +442,12 @@
             <span>Ожидание подключения собеседника...</span>
         </div>
 
-        <!-- Local video (PiP) -->
         <div class="local-video-wrapper" id="localVideoWrapper">
             <video id="localVideo" autoplay playsinline muted></video>
             <div class="local-label"><i class="fas fa-user me-1"></i> Вы</div>
         </div>
     </div>
 
-    <!-- Control bar -->
     <div class="control-bar">
         <button class="ctrl-btn" id="btnToggleMic" title="Микрофон">
             <i class="fas fa-microphone" id="micIcon"></i>
@@ -451,7 +463,6 @@
         </button>
     </div>
 
-    <!-- Transcription panel -->
     <div class="transcription-panel" id="transcriptionPanel">
         <div class="transcription-header">
             <h6><i class="fas fa-closed-captioning me-2"></i>Транскрипция</h6>
@@ -474,7 +485,6 @@
 (function() {
     'use strict';
 
-    // ── DOM elements ──
     const remoteVideo   = document.getElementById('remoteVideo');
     const localVideo    = document.getElementById('localVideo');
     const remotePlaceholder = document.getElementById('remotePlaceholder');
@@ -496,7 +506,6 @@
     const roomId        = document.getElementById('roomId').value;
     const appointmentId = document.getElementById('appointmentId').value;
 
-    // ── State ──
     let localStream      = null;
     let peerConnection   = null;
     let micEnabled       = true;
@@ -507,7 +516,6 @@
     let transcriptionOn  = false;
     let fullTranscript   = '';
 
-    // Signaling state
     let isInitiator       = false;   // decided by server based on join order
     let mediaReady        = false;   // true after getUserMedia resolved
     let socketReady       = false;   // true after socket connected
@@ -515,7 +523,6 @@
     let iceCandidateQueue = [];      // buffer ICE candidates until remoteDescription is set
     let hasRemoteDesc     = false;
 
-    // ── STUN/TURN servers ──
     const iceConfig = {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
@@ -526,7 +533,6 @@
         ]
     };
 
-    // ── Socket.IO ──
     const socket = io({
         transports: ['websocket', 'polling'],
         reconnection: true,
@@ -537,7 +543,6 @@
         console.log('[Socket] Connected');
         socketReady = true;
         setConnectionStatus('connecting', 'Подключение к комнате...');
-        // Wait for media before joining room (so peer connection has tracks)
         tryJoinRoom();
     });
 
@@ -553,8 +558,6 @@
             setConnectionStatus('connecting', 'Ожидание собеседника...');
         }
 
-        // If I'm second (not initiator), I should start the offer immediately
-        // because the other peer is already here waiting
         if (!isInitiator && localStream) {
             createOffer();
         }
@@ -563,8 +566,6 @@
     socket.on('peer_joined', function(data) {
         console.log('[Socket] Peer joined:', data);
         setConnectionStatus('connecting', 'Собеседник подключён, устанавливаем связь...');
-        // I'm the initiator: second peer joined → they will send me offer
-        // (in this design, the second one sends offer; first waits)
     });
 
     socket.on('offer', async function(data) {
@@ -586,7 +587,6 @@
         setConnectionStatus('error', 'Собеседник покинул звонок');
         remotePlaceholder.style.display = 'flex';
         remoteVideo.srcObject = null;
-        // Reset peer connection for possible rejoin
         if (peerConnection) {
             peerConnection.close();
             peerConnection = null;
@@ -608,16 +608,13 @@
     });
 
     function tryJoinRoom() {
-        // Join room only after both socket and media are ready
         if (socketReady && mediaReady && !joined) {
             console.log('[Signal] Joining room', roomId);
-            // Ensure peer connection exists with tracks before any offer/answer
             if (!peerConnection) createPeerConnection();
             socket.emit('join_room', { room_id: roomId });
         }
     }
 
-    // ── Connection status helper ──
     function setConnectionStatus(type, text) {
         connectionStatus.className = 'connection-status ' + type;
         connectionStatus.innerHTML = (type === 'connecting'
@@ -627,17 +624,19 @@
                 : '<i class="fas fa-exclamation-triangle me-2"></i>') + text;
     }
 
-    // ── Get user media ──
     async function initMedia() {
         try {
+            var isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+            var videoConstraints = isMobile
+                ? { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } }
+                : { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } };
             localStream = await navigator.mediaDevices.getUserMedia({
-                video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+                video: videoConstraints,
                 audio: { echoCancellation: true, noiseSuppression: true }
             });
             localVideo.srcObject = localStream;
             mediaReady = true;
             console.log('[Media] Ready');
-            // Now that media is ready, try to join room
             tryJoinRoom();
         } catch (err) {
             console.error('[Media] Error:', err);
@@ -645,7 +644,6 @@
         }
     }
 
-    // ── WebRTC ──
     function createPeerConnection() {
         if (peerConnection) return peerConnection;
 
@@ -745,7 +743,6 @@
     async function handleIceCandidate(candidate) {
         if (!candidate) return;
         if (!peerConnection || !hasRemoteDesc) {
-            // Queue candidate until remote description is set
             iceCandidateQueue.push(candidate);
             return;
         }
@@ -768,7 +765,6 @@
         }
     }
 
-    // ── Timer ──
     function startTimer() {
         if (timerInterval) return;
         timerInterval = setInterval(function() {
@@ -781,7 +777,6 @@
         }, 1000);
     }
 
-    // ── Toggle microphone ──
     btnToggleMic.addEventListener('click', function() {
         if (!localStream) return;
         micEnabled = !micEnabled;
@@ -790,7 +785,6 @@
         btnToggleMic.classList.toggle('active-off', !micEnabled);
     });
 
-    // ── Toggle camera ──
     btnToggleCamera.addEventListener('click', function() {
         if (!localStream) return;
         cameraEnabled = !cameraEnabled;
@@ -799,53 +793,43 @@
         btnToggleCamera.classList.toggle('active-off', !cameraEnabled);
     });
 
-    // ── End call ──
     btnEndCall.addEventListener('click', function() {
         endCall();
     });
 
     async function endCall() {
-        // Stop timer
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
 
-        // Stop transcription
         if (recognition && transcriptionOn) {
             recognition.stop();
             transcriptionOn = false;
         }
 
-        // Send transcription if any
-        if (fullTranscript.trim()) {
-            try {
-                await fetch('/videocall/transcribe/' + roomId, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ transcription: fullTranscript })
-                });
-            } catch (err) {
-                console.error('Transcription save error:', err);
-            }
+        try {
+            await fetch('/videocall/transcribe/' + roomId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ transcription: (fullTranscript || '').trim() })
+            });
+        } catch (err) {
+            console.error('Transcription save error:', err);
         }
 
-        // Stop local streams
         if (localStream) {
             localStream.getTracks().forEach(function(track) { track.stop(); });
         }
 
-        // Close peer connection
         if (peerConnection) {
             peerConnection.close();
             peerConnection = null;
         }
 
-        // Notify server
         socket.emit('leave_room', { room_id: roomId });
         socket.disconnect();
 
-        // POST end call (triggers redirect server-side)
         try {
             const resp = await fetch('/videocall/end/' + roomId, {
                 method: 'POST',
@@ -859,28 +843,23 @@
             console.error('End call error:', err);
         }
 
-        // Fallback redirect
         window.location.href = '/';
     }
 
-    // ── Transcription helpers ──
     function showTranscriptError(msg) {
         const div = document.createElement('div');
         div.style.cssText = 'padding:10px 14px;background:rgba(239,68,68,.15);border-radius:8px;border-left:3px solid rgba(239,68,68,.6);color:#fca5a5;font-size:.83rem;margin-bottom:8px;';
         div.textContent = '⚠ ' + msg;
         transcriptionBody.appendChild(div);
         transcriptionBody.scrollTop = transcriptionBody.scrollHeight;
-        // Auto-deactivate transcription on fatal errors
         transcriptionOn = false;
         btnToggleTranscription.classList.remove('transcription-active');
     }
 
-    // ── Speech Recognition (Transcription) ──
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     btnToggleTranscription.addEventListener('click', function() {
         if (!SpeechRecognition) {
-            // Open panel and show unsupported message
             transcriptionPanel.classList.add('open');
             transcriptionEmpty.style.display = 'none';
             showTranscriptError(
@@ -893,7 +872,6 @@
         transcriptionOn = !transcriptionOn;
         btnToggleTranscription.classList.toggle('transcription-active', transcriptionOn);
 
-        // Toggle panel visibility
         transcriptionPanel.classList.toggle('open', transcriptionOn);
 
         if (transcriptionOn) {
@@ -939,8 +917,8 @@
                 'audio-capture':      'Микрофон недоступен. Проверьте подключение.',
                 'network':            'Нет сети для распознавания речи. Проверьте интернет-соединение.',
                 'service-not-allowed':'Сервис распознавания речи заблокирован браузером.',
-                'no-speech':          '', // not an error — just silence, ignore
-                'aborted':            '', // user stopped, ignore
+                'no-speech':          '',
+                'aborted':            '',
             };
             const msg = errorMessages[event.error];
             if (msg === undefined) {
@@ -951,7 +929,6 @@
         };
 
         recognition.onend = function() {
-            // Restart if still enabled (but not after a fatal error that cleared transcriptionOn)
             if (transcriptionOn) {
                 setTimeout(function() {
                     if (transcriptionOn) {
@@ -990,7 +967,6 @@
         return div.innerHTML;
     }
 
-    // ── Handle page unload ──
     window.addEventListener('beforeunload', function() {
         if (localStream) {
             localStream.getTracks().forEach(function(track) { track.stop(); });
@@ -999,7 +975,6 @@
         socket.emit('leave_room', { room_id: roomId });
     });
 
-    // ── Init ──
     initMedia();
 
 })();
