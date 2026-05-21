@@ -53,8 +53,23 @@ def save_logo(file):
 
 
 def _wipe_user(user):
-    
+    """Remove all records that reference the given user so it can be hard-deleted.
 
+    Ordering matters: we must expunge rows that SQLAlchemy will later try to
+    cascade-delete BEFORE issuing the bulk DELETEs — otherwise the session ends up
+    with stale references and raises StaleDataError / FK violations on PostgreSQL.
+
+    Strategy:
+      1. Load every Appointment the user is involved in and delete it through the
+         session so SQLAlchemy's 'all, delete-orphan' cascade removes the attached
+         VideoCall / Prescription / Review consistently.
+      2. Flush to push those DELETEs to the database immediately.
+      3. Bulk-DELETE any orphan rows that still reference the user directly
+         (prescriptions/reviews/medical records where the user is mentioned outside
+         an appointment, notifications, chat messages).
+      4. Flush again so the session is clean before the caller deletes the user.
+    """
+    # --- 1. Delete appointments via the session so cascades fire ---
     appts = Appointment.query.filter(
         db.or_(Appointment.patient_id == user.id, Appointment.doctor_id == user.id)
     ).all()
@@ -62,6 +77,9 @@ def _wipe_user(user):
         db.session.delete(appt)
     db.session.flush()
 
+    # --- 2. Clean up any rows still pointing at the user ---
+    # (Normally these are already gone via the cascade above, but we protect
+    # against data where doctor/patient fields were set without an appointment.)
     Prescription.query.filter(
         db.or_(Prescription.patient_id == user.id, Prescription.doctor_id == user.id)
     ).delete(synchronize_session=False)
@@ -76,6 +94,9 @@ def _wipe_user(user):
     db.session.flush()
 
 
+# ---------------------------------------------------------------------------
+# Dashboard
+# ---------------------------------------------------------------------------
 @admin.route('/')
 @login_required
 @superadmin_required
@@ -104,6 +125,9 @@ def dashboard():
     )
 
 
+# ---------------------------------------------------------------------------
+# Clinics – list
+# ---------------------------------------------------------------------------
 @admin.route('/clinics')
 @login_required
 @superadmin_required
@@ -124,6 +148,9 @@ def clinics():
     )
 
 
+# ---------------------------------------------------------------------------
+# Clinics – create
+# ---------------------------------------------------------------------------
 @admin.route('/clinics/create', methods=['GET', 'POST'])
 @login_required
 @superadmin_required
@@ -131,6 +158,7 @@ def create_clinic():
     form = ClinicForm()
 
     if form.validate_on_submit():
+        # --- Validate admin fields for new clinic ---
         if not form.admin_email.data or not form.admin_password.data:
             flash('Укажите email и пароль администратора клиники.', 'danger')
             return render_template('admin/clinic_form.html', form=form, title='Создание клиники')
@@ -139,6 +167,7 @@ def create_clinic():
             flash('Пользователь с таким email уже существует.', 'danger')
             return render_template('admin/clinic_form.html', form=form, title='Создание клиники')
 
+        # --- Create clinic ---
         clinic = Clinic(
             name=form.name.data,
             description=form.description.data,
@@ -152,15 +181,16 @@ def create_clinic():
             working_hours_end=form.working_hours_end.data or '18:00',
         )
 
+        # Handle logo upload
         if form.logo.data and getattr(form.logo.data, 'filename', ''):
             saved_logo = save_logo(form.logo.data)
             if saved_logo:
                 clinic.logo = saved_logo
 
         db.session.add(clinic)
-        db.session.flush()  
+        db.session.flush()  # get clinic.id before creating admin user
 
-
+        # --- Create clinic_admin user ---
         clinic_admin = User(
             email=form.admin_email.data,
             first_name=form.admin_first_name.data or 'Admin',
@@ -179,6 +209,9 @@ def create_clinic():
     return render_template('admin/clinic_form.html', form=form, title='Создание клиники')
 
 
+# ---------------------------------------------------------------------------
+# Clinics – edit
+# ---------------------------------------------------------------------------
 @admin.route('/clinics/<int:clinic_id>/edit', methods=['GET', 'POST'])
 @login_required
 @superadmin_required
@@ -215,6 +248,9 @@ def edit_clinic(clinic_id):
     return render_template('admin/clinic_form.html', form=form, title='Редактирование клиники', clinic=clinic)
 
 
+# ---------------------------------------------------------------------------
+# Clinics – delete
+# ---------------------------------------------------------------------------
 @admin.route('/clinics/<int:clinic_id>/delete', methods=['POST'])
 @login_required
 @superadmin_required
@@ -223,17 +259,22 @@ def delete_clinic(clinic_id):
     name = clinic.name
 
     try:
-
+        # Wipe dependent data for every user tied to this clinic. We do NOT delete
+        # the users themselves here — the Clinic.users relationship has
+        # cascade='all, delete-orphan', so `db.session.delete(clinic)` below will
+        # remove them cleanly once their appointments / prescriptions / etc. are gone.
         members = User.query.filter(User.clinic_id == clinic.id).all()
         for member in members:
             _wipe_user(member)
 
-
+        # Also wipe any appointments that reference this clinic but whose
+        # participants somehow aren't in `members` (defensive — data drift).
         stray_appts = Appointment.query.filter_by(clinic_id=clinic.id).all()
         for appt in stray_appts:
             db.session.delete(appt)
         db.session.flush()
 
+        # Finally drop the clinic. Cascade handles users + specializations.
         db.session.delete(clinic)
         db.session.commit()
         flash(f'Клиника "{name}" удалена.', 'warning')
@@ -244,6 +285,9 @@ def delete_clinic(clinic_id):
     return redirect(url_for('admin.clinics'))
 
 
+# ---------------------------------------------------------------------------
+# Clinics – activate / deactivate
+# ---------------------------------------------------------------------------
 @admin.route('/clinics/<int:clinic_id>/toggle', methods=['POST'])
 @login_required
 @superadmin_required
@@ -256,6 +300,9 @@ def toggle_clinic(clinic_id):
     return redirect(url_for('admin.clinics'))
 
 
+# ---------------------------------------------------------------------------
+# Users – list all platform users
+# ---------------------------------------------------------------------------
 @admin.route('/users')
 @login_required
 @superadmin_required
@@ -286,10 +333,14 @@ def users():
     )
 
 
+# ---------------------------------------------------------------------------
+# Analytics
+# ---------------------------------------------------------------------------
 @admin.route('/analytics')
 @login_required
 @superadmin_required
 def analytics():
+    # General counts
     total_clinics = Clinic.query.count()
     active_clinics = Clinic.query.filter_by(is_active=True).count()
     total_doctors = User.query.filter_by(role='doctor').count()
@@ -297,21 +348,25 @@ def analytics():
     total_appointments = Appointment.query.count()
     total_videocalls = VideoCall.query.count()
 
+    # Appointments by status — template expects `status_stats`
     status_stats = dict(
         db.session.query(Appointment.status, db.func.count(Appointment.id))
         .group_by(Appointment.status)
         .all()
     )
 
+    # Appointments over last 30 days
     thirty_days_ago = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=30)
     recent_appointments_count = Appointment.query.filter(
         Appointment.created_at >= thirty_days_ago
     ).count()
 
+    # New users over last 30 days
     new_users_count = User.query.filter(
         User.created_at >= thirty_days_ago
     ).count()
 
+    # Top clinics by appointment count
     top_clinics = (
         db.session.query(Clinic, db.func.count(Appointment.id).label('appointment_count'))
         .join(Appointment, Appointment.clinic_id == Clinic.id)
@@ -321,7 +376,7 @@ def analytics():
         .all()
     )
 
-
+    # Monthly data for last 6 months
     RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
                  'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
     monthly_data = []
@@ -374,6 +429,10 @@ def analytics():
         monthly_data=monthly_data,
     )
 
+
+# ---------------------------------------------------------------------------
+# Users – toggle active status
+# ---------------------------------------------------------------------------
 @admin.route('/users/<int:user_id>/toggle', methods=['POST'])
 @login_required
 @superadmin_required
@@ -389,6 +448,9 @@ def toggle_user(user_id):
     return redirect(url_for('admin.users'))
 
 
+# ---------------------------------------------------------------------------
+# Users – delete
+# ---------------------------------------------------------------------------
 @admin.route('/users/<int:user_id>/delete', methods=['POST'])
 @login_required
 @superadmin_required
@@ -410,6 +472,9 @@ def delete_user(user_id):
     return redirect(url_for('admin.users'))
 
 
+# ---------------------------------------------------------------------------
+# Admin profile
+# ---------------------------------------------------------------------------
 @admin.route('/profile', methods=['GET', 'POST'])
 @login_required
 @superadmin_required
@@ -421,14 +486,20 @@ def profile():
         current_user.last_name = form.last_name.data
         current_user.phone = form.phone.data
 
-        if form.avatar.data and form.avatar.data.filename:
-            avatar_filename = secure_filename(form.avatar.data.filename)
-            name, ext = os.path.splitext(avatar_filename)
-            avatar_filename = f"{name}_{int(datetime.now(timezone.utc).replace(tzinfo=None).timestamp())}{ext}"
-            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'avatars')
-            os.makedirs(upload_dir, exist_ok=True)
-            form.avatar.data.save(os.path.join(upload_dir, avatar_filename))
-            current_user.avatar = f'uploads/avatars/{avatar_filename}'
+        if form.avatar.data and getattr(form.avatar.data, 'filename', ''):
+            original = secure_filename(form.avatar.data.filename) or ''
+            if '.' in original:
+                ext = original.rsplit('.', 1)[-1].lower()
+                if ext in ALLOWED_IMAGE_EXTENSIONS:
+                    avatar_filename = f"{uuid.uuid4().hex}.{ext}"
+                    upload_dir = os.path.join(
+                        current_app.config.get('UPLOAD_FOLDER')
+                        or os.path.join(current_app.root_path, 'static', 'uploads'),
+                        'avatars',
+                    )
+                    os.makedirs(upload_dir, exist_ok=True)
+                    form.avatar.data.save(os.path.join(upload_dir, avatar_filename))
+                    current_user.avatar = avatar_filename
 
         db.session.commit()
         flash('Профиль обновлен.', 'success')
@@ -436,6 +507,10 @@ def profile():
 
     return render_template('admin/profile.html', form=form)
 
+
+# ---------------------------------------------------------------------------
+# Admin notifications
+# ---------------------------------------------------------------------------
 @admin.route('/notifications')
 @login_required
 @superadmin_required
@@ -448,6 +523,7 @@ def notifications():
         .paginate(page=page, per_page=20, error_out=False)
     )
 
+    # Mark all as read
     Notification.query.filter_by(user_id=current_user.id, is_read=False).update({'is_read': True})
     db.session.commit()
 
