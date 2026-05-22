@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Медицинская карта{% endblock %}
+{% block title %}{{ t('patient.medical_records.title') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -35,8 +35,8 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="fas fa-file-medical me-2 text-primary"></i>Медицинская карта</h2>
-            <p class="text-muted mb-0">Все ваши медицинские записи в одном месте</p>
+                <h2 class="mb-1"><i class="fas fa-file-medical me-2 text-primary"></i>{{ t('patient.medical_records.title') }}</h2>
+                <p class="text-muted mb-0">{{ t('patient.medical_records.subtitle') }}</p>
         </div>
     </div>
 
@@ -45,31 +45,31 @@
             <div class="d-flex flex-wrap gap-2">
                 <a href="{{ url_for('patient.medical_records') }}"
                    class="btn btn-sm {% if not request.args.get('type') %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-list me-1"></i>Все
+                    <i class="fas fa-list me-1"></i>{{ t('record_type.all', 'Все') }}
                 </a>
                 <a href="{{ url_for('patient.medical_records', type='examination') }}"
                    class="btn btn-sm {% if request.args.get('type') == 'examination' %}btn-success{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-stethoscope me-1"></i>Осмотры / Диагнозы
+                    <i class="fas fa-stethoscope me-1"></i>{{ t('record_type.examination') }}
                 </a>
                 <a href="{{ url_for('patient.medical_records', type='prescription') }}"
                    class="btn btn-sm {% if request.args.get('type') == 'prescription' %}btn-info{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-prescription me-1"></i>Назначения
+                    <i class="fas fa-prescription me-1"></i>{{ t('record_type.prescription') }}
                 </a>
                 <a href="{{ url_for('patient.medical_records', type='consultation') }}"
                    class="btn btn-sm {% if request.args.get('type') == 'consultation' %}btn-warning{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-comments me-1"></i>Консультации
+                    <i class="fas fa-comments me-1"></i>{{ t('record_type.consultation') }}
                 </a>
                 <a href="{{ url_for('patient.medical_records', type='lab_result') }}"
                    class="btn btn-sm {% if request.args.get('type') == 'lab_result' %}btn-danger{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-flask me-1"></i>Анализы
+                    <i class="fas fa-flask me-1"></i>{{ t('record_type.lab_result') }}
                 </a>
                 <a href="{{ url_for('patient.medical_records', type='imaging') }}"
                    class="btn btn-sm {% if request.args.get('type') == 'imaging' %}btn-secondary{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-x-ray me-1"></i>Снимки
+                    <i class="fas fa-x-ray me-1"></i>{{ t('record_type.imaging') }}
                 </a>
                 <a href="{{ url_for('patient.medical_records', type='note') }}"
                    class="btn btn-sm {% if request.args.get('type') == 'note' %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-sticky-note me-1"></i>Заметки
+                    <i class="fas fa-sticky-note me-1"></i>{{ t('record_type.note') }}
                 </a>
             </div>
         </div>
@@ -109,7 +109,7 @@
                                         {% if record.doctor %}
                                         <i class="fas fa-user-md me-1"></i>{{ record.doctor.first_name }} {{ record.doctor.last_name }}
                                         {% else %}
-                                        <i class="fas fa-user me-1"></i>Личная запись
+                                            <i class="fas fa-user me-1"></i>{{ t('patient.medical_records.personal_entry') }}
                                         {% endif %}
                                     </p>
                                 </div>
@@ -126,8 +126,8 @@
                 {% else %}
                 <div class="list-group-item text-center py-5">
                     <i class="fas fa-folder-open fa-4x text-muted mb-3 d-block opacity-50"></i>
-                    <h5 class="text-muted">Нет медицинских записей</h5>
-                    <p class="text-muted">Записи появятся после визитов к врачам</p>
+                    <h5 class="text-muted">{{ t('patient.medical_records.none_found_title') }}</h5>
+                    <p class="text-muted">{{ t('patient.medical_records.none_found_subtitle') }}</p>
                 </div>
                 {% endfor %}
             </div>

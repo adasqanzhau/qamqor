@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Мой профиль{% endblock %}
+{% block title %}{{ t('patient.profile.title') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -47,8 +47,8 @@
         <div class="col-lg-8">
             <!-- Heading -->
             <div class="mb-4">
-                <h2 class="mb-1"><i class="fas fa-user-circle me-2 text-primary"></i>Мой профиль</h2>
-                <p class="text-muted mb-0">Управление личной информацией</p>
+                <h2 class="mb-1"><i class="fas fa-user-circle me-2 text-primary"></i>{{ t('patient.profile.title') }}</h2>
+                <p class="text-muted mb-0">{{ t('patient.profile.subtitle') }}</p>
             </div>
 
             <div class="card shadow-sm">
@@ -59,68 +59,68 @@
                         <div class="text-center mb-4">
                             <div class="position-relative d-inline-block">
                                 {% if current_user.avatar %}
-                                <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}"
-                                     alt="Аватар" class="avatar-preview" id="avatarPreview">
+                                  <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}"
+                                      alt="{{ t('patient.profile.avatar_alt') }}" class="avatar-preview" id="avatarPreview">
                                 {% else %}
                                 <div class="avatar-placeholder" id="avatarPlaceholder">
                                     <i class="fas fa-user"></i>
                                 </div>
-                                <img src="#" alt="Аватар" class="avatar-preview d-none" id="avatarPreview">
+                                <img src="#" alt="{{ t('patient.profile.avatar_alt') }}" class="avatar-preview d-none" id="avatarPreview">
                                 {% endif %}
-                                <label for="avatar" class="avatar-upload-btn btn btn-primary btn-sm" title="Загрузить фото">
+                                <label for="avatar" class="avatar-upload-btn btn btn-primary btn-sm" title="{{ t('patient.profile.upload_photo') }}">
                                     <i class="fas fa-camera"></i>
                                 </label>
                             </div>
                             <input type="file" name="avatar" id="avatar" class="d-none" accept="image/*">
-                            <p class="text-muted small mt-2">Нажмите на иконку камеры для загрузки фото</p>
+                            <p class="text-muted small mt-2">{{ t('patient.profile.upload_hint') }}</p>
                         </div>
 
                         <hr>
 
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Email</label>
+                                <label class="form-label fw-semibold">{{ t('auth.email') }}</label>
                                 <input type="email" class="form-control" value="{{ current_user.email }}" disabled readonly>
-                                <div class="form-text">Email нельзя изменить</div>
+                                <div class="form-text">{{ t('patient.profile.email_immutable') }}</div>
                             </div>
                             <div class="col-md-6">
-                                <label for="first_name" class="form-label fw-semibold">Имя</label>
-                                {{ form.first_name(class="form-control", placeholder="Введите имя") }}
+                                <label for="first_name" class="form-label fw-semibold">{{ t('common.first_name') }}</label>
+                                {{ form.first_name(class="form-control", placeholder="{{ t('patient.profile.first_name_placeholder') }}") }}
                                 {% if form.first_name.errors %}
                                 <div class="invalid-feedback d-block">{{ form.first_name.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="last_name" class="form-label fw-semibold">Фамилия</label>
-                                {{ form.last_name(class="form-control", placeholder="Введите фамилию") }}
+                                <label for="last_name" class="form-label fw-semibold">{{ t('common.last_name') }}</label>
+                                {{ form.last_name(class="form-control", placeholder="{{ t('patient.profile.last_name_placeholder') }}") }}
                                 {% if form.last_name.errors %}
                                 <div class="invalid-feedback d-block">{{ form.last_name.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="phone" class="form-label fw-semibold">Телефон</label>
-                                {{ form.phone(class="form-control", placeholder="+7 (XXX) XXX-XX-XX") }}
+                                <label for="phone" class="form-label fw-semibold">{{ t('common.phone') }}</label>
+                                {{ form.phone(class="form-control", placeholder="{{ t('patient.profile.phone_placeholder') }}") }}
                                 {% if form.phone.errors %}
                                 <div class="invalid-feedback d-block">{{ form.phone.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="birth_date" class="form-label fw-semibold">Дата рождения</label>
+                                <label for="birth_date" class="form-label fw-semibold">{{ t('common.birth_date') }}</label>
                                 {{ form.birth_date(class="form-control", type="date") }}
                                 {% if form.birth_date.errors %}
                                 <div class="invalid-feedback d-block">{{ form.birth_date.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="gender" class="form-label fw-semibold">Пол</label>
+                                <label for="gender" class="form-label fw-semibold">{{ t('common.gender') }}</label>
                                 {{ form.gender(class="form-select") }}
                                 {% if form.gender.errors %}
                                 <div class="invalid-feedback d-block">{{ form.gender.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="address" class="form-label fw-semibold">Адрес</label>
-                                {{ form.address(class="form-control", placeholder="Город, улица, дом") }}
+                                <label for="address" class="form-label fw-semibold">{{ t('patient.profile.address_label') }}</label>
+                                {{ form.address(class="form-control", placeholder="{{ t('patient.profile.address_placeholder') }}") }}
                                 {% if form.address.errors %}
                                 <div class="invalid-feedback d-block">{{ form.address.errors[0] }}</div>
                                 {% endif %}
@@ -131,7 +131,7 @@
 
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save me-1"></i>Сохранить изменения
+                                <i class="fas fa-save me-1"></i>{{ t('patient.profile.save_changes') }}
                             </button>
                         </div>
                     </form>

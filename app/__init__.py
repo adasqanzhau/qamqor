@@ -1,9 +1,10 @@
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask, redirect, url_for, render_template, session, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_wtf.csrf import CSRFProtect
+from flask_babel import Babel
 from config import Config
 import os
 
@@ -12,6 +13,7 @@ login_manager = LoginManager()
 migrate = Migrate()
 socketio = SocketIO()
 csrf = CSRFProtect()
+babel = Babel()
 
 
 def create_app(config_class=Config):
@@ -47,6 +49,22 @@ def create_app(config_class=Config):
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Пожалуйста, войдите в систему.'
     login_manager.login_message_category = 'warning'
+
+    # Locale selector for Babel
+    def get_locale():
+        # 1. Check session first so the auth-page selection survives login
+        if 'language' in session:
+            return session['language']
+        # 2. Check if user is logged in and has language preference
+        if current_user.is_authenticated and current_user.language:
+            return current_user.language
+        # 3. Check URL parameter
+        if request.args.get('lang') in app.config.get('LANGUAGES', {}):
+            return request.args.get('lang')
+        # 4. Default
+        return app.config.get('BABEL_DEFAULT_LOCALE', 'ru')
+
+    babel.init_app(app, locale_selector=get_locale)
 
     # Ensure upload folder exists
     os.makedirs(app.config.get('UPLOAD_FOLDER', 'app/static/uploads'), exist_ok=True)
@@ -86,9 +104,43 @@ def create_app(config_class=Config):
     def landing():
         return render_template('landing.html')
 
+    @app.route('/set-language/<language>')
+    def set_language(language):
+        if language in app.config.get('LANGUAGES', {}):
+            session['language'] = language
+            if current_user.is_authenticated:
+                current_user.language = language
+                db.session.commit()
+        return redirect(request.referrer or url_for('landing'))
+
     @app.context_processor
     def inject_now():
         from datetime import datetime, timezone
-        return {'now': datetime.now(timezone.utc).replace(tzinfo=None)}
+        from app.i18n import t, get_translations, get_dom_translations
+        
+        # Determine current language
+        current_lang = 'ru'
+        if 'language' in session:
+            current_lang = session['language']
+        elif current_user.is_authenticated and current_user.language:
+            current_lang = current_user.language
+        
+        return {
+            'now': datetime.now(timezone.utc).replace(tzinfo=None),
+            'languages': app.config.get('LANGUAGES', {}),
+            'current_language': current_lang,
+            't': lambda key, default='': t(key, current_lang, default),
+            'translations': get_translations(current_lang),
+            'dom_translations': get_dom_translations(current_lang)
+        }
+
+    @app.before_request
+    def sync_language_from_query():
+        lang = request.args.get('lang')
+        if lang in app.config.get('LANGUAGES', {}):
+            session['language'] = lang
+            if current_user.is_authenticated and current_user.language != lang:
+                current_user.language = lang
+                db.session.commit()
 
     return app

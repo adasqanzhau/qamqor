@@ -1,4 +1,40 @@
 document.addEventListener('DOMContentLoaded', function () {
+    var translations = window.QAMQOR_DOM_TRANSLATIONS || {};
+
+    function translateDom() {
+        if (!translations || Object.keys(translations).length === 0) return;
+
+        function normalizeText(value) {
+            return (value || '').replace(/\s+/g, ' ').trim();
+        }
+
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+        var node;
+        while ((node = walker.nextNode())) {
+            var parent = node.parentElement;
+            if (!parent || ['SCRIPT', 'STYLE', 'NOSCRIPT'].indexOf(parent.tagName) !== -1) continue;
+            var text = normalizeText(node.nodeValue);
+            if (!text || !translations[text]) continue;
+            node.nodeValue = translations[text];
+        }
+
+        document.querySelectorAll('[placeholder], [title], [aria-label], input[type="button"], input[type="submit"], button').forEach(function (el) {
+            ['placeholder', 'title', 'aria-label', 'value'].forEach(function (attr) {
+                var current = el.getAttribute(attr);
+                var normalized = normalizeText(current);
+                if (normalized && translations[normalized]) {
+                    el.setAttribute(attr, translations[normalized]);
+                }
+            });
+        });
+
+        var titleKey = normalizeText(document.title);
+        if (titleKey && translations[titleKey]) {
+            document.title = translations[titleKey];
+        }
+    }
+
+    translateDom();
 
     const notificationBadge = document.getElementById('notificationCount');
     const notificationList = document.getElementById('notificationList');
@@ -21,8 +57,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(function () { /* silent */ });
     }
 
-    fetchNotificationCount();
-    setInterval(fetchNotificationCount, 30000);
+    if (notificationBadge || notificationList || markAllReadBtn) {
+        fetchNotificationCount();
+        setInterval(fetchNotificationCount, 30000);
+    }
 
     var notifDropdownEl = document.getElementById('notificationsDropdown');
     if (notifDropdownEl) {
@@ -41,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     notificationList.innerHTML =
                         '<div class="text-center py-4 text-muted">' +
                             '<i class="fas fa-bell-slash fa-2x mb-2 d-block"></i>' +
-                            '<span class="small">Нет новых уведомлений</span>' +
+                            '<span class="small">' + (translations['Нет новых уведомлений'] || 'Нет новых уведомлений') + '</span>' +
                         '</div>';
                     return;
                 }
@@ -151,11 +189,11 @@ document.addEventListener('DOMContentLoaded', function () {
             overlay.innerHTML =
                 '<div class="confirm-dialog">' +
                     '<div class="confirm-icon"><i class="fas fa-trash-alt"></i></div>' +
-                    '<h5 class="mb-2">' + escapeHtml(title || 'Удаление') + '</h5>' +
-                    '<p class="text-muted mb-4">' + escapeHtml(message || 'Вы уверены? Это действие нельзя отменить.') + '</p>' +
+                    '<h5 class="mb-2">' + escapeHtml(title || (translations['Удаление'] || 'Удаление')) + '</h5>' +
+                    '<p class="text-muted mb-4">' + escapeHtml(message || (translations['Вы уверены? Это действие нельзя отменить.'] || 'Вы уверены? Это действие нельзя отменить.')) + '</p>' +
                     '<div class="d-flex justify-content-center gap-3">' +
-                        '<button class="btn btn-secondary px-4 btn-cancel">Отмена</button>' +
-                        '<button class="btn btn-danger px-4 btn-confirm">Удалить</button>' +
+                        '<button class="btn btn-secondary px-4 btn-cancel">' + (translations['Отмена'] || 'Отмена') + '</button>' +
+                        '<button class="btn btn-danger px-4 btn-confirm">' + (translations['Удалить'] || 'Удалить') + '</button>' +
                     '</div>' +
                 '</div>';
 

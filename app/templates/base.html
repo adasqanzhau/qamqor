@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ current_language }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +14,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <script>
+        window.QAMQOR_CURRENT_LANGUAGE = {{ current_language|tojson }};
+        window.QAMQOR_DOM_TRANSLATIONS = {{ dom_translations|tojson }};
+    </script>
 
     {% block extra_css %}{% endblock %}
 </head>
@@ -35,109 +40,126 @@
                     {% if current_user.role == 'superadmin' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-                            <i class="fas fa-tachometer-alt me-1"></i> Панель управления
+                            <i class="fas fa-tachometer-alt me-1"></i> {{ t('nav.dashboard') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('admin.clinics') }}">
-                            <i class="fas fa-hospital me-1"></i> Клиники
+                            <i class="fas fa-hospital me-1"></i> {{ t('nav.clinics') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('admin.users') }}">
-                            <i class="fas fa-users me-1"></i> Пользователи
+                            <i class="fas fa-users me-1"></i> {{ t('nav.users') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('admin.analytics') }}">
-                            <i class="fas fa-chart-line me-1"></i> Аналитика
+                            <i class="fas fa-chart-line me-1"></i> {{ t('nav.analytics') }}
                         </a>
                     </li>
 
                     {% elif current_user.role == 'clinic_admin' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('clinic.dashboard') }}">
-                            <i class="fas fa-tachometer-alt me-1"></i> Панель управления
+                            <i class="fas fa-tachometer-alt me-1"></i> {{ t('nav.dashboard') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('clinic.doctors') }}">
-                            <i class="fas fa-user-md me-1"></i> Врачи
+                            <i class="fas fa-user-md me-1"></i> {{ t('nav.doctors') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('clinic.patients') }}">
-                            <i class="fas fa-users me-1"></i> Пациенты
+                            <i class="fas fa-users me-1"></i> {{ t('nav.patients') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('clinic.appointments') }}">
-                            <i class="fas fa-calendar-check me-1"></i> Записи
+                            <i class="fas fa-calendar-check me-1"></i> {{ t('nav.appointments') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('clinic.settings') }}">
-                            <i class="fas fa-cog me-1"></i> Настройки
+                            <i class="fas fa-cog me-1"></i> {{ t('common.settings') }}
                         </a>
                     </li>
 
                     {% elif current_user.role == 'doctor' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('doctor.dashboard') }}">
-                            <i class="fas fa-tachometer-alt me-1"></i> Панель управления
+                            <i class="fas fa-tachometer-alt me-1"></i> {{ t('nav.dashboard') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('doctor.appointments') }}">
-                            <i class="fas fa-calendar-alt me-1"></i> Расписание
+                            <i class="fas fa-calendar-alt me-1"></i> {{ t('nav.schedule') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('doctor.reviews') }}">
-                            <i class="fas fa-star me-1"></i> Отзывы
+                            <i class="fas fa-star me-1"></i> {{ t('nav.reviews') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('doctor.profile') }}">
-                            <i class="fas fa-user me-1"></i> Профиль
+                            <i class="fas fa-user me-1"></i> {{ t('common.profile') }}
                         </a>
                     </li>
 
                     {% elif current_user.role == 'patient' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('patient.index') }}">
-                            <i class="fas fa-tachometer-alt me-1"></i> Панель управления
+                            <i class="fas fa-tachometer-alt me-1"></i> {{ t('nav.dashboard') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('patient.doctors') }}">
-                            <i class="fas fa-user-md me-1"></i> Врачи
+                            <i class="fas fa-user-md me-1"></i> {{ t('nav.doctors') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('patient.appointments') }}">
-                            <i class="fas fa-calendar-check me-1"></i> Мои записи
+                            <i class="fas fa-calendar-check me-1"></i> {{ t('nav.appointments') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('patient.medical_records') }}">
-                            <i class="fas fa-file-medical me-1"></i> Мед. карта
+                            <i class="fas fa-file-medical me-1"></i> {{ t('patient.medical_card') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('chatbot.chat') }}">
-                            <i class="fas fa-robot me-1"></i> AI Ассистент
+                            <i class="fas fa-robot me-1"></i> {{ t('patient.ai_assistant') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('patient.profile') }}">
-                            <i class="fas fa-user me-1"></i> Профиль
+                            <i class="fas fa-user me-1"></i> {{ t('common.profile') }}
                         </a>
                     </li>
                     {% endif %}
                 </ul>
 
                 <ul class="navbar-nav ms-auto align-items-center">
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe me-1"></i>
+                            <span class="d-none d-md-inline">{{ current_language.upper() }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                            {% for lang_code, lang_name in languages.items() %}
+                            <li>
+                                <a class="dropdown-item {% if current_language == lang_code %}active{% endif %}" href="{{ url_for('set_language', language=lang_code) }}">
+                                    {{ lang_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+
                     <li class="nav-item dropdown me-3">
                         <a class="nav-link position-relative" href="#" id="notificationsDropdown"
                            role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
@@ -146,17 +168,17 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end notification-dropdown p-0" aria-labelledby="notificationsDropdown">
                             <div class="notification-header d-flex justify-content-between align-items-center px-3 py-2">
-                                <h6 class="mb-0 fw-semibold">Уведомления</h6>
-                                <a href="#" class="text-decoration-none small" id="markAllRead">Прочитать все</a>
+                                <h6 class="mb-0 fw-semibold">{{ t('common.notifications') }}</h6>
+                                <a href="#" class="text-decoration-none small" id="markAllRead">{{ t('common.mark_all_read') }}</a>
                             </div>
                             <div class="notification-body" id="notificationList">
                                 <div class="text-center py-4 text-muted">
                                     <i class="fas fa-bell-slash fa-2x mb-2 d-block"></i>
-                                    <span class="small">Нет новых уведомлений</span>
+                                    <span class="small">{{ t('messages.no_new_notifications') }}</span>
                                 </div>
                             </div>
                             <div class="notification-footer text-center py-2 border-top">
-                                <a href="{% if current_user.role == 'patient' %}{{ url_for('patient.notifications') }}{% elif current_user.role == 'superadmin' %}{{ url_for('admin.notifications') }}{% elif current_user.role == 'doctor' %}{{ url_for('doctor.notifications') }}{% elif current_user.role == 'clinic_admin' %}{{ url_for('clinic.notifications') }}{% else %}#{% endif %}" class="text-decoration-none small">Все уведомления</a>
+                                <a href="{% if current_user.role == 'patient' %}{{ url_for('patient.notifications') }}{% elif current_user.role == 'superadmin' %}{{ url_for('admin.notifications') }}{% elif current_user.role == 'doctor' %}{{ url_for('doctor.notifications') }}{% elif current_user.role == 'clinic_admin' %}{{ url_for('clinic.notifications') }}{% else %}#{% endif %}" class="text-decoration-none small">{{ t('common.all_notifications') }}</a>
                             </div>
                         </div>
                     </li>
@@ -172,13 +194,13 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                             <li>
                                 <a class="dropdown-item" href="{% if current_user.role == 'doctor' %}{{ url_for('doctor.profile') }}{% elif current_user.role == 'patient' %}{{ url_for('patient.profile') }}{% elif current_user.role == 'superadmin' %}{{ url_for('admin.profile') }}{% elif current_user.role == 'clinic_admin' %}{{ url_for('clinic.profile') }}{% else %}#{% endif %}">
-                                    <i class="fas fa-user me-2 text-primary"></i> Профиль
+                                    <i class="fas fa-user me-2 text-primary"></i> {{ t('common.profile') }}
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
-                                    <i class="fas fa-sign-out-alt me-2"></i> Выйти
+                                    <i class="fas fa-sign-out-alt me-2"></i> {{ t('common.logout') }}
                                 </a>
                             </li>
                         </ul>
@@ -189,12 +211,12 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item me-2">
                         <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('auth.login') }}">
-                            <i class="fas fa-sign-in-alt me-1"></i> Войти
+                            <i class="fas fa-sign-in-alt me-1"></i> {{ t('auth.login') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="btn btn-light btn-sm px-3 fw-semibold" href="{{ url_for('auth.register') }}">
-                            <i class="fas fa-user-plus me-1"></i> Регистрация
+                            <i class="fas fa-user-plus me-1"></i> {{ t('auth.register') }}
                         </a>
                     </li>
                 </ul>
@@ -233,10 +255,10 @@
 
     <footer class="app-footer">
         <div class="container text-center">
-            <p class="mb-2">&copy; {{ now.year if now is defined else '2026' }} <strong>Qamqor</strong>. Все права защищены.</p>
+            <p class="mb-2">&copy; {{ now.year if now is defined else '2026' }} <strong>Qamqor</strong>. {{ t('landing.all_rights_reserved') }}</p>
             <div>
-                <a href="#" class="text-muted me-3"><i class="fas fa-shield-alt me-1"></i>Политика конфиденциальности</a>
-                <a href="#" class="text-muted"><i class="fas fa-file-contract me-1"></i>Условия использования</a>
+                <a href="#" class="text-muted me-3"><i class="fas fa-shield-alt me-1"></i>{{ t('landing.privacy_policy') }}</a>
+                <a href="#" class="text-muted"><i class="fas fa-file-contract me-1"></i>{{ t('landing.terms_of_use') }}</a>
             </div>
         </div>
     </footer>

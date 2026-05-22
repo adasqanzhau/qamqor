@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Врачи клиники - Qamqor{% endblock %}
+{% block title %}{{ t('clinic.dashboard.doctors') }} - Qamqor{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -8,12 +8,12 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold mb-1">
-                <i class="fas fa-user-md text-primary me-2"></i>Врачи клиники
+                <i class="fas fa-user-md text-primary me-2"></i>{{ t('clinic.dashboard.doctors') }}
             </h2>
-            <p class="text-muted mb-0">Управление врачами вашей клиники</p>
+            <p class="text-muted mb-0">{{ t('clinic.doctors_page.subtitle') }}</p>
         </div>
         <a href="{{ url_for('clinic.add_doctor') }}" class="btn btn-primary">
-            <i class="fas fa-user-plus me-1"></i> Добавить врача
+            <i class="fas fa-user-plus me-1"></i> {{ t('clinic.dashboard.add_doctor') }}
         </a>
     </div>
 
@@ -41,12 +41,12 @@
                     <!-- Info -->
                     <h5 class="fw-bold mb-1">{{ doctor.full_name }}</h5>
                     <p class="text-primary mb-2">
-                        <i class="fas fa-stethoscope me-1"></i>{{ doctor.specialization or 'Не указана' }}
+                        <i class="fas fa-stethoscope me-1"></i>{{ doctor.specialization or t('doctor.profile.not_specified') }}
                     </p>
 
                     <div class="d-flex justify-content-center gap-3 mb-3">
                         <span class="text-muted small">
-                            <i class="fas fa-briefcase me-1"></i>{{ doctor.experience_years or 0 }} лет
+                            <i class="fas fa-briefcase me-1"></i>{{ doctor.experience_years or 0 }} {{ t('doctor.profile.years') }}
                         </span>
                         <span class="text-muted small">
                             <i class="fas fa-money-bill-wave me-1"></i>{{ doctor.consultation_price or 0 }} ₸
@@ -69,7 +69,7 @@
                         {% endfor %}
                         <span class="text-muted small ms-1">
                             {{ '%.1f'|format(rating) }}
-                            {% if reviews_count %}({{ reviews_count }}){% endif %}
+                            {% if reviews_count %}{{ t('doctor.reviews.reviews_count').replace('%(count)s', reviews_count|string) }}{% endif %}
                         </span>
                     </div>
 
@@ -81,7 +81,7 @@
                             data-bs-target="#reviews{{ doctor.id }}"
                             aria-expanded="false">
                         <i class="fas fa-comment-dots me-1"></i>
-                        Отзывы ({{ reviews_count }})
+                        {{ t('doctor.reviews.reviews_count').replace('%(count)s', reviews_count|string) }}
                     </button>
                     <div class="collapse text-start" id="reviews{{ doctor.id }}">
                         <div class="border-top pt-3 mt-2"
@@ -90,7 +90,7 @@
                             <div class="mb-3 pb-2 {% if not loop.last %}border-bottom{% endif %}">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <strong class="small">
-                                        {{ review.patient.full_name if review.patient else 'Пациент' }}
+                                        {{ review.patient.full_name if review.patient else t('patient') }}
                                     </strong>
                                     <span class="small text-muted">
                                         {{ review.created_at.strftime('%d.%m.%Y') if review.created_at else '' }}
@@ -114,18 +114,18 @@
                     </div>
                     {% else %}
                     <div class="text-muted small mb-2">
-                        <i class="fas fa-comment-slash me-1"></i>Отзывов пока нет
+                        <i class="fas fa-comment-slash me-1"></i>{{ t('doctor.reviews.none_found_title') }}
                     </div>
                     {% endif %}
                 </div>
                 <div class="card-footer bg-white border-top-0 text-center pb-4">
                     <a href="{{ url_for('clinic.edit_doctor', doctor_id=doctor.id) }}"
                        class="btn btn-sm btn-outline-primary me-2">
-                        <i class="fas fa-edit me-1"></i> Редактировать
+                        <i class="fas fa-edit me-1"></i> {{ t('buttons.edit') }}
                     </a>
                     <button type="button" class="btn btn-sm btn-outline-danger"
                             data-bs-toggle="modal" data-bs-target="#deleteModal{{ doctor.id }}">
-                        <i class="fas fa-trash-alt me-1"></i> Удалить
+                        <i class="fas fa-trash-alt me-1"></i> {{ t('buttons.delete') }}
                     </button>
                 </div>
             </div>
@@ -136,22 +136,22 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header border-0">
-                        <h5 class="modal-title fw-bold">Подтверждение удаления</h5>
+                        <h5 class="modal-title fw-bold">{{ t('messages.confirm_delete_title') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Вы уверены, что хотите удалить врача <strong>{{ doctor.full_name }}</strong>?</p>
+                        <p>{{ t('messages.confirm_delete').replace('%(name)s', doctor.full_name) }}</p>
                         <p class="text-danger small mb-0">
                             <i class="fas fa-exclamation-triangle me-1"></i>
-                            Это действие нельзя отменить.
+                            {{ t('messages.confirm_delete_warning') }}
                         </p>
                     </div>
                     <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t('buttons.cancel') }}</button>
                         <form action="{{ url_for('clinic.delete_doctor', doctor_id=doctor.id) }}" method="POST">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-trash-alt me-1"></i> Удалить
+                                <i class="fas fa-trash-alt me-1"></i> {{ t('buttons.delete') }}
                             </button>
                         </form>
                     </div>
@@ -164,10 +164,10 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
             <i class="fas fa-user-md fa-4x text-muted mb-3 d-block"></i>
-            <h5 class="text-muted">Врачи пока не добавлены</h5>
-            <p class="text-muted mb-3">Добавьте первого врача в вашу клинику</p>
+            <h5 class="text-muted">{{ t('clinic.doctors_page.empty_title') }}</h5>
+            <p class="text-muted mb-3">{{ t('clinic.doctors_page.empty_desc') }}</p>
             <a href="{{ url_for('clinic.add_doctor') }}" class="btn btn-primary">
-                <i class="fas fa-user-plus me-1"></i> Добавить врача
+                <i class="fas fa-user-plus me-1"></i> {{ t('clinic.doctors_page.add_doctor') }}
             </a>
         </div>
     </div>

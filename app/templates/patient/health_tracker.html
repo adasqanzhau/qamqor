@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Дневник здоровья{% endblock %}
+{% block title %}{{ t('patient.health_tracker.title') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -35,39 +35,39 @@
 {% block content %}
 <div class="container-fluid py-4">
     <div class="mb-4">
-        <h2 class="mb-1"><i class="fas fa-heartbeat me-2 text-danger"></i>Дневник здоровья</h2>
-        <p class="text-muted mb-0">Ведите записи о своем самочувствии</p>
+        <h2 class="mb-1"><i class="fas fa-heartbeat me-2 text-danger"></i>{{ t('patient.health_tracker.title') }}</h2>
+        <p class="text-muted mb-0">{{ t('patient.health_tracker.subtitle') }}</p>
     </div>
 
     <div class="row g-4">
         <div class="col-lg-5">
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2 text-success"></i>Новая запись</h5>
+                    <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2 text-success"></i>{{ t('patient.health_tracker.new_entry') }}</h5>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('patient.health_tracker') }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="mb-3">
-                            <label for="entry_date" class="form-label fw-semibold">Дата</label>
+                            <label for="entry_date" class="form-label fw-semibold">{{ t('patient.health_tracker.date_label') }}</label>
                             <input type="date" name="entry_date" id="entry_date" class="form-control"
                                    value="{{ today }}" required>
                         </div>
                         <div class="mb-3">
-                            <label for="notes" class="form-label fw-semibold">Симптомы / Заметки</label>
+                            <label for="notes" class="form-label fw-semibold">{{ t('patient.health_tracker.notes_label') }}</label>
                             <textarea name="notes" id="notes" class="form-control" rows="5"
-                                      placeholder="Опишите ваше самочувствие, симптомы, принятые лекарства..." required></textarea>
+                                      placeholder="{{ t('patient.health_tracker.notes_placeholder') }}" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-save me-1"></i>Сохранить запись
+                            <i class="fas fa-save me-1"></i>{{ t('patient.health_tracker.save_entry') }}
                         </button>
                     </form>
                 </div>
             </div>
 
             <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>Советы по здоровью</h5>
+                    <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>{{ t('patient.health_tracker.tips_title') }}</h5>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush">
@@ -77,8 +77,8 @@
                                     <i class="fas fa-apple-alt"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1 fw-semibold">Правильное питание</h6>
-                                    <p class="text-muted small mb-0">Употребляйте больше фруктов и овощей, пейте не менее 2 литров воды в день</p>
+                                    <h6 class="mb-1 fw-semibold">{{ t('patient.health_tracker.tip_nutrition.title') }}</h6>
+                                    <p class="text-muted small mb-0">{{ t('patient.health_tracker.tip_nutrition.desc') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -88,8 +88,8 @@
                                     <i class="fas fa-running"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1 fw-semibold">Физическая активность</h6>
-                                    <p class="text-muted small mb-0">Уделяйте не менее 30 минут в день умеренной физической нагрузке</p>
+                                    <h6 class="mb-1 fw-semibold">{{ t('patient.health_tracker.tip_activity.title') }}</h6>
+                                    <p class="text-muted small mb-0">{{ t('patient.health_tracker.tip_activity.desc') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -99,8 +99,8 @@
                                     <i class="fas fa-bed"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1 fw-semibold">Здоровый сон</h6>
-                                    <p class="text-muted small mb-0">Спите 7-8 часов в сутки, ложитесь и вставайте в одно время</p>
+                                    <h6 class="mb-1 fw-semibold">{{ t('patient.health_tracker.tip_sleep.title') }}</h6>
+                                    <p class="text-muted small mb-0">{{ t('patient.health_tracker.tip_sleep.desc') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -110,8 +110,8 @@
                                     <i class="fas fa-spa"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1 fw-semibold">Управление стрессом</h6>
-                                    <p class="text-muted small mb-0">Практикуйте медитацию, дыхательные упражнения и прогулки на свежем воздухе</p>
+                                    <h6 class="mb-1 fw-semibold">{{ t('patient.health_tracker.tip_stress.title') }}</h6>
+                                    <p class="text-muted small mb-0">{{ t('patient.health_tracker.tip_stress.desc') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -122,8 +122,8 @@
 
         <div class="col-lg-7">
             <div class="card shadow-sm">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-history me-2 text-primary"></i>История записей</h5>
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-history me-2 text-primary"></i>{{ t('patient.health_tracker.history_title') }}</h5>
                     <span class="badge bg-primary rounded-pill">{{ records|length if records else 0 }}</span>
                 </div>
                 <div class="card-body p-0">
@@ -144,8 +144,8 @@
                         {% else %}
                         <div class="list-group-item text-center py-5">
                             <i class="fas fa-book-medical fa-4x text-muted mb-3 d-block opacity-50"></i>
-                            <h5 class="text-muted">Нет записей</h5>
-                            <p class="text-muted">Начните вести дневник здоровья</p>
+                            <h5 class="text-muted">{{ t('patient.health_tracker.none_found_title') }}</h5>
+                            <p class="text-muted">{{ t('patient.health_tracker.none_found_subtitle') }}</p>
                         </div>
                         {% endfor %}
                     </div>

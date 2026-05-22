@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Уведомления{% endblock %}
+{% block title %}{{ t('patient.notifications.title') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -39,13 +39,13 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="fas fa-bell me-2 text-primary"></i>Уведомления</h2>
-            <p class="text-muted mb-0">Все ваши уведомления</p>
+            <h2 class="mb-1"><i class="fas fa-bell me-2 text-primary"></i>{{ t('patient.notifications.title') }}</h2>
+            <p class="text-muted mb-0">{{ t('patient.notifications.subtitle') }}</p>
         </div>
         <form method="POST" action="{{ url_for('patient.mark_all_notifications_read') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-outline-primary">
-                <i class="fas fa-check-double me-1"></i>Прочитать все
+                <i class="fas fa-check-double me-1"></i>{{ t('common.mark_all_read') }}
             </button>
         </form>
     </div>
@@ -91,7 +91,7 @@
                                     {% if not notification.is_read %}
                                     <form method="POST" action="{{ url_for('patient.mark_notification_read', notification_id=notification.id) }}" class="d-inline" onclick="event.stopPropagation();">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button type="submit" class="btn btn-sm btn-outline-primary" title="Отметить как прочитанное">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary" title="{{ t('common.mark_all_read') }}">
                                             <i class="fas fa-check"></i>
                                         </button>
                                     </form>
@@ -108,8 +108,8 @@
                 {% else %}
                 <div class="list-group-item text-center py-5">
                     <i class="fas fa-bell-slash fa-4x text-muted mb-3 d-block opacity-50"></i>
-                    <h5 class="text-muted">Нет уведомлений</h5>
-                    <p class="text-muted">У вас пока нет уведомлений</p>
+                    <h5 class="text-muted">{{ t('patient.notifications.none_found_title') }}</h5>
+                    <p class="text-muted">{{ t('patient.notifications.none_found_subtitle') }}</p>
                 </div>
                 {% endfor %}
             </div>

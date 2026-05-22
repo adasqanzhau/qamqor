@@ -1,4 +1,5 @@
 import os
+from sqlalchemy import text
 
 from app import create_app, socketio, db
 from app.models import User, Clinic
@@ -79,8 +80,19 @@ def _seed_demo_data():
     db.session.commit()
 
 
+def _ensure_language_column():
+    """Add the language column to existing databases if it is missing."""
+    inspector = db.inspect(db.engine)
+    columns = [column['name'] for column in inspector.get_columns('users')]
+    if 'language' not in columns:
+        db.session.execute(text("ALTER TABLE users ADD COLUMN language VARCHAR(5) DEFAULT 'ru'"))
+        db.session.execute(text("UPDATE users SET language = 'ru' WHERE language IS NULL"))
+        db.session.commit()
+
+
 with app.app_context():
     db.create_all()
+    _ensure_language_column()
     _seed_demo_data()
 
 

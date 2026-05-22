@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Наши врачи{% endblock %}
+{% block title %}{{ t('patient.doctors.title', 'Наши врачи') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -66,8 +66,8 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="fas fa-user-md me-2 text-primary"></i>Наши врачи</h2>
-            <p class="text-muted mb-0">Выберите специалиста и запишитесь на прием</p>
+            <h2 class="mb-1"><i class="fas fa-user-md me-2 text-primary"></i>{{ t('patient.doctors.title', 'Наши врачи') }}</h2>
+            <p class="text-muted mb-0">{{ t('patient.doctors.subtitle', 'Выберите специалиста и запишитесь на прием') }}</p>
         </div>
     </div>
 
@@ -76,18 +76,18 @@
             <form method="GET" action="{{ url_for('patient.doctors') }}">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Поиск врача</label>
+                        <label class="form-label fw-semibold">{{ t('patient.doctors.search_label', 'Поиск врача') }}</label>
                         <div class="position-relative">
                             <i class="fas fa-search search-icon"></i>
                             <input type="text" name="search" class="form-control search-box"
-                                   placeholder="Имя или фамилия врача..."
+                                   placeholder="{{ t('patient.doctors.search_placeholder', 'Имя или фамилия врача...') }}"
                                    value="{{ request.args.get('search', '') }}">
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Специализация</label>
+                        <label class="form-label fw-semibold">{{ t('patient.doctors.specialization_label', 'Специализация') }}</label>
                         <select name="specialization" class="form-select">
-                            <option value="">Все специализации</option>
+                            <option value="">{{ t('patient.doctors.all_specializations', 'Все специализации') }}</option>
                             {% for spec in specializations %}
                             <option value="{{ spec }}" {% if request.args.get('specialization') == spec %}selected{% endif %}>
                                 {{ spec }}
@@ -97,7 +97,7 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-filter me-1"></i>Найти
+                            <i class="fas fa-filter me-1"></i>{{ t('patient.doctors.find_button', 'Найти') }}
                         </button>
                     </div>
                 </div>
@@ -122,11 +122,11 @@
                     </div>
 
                     <h5 class="fw-bold mb-1">{{ doctor.first_name }} {{ doctor.last_name }}</h5>
-                    <p class="text-primary mb-2">{{ doctor.specialization or 'Врач' }}</p>
+                    <p class="text-primary mb-2">{{ doctor.specialization or t('patient.doctors.default_specialization', 'Врач') }}</p>
 
                     {% if doctor.experience_years %}
                     <p class="text-muted small mb-2">
-                        <i class="fas fa-briefcase me-1"></i>Стаж: {{ doctor.experience_years }} лет
+                        <i class="fas fa-briefcase me-1"></i>{{ t('patient.doctors.experience', 'Стаж: %(years)s лет') % {'years': doctor.experience_years} }}
                     </p>
                     {% endif %}
 
@@ -156,7 +156,7 @@
                     <div class="book-btn-wrap">
                         <a href="{{ url_for('patient.book_appointment', doctor_id=doctor.id) }}"
                            class="btn btn-primary w-100">
-                            <i class="fas fa-calendar-plus me-1"></i>Записаться
+                            <i class="fas fa-calendar-plus me-1"></i>{{ t('patient.doctors.book_button', 'Записаться') }}
                         </a>
                     </div>
                 </div>
@@ -167,8 +167,8 @@
             <div class="card shadow-sm">
                 <div class="card-body text-center py-5">
                     <i class="fas fa-user-md-slash fa-4x text-muted mb-3 d-block opacity-50"></i>
-                    <h5 class="text-muted">Врачи не найдены</h5>
-                    <p class="text-muted">Попробуйте изменить параметры поиска</p>
+                    <h5 class="text-muted">{{ t('patient.doctors.not_found_title', 'Врачи не найдены') }}</h5>
+                    <p class="text-muted">{{ t('patient.doctors.not_found_desc', 'Попробуйте изменить параметры поиска') }}</p>
                 </div>
             </div>
         </div>

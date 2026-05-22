@@ -10,6 +10,7 @@
     .main-content { padding: 0 !important; min-height: auto !important; }
     .flash-container { position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 500px; }
     .auth-wrapper {
+        position: relative;
         min-height: 100vh;
         background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 50%, #6610f2 100%);
         display: flex;
@@ -65,22 +66,45 @@
         border-color: #0d6efd;
         box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
     }
+    .auth-language-switcher {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+    }
+    .auth-language-switcher select {
+        min-width: 118px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        padding: 0.42rem 0.85rem;
+        font-weight: 600;
+        outline: none;
+    }
 </style>
 
 <div class="auth-wrapper">
+    <div class="auth-language-switcher">
+        <select onchange="window.location.href=this.value">
+            {% for lang_code, lang_name in languages.items() %}
+            <option value="{{ url_for('set_language', language=lang_code) }}" {% if current_language == lang_code %}selected{% endif %}>{{ lang_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
     <div class="card auth-card">
         <div class="card-body">
             <div class="auth-icon">
                 <i class="bi bi-heart-pulse"></i>
             </div>
-            <h3 class="text-center fw-bold mb-4">Вход в систему</h3>
+            <h3 class="text-center fw-bold mb-4">{{ t('auth.login') }}</h3>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
                         <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
                             {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ t('common.close') }}"></button>
                         </div>
                     {% endfor %}
                 {% endif %}
@@ -90,25 +114,25 @@
                 {{ form.hidden_tag() if form is defined }}
 
                 <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="{{ t('auth.email') }}" required>
+                    <label for="email">{{ t('auth.email') }}</label>
                 </div>
 
                 <div class="form-floating mb-4">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Пароль" required>
-                    <label for="password">Пароль</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="{{ t('auth.password') }}" required>
+                    <label for="password">{{ t('auth.password') }}</label>
                 </div>
 
                 <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-gradient">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Войти
+                        <i class="bi bi-box-arrow-in-right me-2"></i>{{ t('auth.sign_in') }}
                     </button>
                 </div>
             </form>
 
             <p class="text-center text-muted mb-0">
-                Нет аккаунта?
-                <a href="{{ url_for('auth.register') }}" class="fw-semibold text-decoration-none">Зарегистрируйтесь</a>
+                {{ t('auth.no_account') }}
+                <a href="{{ url_for('auth.register') }}" class="fw-semibold text-decoration-none">{{ t('auth.sign_up') }}</a>
             </p>
         </div>
     </div>

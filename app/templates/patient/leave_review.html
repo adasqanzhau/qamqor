@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Оставить отзыв{% endblock %}
+{% block title %}{{ t('patient.reviews.leave_title') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -67,10 +67,10 @@
         <div class="col-lg-7">
             <div class="mb-4">
                 <a href="{{ url_for('patient.reviews') }}" class="text-decoration-none text-muted small">
-                    <i class="fas fa-arrow-left me-1"></i>К моим отзывам
+                    <i class="fas fa-arrow-left me-1"></i>{{ t('patient.reviews.back_to_reviews') }}
                 </a>
-                <h2 class="mt-2 mb-1"><i class="fas fa-star text-warning me-2"></i>Оставить отзыв</h2>
-                <p class="text-muted mb-0">Поделитесь своим мнением о приёме</p>
+                <h2 class="mt-2 mb-1"><i class="fas fa-star text-warning me-2"></i>{{ t('patient.reviews.leave_title') }}</h2>
+                <p class="text-muted mb-0">{{ t('patient.reviews.leave_subtitle') }}</p>
             </div>
 
             <div class="card review-form-card shadow-sm">
@@ -82,10 +82,10 @@
                         </div>
                         <div>
                             <h5 class="mb-0 fw-bold">{{ appointment.doctor.full_name }}</h5>
-                            <small class="text-muted">{{ appointment.doctor.specialization or 'Врач' }}</small>
+                            <small class="text-muted">{{ appointment.doctor.specialization or t('patient.doctors.default_specialization') }}</small>
                             <div class="small text-muted">
                                 <i class="far fa-calendar me-1"></i>
-                                Приём {{ appointment.scheduled_time.strftime('%d.%m.%Y в %H:%M') }}
+                                {{ t('patient.reviews.appointment_at') }} {{ appointment.scheduled_time.strftime('%d.%m.%Y в %H:%M') }}
                             </div>
                         </div>
                     </div>
@@ -93,9 +93,9 @@
                     <form method="POST" novalidate>
                         {{ form.csrf_token }}
 
-                        <label class="form-label fw-semibold d-block text-center">Ваша оценка</label>
+                        <label class="form-label fw-semibold d-block text-center">{{ t('patient.reviews.rating_label') }}</label>
 
-                        <div class="rating-label" id="ratingLabel">Нажмите на звёзды</div>
+                        <div class="rating-label" id="ratingLabel">{{ t('patient.reviews.rating_hint') }}</div>
 
                         <div class="star-picker" id="starPicker">
                             <input type="radio" id="star5" name="rating" value="5">
@@ -121,17 +121,17 @@
                         {% endif %}
 
                         <div class="mb-3">
-                            <label for="comment" class="form-label fw-semibold">Комментарий (необязательно)</label>
+                            <label for="comment" class="form-label fw-semibold">{{ t('patient.reviews.comment_label') }}</label>
                             {{ form.comment(class="form-control", rows="4",
-                                placeholder="Расскажите о качестве приёма, внимательности врача, результатах...") }}
+                                placeholder="{{ t('patient.reviews.comment_placeholder') }}") }}
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ url_for('patient.reviews') }}" class="btn btn-outline-secondary">
-                                Отмена
+                                {{ t('buttons.cancel') }}
                             </a>
                             <button type="submit" class="btn btn-primary px-4">
-                                <i class="fas fa-paper-plane me-1"></i>Отправить отзыв
+                                <i class="fas fa-paper-plane me-1"></i>{{ t('patient.reviews.submit') }}
                             </button>
                         </div>
                     </form>
@@ -146,11 +146,11 @@
 <script>
 (function() {
     const RATING_LABELS = {
-        1: 'Очень плохо',
-        2: 'Плохо',
-        3: 'Нормально',
-        4: 'Хорошо',
-        5: 'Отлично',
+        1: '{{ t("patient.reviews.rating_labels.1") }}',
+        2: '{{ t("patient.reviews.rating_labels.2") }}',
+        3: '{{ t("patient.reviews.rating_labels.3") }}',
+        4: '{{ t("patient.reviews.rating_labels.4") }}',
+        5: '{{ t("patient.reviews.rating_labels.5") }}',
     };
 
     const starPicker = document.getElementById('starPicker');
@@ -169,12 +169,12 @@
         });
     });
 
-    starPicker.addEventListener('mouseleave', function() {
+        starPicker.addEventListener('mouseleave', function() {
         const checked = starPicker.querySelector('input[type="radio"]:checked');
         if (checked) {
             ratingLabel.textContent = RATING_LABELS[checked.value] || '';
         } else {
-            ratingLabel.textContent = 'Нажмите на звёзды';
+            ratingLabel.textContent = '{{ t("patient.reviews.rating_hint") }}';
         }
     });
 })();

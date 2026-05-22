@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Записи клиники - Qamqor{% endblock %}
+{% block title %}{{ t('clinic.appointments_page.title') }} - Qamqor{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold mb-1">
-                <i class="fas fa-calendar-check text-primary me-2"></i>Записи клиники
+                <i class="fas fa-calendar-check text-primary me-2"></i>{{ t('clinic.appointments_page.title') }}
             </h2>
-            <p class="text-muted mb-0">Управление записями на прием</p>
+            <p class="text-muted mb-0">{{ t('clinic.appointments_page.subtitle') }}</p>
         </div>
     </div>
 
@@ -17,27 +17,27 @@
         <div class="card-body">
             <form method="GET" action="{{ url_for('clinic.appointments') }}" class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold">Статус</label>
+                    <label class="form-label fw-semibold">{{ t('common.status') }}</label>
                     <select name="status" class="form-select">
-                        <option value="">Все статусы</option>
-                        <option value="scheduled" {{ 'selected' if request.args.get('status') == 'scheduled' }}>Запланирована</option>
-                        <option value="in_progress" {{ 'selected' if request.args.get('status') == 'in_progress' }}>В процессе</option>
-                        <option value="awaiting_report" {{ 'selected' if request.args.get('status') == 'awaiting_report' }}>Ожидает отчёт</option>
-                        <option value="completed" {{ 'selected' if request.args.get('status') == 'completed' }}>Завершена</option>
-                        <option value="cancelled" {{ 'selected' if request.args.get('status') == 'cancelled' }}>Отменена</option>
+                        <option value="">{{ t('status.all_statuses') }}</option>
+                        <option value="scheduled" {{ 'selected' if request.args.get('status') == 'scheduled' }}>{{ t('status.scheduled') }}</option>
+                        <option value="in_progress" {{ 'selected' if request.args.get('status') == 'in_progress' }}>{{ t('status.in_progress') }}</option>
+                        <option value="awaiting_report" {{ 'selected' if request.args.get('status') == 'awaiting_report' }}>{{ t('status.awaiting_report') }}</option>
+                        <option value="completed" {{ 'selected' if request.args.get('status') == 'completed' }}>{{ t('status.completed') }}</option>
+                        <option value="cancelled" {{ 'selected' if request.args.get('status') == 'cancelled' }}>{{ t('status.cancelled') }}</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold">Дата</label>
+                    <label class="form-label fw-semibold">{{ t('common.date') }}</label>
                     <input type="date" name="date" class="form-control"
                            value="{{ request.args.get('date', '') }}">
                 </div>
                 <div class="col-md-4">
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary flex-grow-1">
-                            <i class="fas fa-filter me-1"></i> Фильтровать
+                            <i class="fas fa-filter me-1"></i> {{ t('buttons.filter') }}
                         </button>
-                        <a href="{{ url_for('clinic.appointments') }}" class="btn btn-outline-secondary">
+                        <a href="{{ url_for('clinic.appointments') }}" class="btn btn-outline-secondary" title="{{ t('buttons.reset') }}">
                             <i class="fas fa-times"></i>
                         </a>
                     </div>
@@ -53,11 +53,11 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">Дата и время</th>
-                            <th>Пациент</th>
-                            <th>Врач</th>
-                            <th>Статус</th>
-                            <th class="text-center">Действия</th>
+                            <th class="ps-4">{{ t('clinic.appointments_page.date_time') }}</th>
+                            <th>{{ t('clinic.appointments_page.patient') }}</th>
+                            <th>{{ t('clinic.appointments_page.doctor') }}</th>
+                            <th>{{ t('clinic.appointments_page.status') }}</th>
+                            <th class="text-center">{{ t('clinic.appointments_page.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -93,23 +93,23 @@
                             <td>
                                 {% if appointment.status == 'scheduled' %}
                                     <span class="badge bg-primary bg-opacity-10 text-primary">
-                                        <i class="fas fa-clock me-1"></i>Запланирована
+                                        <i class="fas fa-clock me-1"></i>{{ t('status.scheduled') }}
                                     </span>
                                 {% elif appointment.status == 'in_progress' %}
                                     <span class="badge bg-warning bg-opacity-10 text-warning">
-                                        <i class="fas fa-spinner me-1"></i>В процессе
+                                        <i class="fas fa-spinner me-1"></i>{{ t('status.in_progress') }}
                                     </span>
                                 {% elif appointment.status == 'awaiting_report' %}
                                     <span class="badge bg-opacity-10" style="color:#f97316; background-color:rgba(249,115,22,.1);">
-                                        <i class="fas fa-file-alt me-1"></i>Ожидает отчёт
+                                        <i class="fas fa-file-alt me-1"></i>{{ t('status.awaiting_report') }}
                                     </span>
                                 {% elif appointment.status == 'completed' %}
                                     <span class="badge bg-success bg-opacity-10 text-success">
-                                        <i class="fas fa-check-double me-1"></i>Завершена
+                                        <i class="fas fa-check-double me-1"></i>{{ t('status.completed') }}
                                     </span>
                                 {% elif appointment.status == 'cancelled' %}
                                     <span class="badge bg-danger bg-opacity-10 text-danger">
-                                        <i class="fas fa-times-circle me-1"></i>Отменена
+                                        <i class="fas fa-times-circle me-1"></i>{{ t('status.cancelled') }}
                                     </span>
                                 {% else %}
                                     <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ appointment.status }}</span>
@@ -119,7 +119,7 @@
                                 <button type="button"
                                         class="btn btn-sm btn-outline-primary js-show-appt-details"
                                         data-appt-id="{{ appointment.id }}">
-                                    <i class="fas fa-eye me-1"></i>Подробнее
+                                    <i class="fas fa-eye me-1"></i> {{ t('buttons.view') }}
                                 </button>
                             </td>
                         </tr>
@@ -130,7 +130,7 @@
 
             {% if appointments.pages > 1 %}
             <div class="card-footer bg-white border-top">
-                <nav aria-label="Навигация по страницам">
+                <nav aria-label="{{ t('clinic.appointments_page.pagination') }}">
                     <ul class="pagination justify-content-center mb-0">
                         <li class="page-item {{ 'disabled' if not appointments.has_prev }}">
                             <a class="page-link" href="{{ url_for('clinic.appointments', page=appointments.prev_num, status=request.args.get('status', ''), date=request.args.get('date', '')) }}">
@@ -160,17 +160,17 @@
             </div>
             {% endif %}
 
-            {% else %}
+                {% else %}
             <div class="text-center py-5 text-muted">
                 <i class="fas fa-calendar-times fa-4x mb-3 d-block"></i>
-                <h5>Записей не найдено</h5>
+                <h5>{{ t('clinic.appointments_page.no_records_title') }}</h5>
                 {% if request.args.get('status') or request.args.get('date') %}
-                <p class="mb-3">Попробуйте изменить параметры фильтрации</p>
+                <p class="mb-3">{{ t('clinic.appointments_page.filter_no_results') }}</p>
                 <a href="{{ url_for('clinic.appointments') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-times me-1"></i> Сбросить фильтры
+                    <i class="fas fa-times me-1"></i> {{ t('clinic.appointments_page.reset_filters') }}
                 </a>
                 {% else %}
-                <p class="mb-0">Записи появятся, когда пациенты запишутся на прием</p>
+                <p class="mb-0">{{ t('clinic.appointments_page.empty_desc') }}</p>
                 {% endif %}
             </div>
             {% endif %}
@@ -184,12 +184,12 @@
 {
     "id": {{ appointment.id }},
     "date": "{{ appointment.scheduled_time.strftime('%d.%m.%Y %H:%M') if appointment.scheduled_time else '—' }}",
-    "duration": "{{ appointment.duration_minutes or 30 }} мин",
+    "duration": "{{ appointment.duration_minutes or 30 }} {{ t('common.minutes_short') }}",
     "patient_name": {{ appointment.patient.full_name|tojson }},
     "patient_email": {{ appointment.patient.email|tojson }},
     "patient_phone": {{ (appointment.patient.phone or '')|tojson }},
     "doctor_name": {{ appointment.doctor.full_name|tojson }},
-    "doctor_spec": {{ (appointment.doctor.specialization or 'Врач')|tojson }},
+    "doctor_spec": {{ (appointment.doctor.specialization or t('common.doctor'))|tojson }},
     "symptoms": {{ (appointment.symptoms or '')|tojson }},
     "notes": {{ (appointment.notes or '')|tojson }},
     "diagnosis": {{ (appointment.prescription.diagnosis if appointment.prescription else '')|tojson }},
@@ -203,12 +203,12 @@
 <div id="apptOverlay" class="appt-overlay d-none" role="dialog">
     <div class="appt-overlay-content">
         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-            <h5 class="mb-0"><i class="fas fa-calendar-check text-primary me-2"></i><span id="apptTitle">Запись</span></h5>
-            <button type="button" class="btn-close" id="apptCloseBtn" aria-label="Закрыть"></button>
+            <h5 class="mb-0"><i class="fas fa-calendar-check text-primary me-2"></i><span id="apptTitle">{{ t('clinic.appointments_page.appt_label') }}</span></h5>
+            <button type="button" class="btn-close" id="apptCloseBtn" aria-label="{{ t('common.close') }}"></button>
         </div>
         <div id="apptBody"></div>
         <div class="text-end mt-3">
-            <button type="button" class="btn btn-secondary" id="apptCloseFooter">Закрыть</button>
+            <button type="button" class="btn btn-secondary" id="apptCloseFooter">{{ t('common.close') }}</button>
         </div>
     </div>
 </div>
@@ -236,22 +236,22 @@
 
     function render(a) {
         var html = '<div class="row g-3">';
-        html += '<div class="col-md-6"><div class="text-muted small">Дата и время</div><div class="fw-semibold">' + esc(a.date) + '</div></div>';
-        html += '<div class="col-md-6"><div class="text-muted small">Длительность</div><div class="fw-semibold">' + esc(a.duration) + '</div></div>';
-        html += '<div class="col-md-6"><div class="text-muted small">Пациент</div><div class="fw-semibold">' + esc(a.patient_name) + '</div>';
+        html += '<div class="col-md-6"><div class="text-muted small">' + {{ t('clinic.appointments_page.date_time')|tojson }} + '</div><div class="fw-semibold">' + esc(a.date) + '</div></div>';
+        html += '<div class="col-md-6"><div class="text-muted small">' + {{ t('clinic.appointments_page.duration')|tojson }} + '</div><div class="fw-semibold">' + esc(a.duration) + '</div></div>';
+        html += '<div class="col-md-6"><div class="text-muted small">' + {{ t('clinic.appointments_page.patient')|tojson }} + '</div><div class="fw-semibold">' + esc(a.patient_name) + '</div>';
         html += '<div class="small text-muted">' + esc(a.patient_email) + '</div>';
         if (a.patient_phone) html += '<div class="small text-muted">' + esc(a.patient_phone) + '</div>';
         html += '</div>';
-        html += '<div class="col-md-6"><div class="text-muted small">Врач</div><div class="fw-semibold">' + esc(a.doctor_name) + '</div><div class="small text-muted">' + esc(a.doctor_spec) + '</div></div>';
-        if (a.symptoms) html += '<div class="col-12"><div class="text-muted small">Симптомы / жалобы</div><div class="p-2 bg-light rounded">' + esc(a.symptoms) + '</div></div>';
-        if (a.notes) html += '<div class="col-12"><div class="text-muted small">Заметки врача</div><div class="p-2 bg-light rounded">' + esc(a.notes) + '</div></div>';
+        html += '<div class="col-md-6"><div class="text-muted small">' + {{ t('clinic.appointments_page.doctor')|tojson }} + '</div><div class="fw-semibold">' + esc(a.doctor_name) + '</div><div class="small text-muted">' + esc(a.doctor_spec) + '</div></div>';
+        if (a.symptoms) html += '<div class="col-12"><div class="text-muted small">' + {{ t('clinic.appointments_page.symptoms')|tojson }} + '</div><div class="p-2 bg-light rounded">' + esc(a.symptoms) + '</div></div>';
+        if (a.notes) html += '<div class="col-12"><div class="text-muted small">' + {{ t('clinic.appointments_page.doctor_notes')|tojson }} + '</div><div class="p-2 bg-light rounded">' + esc(a.notes) + '</div></div>';
         if (a.diagnosis || a.medications) {
-            html += '<div class="col-12"><div class="text-muted small mb-1"><i class="fas fa-prescription me-1"></i>Рецепт</div><div class="p-2 border rounded">';
-            html += '<div><strong>Диагноз:</strong> ' + esc(a.diagnosis || '—') + '</div>';
-            if (a.medications) html += '<div class="mt-1"><strong>Назначения:</strong> ' + esc(a.medications) + '</div>';
+            html += '<div class="col-12"><div class="text-muted small mb-1"><i class="fas fa-prescription me-1"></i>' + {{ t('clinic.appointments_page.prescription')|tojson }} + '</div><div class="p-2 border rounded">';
+            html += '<div><strong>' + {{ t('clinic.appointments_page.diagnosis_label')|tojson }} + '</strong> ' + esc(a.diagnosis || '—') + '</div>';
+            if (a.medications) html += '<div class="mt-1"><strong>' + {{ t('clinic.appointments_page.medications_label')|tojson }} + '</strong> ' + esc(a.medications) + '</div>';
             html += '</div></div>';
         }
-        if (a.summary) html += '<div class="col-12"><div class="text-muted small mb-1"><i class="fas fa-closed-captioning me-1"></i>Резюме видеоконсультации</div><div class="p-2 border rounded small" style="white-space: pre-wrap;">' + esc(a.summary) + '</div></div>';
+        if (a.summary) html += '<div class="col-12"><div class="text-muted small mb-1"><i class="fas fa-closed-captioning me-1"></i>' + {{ t('clinic.appointments_page.videocall_summary')|tojson }} + '</div><div class="p-2 border rounded small" style="white-space: pre-wrap;">' + esc(a.summary) + '</div></div>';
         html += '</div>';
         return html;
     }
@@ -261,7 +261,7 @@
             var id = this.getAttribute('data-appt-id');
             var a = appts[id];
             if (!a) return;
-            title.textContent = 'Запись №' + id;
+            title.textContent = {{ t('clinic.appointments_page.record_prefix')|tojson }} + id;
             body.innerHTML = render(a);
             overlay.classList.remove('d-none');
         });

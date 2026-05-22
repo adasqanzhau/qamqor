@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, current_user, login_required
 from app import db
 from app.models import User, Clinic
@@ -40,6 +40,11 @@ def login():
         if not user.is_active:
             flash('Ваш аккаунт деактивирован. Обратитесь к администратору.', 'warning')
             return render_template('auth/login.html', form=form)
+
+        selected_language = session.get('language')
+        if selected_language and user.language != selected_language:
+            user.language = selected_language
+            db.session.commit()
 
         login_user(user, remember=True)
         flash(f'Добро пожаловать, {user.first_name}!', 'success')
@@ -83,6 +88,7 @@ def register():
             gender=form.gender.data if form.gender.data else None,
             role='patient',
             clinic_id=clinic_id,
+            language=session.get('language', 'ru'),
         )
         user.set_password(form.password.data)
 

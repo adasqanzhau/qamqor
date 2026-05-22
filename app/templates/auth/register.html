@@ -10,6 +10,7 @@
     .main-content { padding: 0 !important; min-height: auto !important; }
     .flash-container { position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 500px; }
     .auth-wrapper {
+        position: relative;
         min-height: 100vh;
         background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 50%, #6610f2 100%);
         display: flex;
@@ -69,22 +70,45 @@
     .invalid-feedback {
         font-size: 0.82rem;
     }
+    .auth-language-switcher {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+    }
+    .auth-language-switcher select {
+        min-width: 118px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        padding: 0.42rem 0.85rem;
+        font-weight: 600;
+        outline: none;
+    }
 </style>
 
 <div class="auth-wrapper">
+    <div class="auth-language-switcher">
+        <select onchange="window.location.href=this.value">
+            {% for lang_code, lang_name in languages.items() %}
+            <option value="{{ url_for('set_language', language=lang_code) }}" {% if current_language == lang_code %}selected{% endif %}>{{ lang_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
     <div class="card auth-card">
         <div class="card-body">
             <div class="auth-icon">
                 <i class="bi bi-person-plus"></i>
             </div>
-            <h3 class="text-center fw-bold mb-4">Регистрация пациента</h3>
+            <h3 class="text-center fw-bold mb-4">{{ t('auth.register') }}</h3>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
                         <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
                             {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ t('common.close') }}"></button>
                         </div>
                     {% endfor %}
                 {% endif %}
@@ -96,9 +120,9 @@
                 {# --- Email --- #}
                 <div class="form-floating mb-3">
                     <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}"
-                           id="email" name="email" placeholder="Email"
+                              id="email" name="email" placeholder="{{ t('auth.email') }}"
                            value="{{ form.email.data or '' }}" required>
-                    <label for="email">Email</label>
+                          <label for="email">{{ t('auth.email') }}</label>
                     {% for error in form.email.errors %}
                         <div class="invalid-feedback">{{ error }}</div>
                     {% endfor %}
@@ -109,8 +133,8 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}"
-                                   id="password" name="password" placeholder="Пароль" required>
-                            <label for="password">Пароль</label>
+                                id="password" name="password" placeholder="{{ t('auth.password') }}" required>
+                            <label for="password">{{ t('auth.password') }}</label>
                             {% for error in form.password.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -119,8 +143,8 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="password" class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
-                                   id="confirm_password" name="confirm_password" placeholder="Подтвердите пароль" required>
-                            <label for="confirm_password">Подтвердите пароль</label>
+                                id="confirm_password" name="confirm_password" placeholder="{{ t('auth.confirm_password', 'Подтвердите пароль') }}" required>
+                            <label for="confirm_password">{{ t('auth.confirm_password', 'Подтвердите пароль') }}</label>
                             {% for error in form.confirm_password.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -133,9 +157,9 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
-                                   id="first_name" name="first_name" placeholder="Имя"
+                                id="first_name" name="first_name" placeholder="{{ t('common.first_name', 'Имя') }}"
                                    value="{{ form.first_name.data or '' }}" required>
-                            <label for="first_name">Имя</label>
+                            <label for="first_name">{{ t('common.first_name', 'Имя') }}</label>
                             {% for error in form.first_name.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -144,9 +168,9 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
-                                   id="last_name" name="last_name" placeholder="Фамилия"
+                                id="last_name" name="last_name" placeholder="{{ t('common.last_name', 'Фамилия') }}"
                                    value="{{ form.last_name.data or '' }}" required>
-                            <label for="last_name">Фамилия</label>
+                            <label for="last_name">{{ t('common.last_name', 'Фамилия') }}</label>
                             {% for error in form.last_name.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -157,9 +181,9 @@
                 {# --- Phone --- #}
                 <div class="form-floating mb-3">
                     <input type="tel" class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
-                           id="phone" name="phone" placeholder="Телефон"
+                              id="phone" name="phone" placeholder="{{ t('common.phone', 'Телефон') }}"
                            value="{{ form.phone.data or '' }}">
-                    <label for="phone">Телефон</label>
+                          <label for="phone">{{ t('common.phone', 'Телефон') }}</label>
                     {% for error in form.phone.errors %}
                         <div class="invalid-feedback">{{ error }}</div>
                     {% endfor %}
@@ -170,9 +194,9 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="date" class="form-control {% if form.birth_date.errors %}is-invalid{% endif %}"
-                                   id="birth_date" name="birth_date" placeholder="Дата рождения"
+                                id="birth_date" name="birth_date" placeholder="{{ t('common.birth_date', 'Дата рождения') }}"
                                    value="{{ form.birth_date.data or '' }}">
-                            <label for="birth_date">Дата рождения</label>
+                            <label for="birth_date">{{ t('common.birth_date', 'Дата рождения') }}</label>
                             {% for error in form.birth_date.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -182,12 +206,12 @@
                         <div class="form-floating">
                             <select class="form-select {% if form.gender.errors %}is-invalid{% endif %}"
                                     id="gender" name="gender">
-                                <option value="" disabled {% if not form.gender.data %}selected{% endif %}>Выберите</option>
+                                <option value="" disabled {% if not form.gender.data %}selected{% endif %}>{{ t('common.choose', 'Выберите') }}</option>
                                 {% for value, label in form.gender.choices %}
                                     <option value="{{ value }}" {% if form.gender.data == value %}selected{% endif %}>{{ label }}</option>
                                 {% endfor %}
                             </select>
-                            <label for="gender">Пол</label>
+                            <label for="gender">{{ t('common.gender', 'Пол') }}</label>
                             {% for error in form.gender.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -198,24 +222,24 @@
                 {# --- Clinic --- #}
                 <div class="form-floating mb-4">
                     <select class="form-select" id="clinic" name="clinic_id">
-                        <option value="" disabled selected>Выберите</option>
+                        <option value="" disabled selected>{{ t('common.choose', 'Выберите') }}</option>
                         {% for clinic in clinics %}
                             <option value="{{ clinic.id }}">{{ clinic.name }}</option>
                         {% endfor %}
                     </select>
-                    <label for="clinic">Выберите клинику</label>
+                    <label for="clinic">{{ t('common.choose_clinic', 'Выберите клинику') }}</label>
                 </div>
 
                 <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-gradient">
-                        <i class="bi bi-person-check me-2"></i>Зарегистрироваться
+                        <i class="bi bi-person-check me-2"></i>{{ t('auth.sign_up') }}
                     </button>
                 </div>
             </form>
 
             <p class="text-center text-muted mb-0">
-                Уже есть аккаунт?
-                <a href="{{ url_for('auth.login') }}" class="fw-semibold text-decoration-none">Войдите</a>
+                {{ t('auth.have_account') }}
+                <a href="{{ url_for('auth.login') }}" class="fw-semibold text-decoration-none">{{ t('auth.sign_in') }}</a>
             </p>
         </div>
     </div>

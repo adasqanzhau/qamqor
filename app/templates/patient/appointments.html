@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Мои записи{% endblock %}
+{% block title %}{{ t('patient.appointments.title') }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -26,11 +26,11 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="fas fa-calendar-check me-2 text-primary"></i>Мои записи</h2>
-            <p class="text-muted mb-0">Управление вашими приемами</p>
+            <h2 class="mb-1"><i class="fas fa-calendar-check me-2 text-primary"></i>{{ t('patient.appointments.title') }}</h2>
+            <p class="text-muted mb-0">{{ t('patient.appointments.subtitle') }}</p>
         </div>
         <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i>Новая запись
+            <i class="fas fa-plus me-1"></i>{{ t('patient.appointments.new') }}
         </a>
     </div>
 
@@ -39,23 +39,23 @@
             <div class="d-flex flex-wrap gap-2">
                 <a href="{{ url_for('patient.appointments') }}"
                    class="btn btn-sm {% if not request.args.get('status') %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    Все
+                    {{ t('status.all', 'Все') }}
                 </a>
                 <a href="{{ url_for('patient.appointments', status='scheduled') }}"
                    class="btn btn-sm {% if request.args.get('status') == 'scheduled' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-clock me-1"></i>Запланированные
+                    <i class="fas fa-clock me-1"></i>{{ t('status.scheduled') }}
                 </a>
                 <a href="{{ url_for('patient.appointments', status='in_progress') }}"
                    class="btn btn-sm {% if request.args.get('status') == 'in_progress' %}btn-warning{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-spinner me-1"></i>В процессе
+                    <i class="fas fa-spinner me-1"></i>{{ t('status.in_progress') }}
                 </a>
                 <a href="{{ url_for('patient.appointments', status='completed') }}"
                    class="btn btn-sm {% if request.args.get('status') == 'completed' %}btn-success{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-check me-1"></i>Завершенные
+                    <i class="fas fa-check me-1"></i>{{ t('status.completed') }}
                 </a>
                 <a href="{{ url_for('patient.appointments', status='cancelled') }}"
                    class="btn btn-sm {% if request.args.get('status') == 'cancelled' %}btn-danger{% else %}btn-outline-secondary{% endif %} rounded-pill">
-                    <i class="fas fa-times me-1"></i>Отмененные
+                    <i class="fas fa-times me-1"></i>{{ t('status.cancelled') }}
                 </a>
             </div>
         </div>
@@ -74,7 +74,7 @@
                         </div>
                         <div class="col-md-4">
                             <h6 class="mb-1 fw-semibold">{{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</h6>
-                            <p class="text-muted small mb-0">{{ appointment.doctor.specialization or 'Врач' }}</p>
+                            <p class="text-muted small mb-0">{{ appointment.doctor.specialization or t('patient.doctors.default_specialization') }}</p>
                         </div>
                         <div class="col-md-3">
                             <div class="small">
@@ -88,44 +88,44 @@
                         </div>
                         <div class="col-md-2">
                             {% if appointment.status == 'scheduled' %}
-                                <span class="badge bg-primary rounded-pill px-3 py-2">Запланирована</span>
+                                <span class="badge bg-primary rounded-pill px-3 py-2">{{ t('status.scheduled') }}</span>
                             {% elif appointment.status == 'in_progress' %}
-                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">В процессе</span>
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">{{ t('status.in_progress') }}</span>
                             {% elif appointment.status == 'awaiting_report' %}
-                                <span class="badge text-white rounded-pill px-3 py-2" style="background-color: #f97316;">Врач готовит отчёт</span>
+                                <span class="badge text-white rounded-pill px-3 py-2" style="background-color: #f97316;">{{ t('status.awaiting_report') }}</span>
                             {% elif appointment.status == 'completed' %}
-                                <span class="badge bg-success rounded-pill px-3 py-2">Завершена</span>
+                                <span class="badge bg-success rounded-pill px-3 py-2">{{ t('status.completed') }}</span>
                             {% elif appointment.status == 'cancelled' %}
-                                <span class="badge bg-danger rounded-pill px-3 py-2">Отменена</span>
+                                <span class="badge bg-danger rounded-pill px-3 py-2">{{ t('status.cancelled') }}</span>
                             {% else %}
                                 <span class="badge bg-secondary rounded-pill px-3 py-2">{{ appointment.status }}</span>
                             {% endif %}
                         </div>
                         <div class="col-md-2 text-end">
                             {% if appointment.status == 'in_progress' %}
-                                <a href="{{ url_for('videocall.start', appointment_id=appointment.id) }}"
+                                    <a href="{{ url_for('videocall.start', appointment_id=appointment.id) }}"
                                    class="btn btn-sm btn-success">
-                                    <i class="fas fa-video me-1"></i>Присоединиться
+                                    <i class="fas fa-video me-1"></i>{{ t('patient.appointments.join') }}
                                 </a>
                             {% elif appointment.status == 'scheduled' %}
-                                <form method="POST" action="{{ url_for('patient.cancel_appointment', appointment_id=appointment.id) }}"
-                                      class="d-inline" onsubmit="return confirm('Вы уверены, что хотите отменить запись?')">
+                                  <form method="POST" action="{{ url_for('patient.cancel_appointment', appointment_id=appointment.id) }}"
+                                      class="d-inline" onsubmit="return confirm('{{ t('patient.appointments.confirm_cancel') }}')">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-times me-1"></i>Отменить
+                                        <i class="fas fa-times me-1"></i>{{ t('patient.appointments.cancel') }}
                                     </button>
                                 </form>
                             {% elif appointment.status == 'completed' %}
                                 <div class="d-flex flex-column gap-1 align-items-end">
                                     {% if appointment.videocall and (appointment.videocall.transcription or appointment.videocall.summary) %}
-                                    <a href="{{ url_for('videocall.room', room_id=appointment.videocall.room_id) }}"
+                                        <a href="{{ url_for('videocall.room', room_id=appointment.videocall.room_id) }}"
                                        class="btn btn-sm btn-outline-info">
-                                        <i class="fas fa-file-medical-alt me-1"></i>Транскрипция
+                                        <i class="fas fa-file-medical-alt me-1"></i>{{ t('patient.appointments.transcript') }}
                                     </a>
                                     {% endif %}
                                     <a href="{{ url_for('patient.leave_review', appointment_id=appointment.id) }}"
                                        class="btn btn-sm btn-outline-warning">
-                                        <i class="fas fa-star me-1"></i>Отзыв
+                                        <i class="fas fa-star me-1"></i>{{ t('patient.appointments.review') }}
                                     </a>
                                 </div>
                             {% endif %}
@@ -135,10 +135,10 @@
                 {% else %}
                 <div class="list-group-item text-center py-5">
                     <i class="fas fa-calendar-times fa-4x text-muted mb-3 d-block opacity-50"></i>
-                    <h5 class="text-muted">Записей не найдено</h5>
-                    <p class="text-muted">У вас пока нет записей на прием</p>
+                    <h5 class="text-muted">{{ t('patient.appointments.none_found_title') }}</h5>
+                    <p class="text-muted">{{ t('patient.appointments.none_found_subtitle') }}</p>
                     <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i>Записаться к врачу
+                        <i class="fas fa-plus me-1"></i>{{ t('patient.appointments.book_button') }}
                     </a>
                 </div>
                 {% endfor %}
@@ -151,7 +151,7 @@
         <ul class="pagination justify-content-center">
             {% if appointments.has_prev %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('patient.appointments', page=appointments.prev_num, status=status_filter) }}">Назад</a>
+                <a class="page-link" href="{{ url_for('patient.appointments', page=appointments.prev_num, status=status_filter) }}">{{ t('buttons.back') }}</a>
             </li>
             {% endif %}
             {% for p in appointments.iter_pages() %}
@@ -165,7 +165,7 @@
             {% endfor %}
             {% if appointments.has_next %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('patient.appointments', page=appointments.next_num, status=status_filter) }}">Далее</a>
+                <a class="page-link" href="{{ url_for('patient.appointments', page=appointments.next_num, status=status_filter) }}">{{ t('buttons.next') }}</a>
             </li>
             {% endif %}
         </ul>

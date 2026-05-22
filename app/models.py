@@ -22,6 +22,7 @@ class User(UserMixin, db.Model):
     avatar = db.Column(db.String(256))
     role = db.Column(db.String(20), nullable=False, default='patient')  # superadmin, clinic_admin, doctor, patient
     is_active = db.Column(db.Boolean, default=True)
+    language = db.Column(db.String(5), default='ru')  # ru, kz, en
     created_at = db.Column(db.DateTime, default=_utcnow)
     updated_at = db.Column(db.DateTime, default=_utcnow, onupdate=_utcnow)
 

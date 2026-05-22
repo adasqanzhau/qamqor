@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}Мои отзывы{% endblock %}
+{% block title %}{{ t('doctor.reviews.title') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-star me-2"></i>Мои отзывы</h2>
+        <h2><i class="fas fa-star me-2"></i>{{ t('doctor.reviews.title') }}</h2>
     </div>
 
     <div class="card shadow-sm mb-4">
         <div class="card-body text-center py-4">
-            <h5 class="text-muted mb-2">Средняя оценка</h5>
+            <h5 class="text-muted mb-2">{{ t('doctor.reviews.average_rating') }}</h5>
             <div class="mb-2">
                 {% if avg_rating %}
                     <span class="display-4 fw-bold text-warning">{{ "%.1f"|format(avg_rating) }}</span>
@@ -37,7 +37,7 @@
                 {% endif %}
             </div>
             <div class="text-muted mt-2">
-                {{ reviews|length }} {{ 'отзыв' if reviews|length == 1 else 'отзывов' }}
+                {{ t('doctor.reviews.reviews_count').replace('%(count)s', reviews|length|string) }}
             </div>
         </div>
     </div>
@@ -74,7 +74,7 @@
                                 {{ review.comment }}
                             </p>
                         {% else %}
-                            <p class="mb-0 text-muted fst-italic">Без комментария</p>
+                                <p class="mb-0 text-muted fst-italic">{{ t('doctor.reviews.no_comment') }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -85,8 +85,8 @@
         <div class="card shadow-sm">
             <div class="card-body text-center py-5">
                 <i class="fas fa-comment-slash fa-3x text-muted mb-3 d-block"></i>
-                <h5 class="text-muted">Отзывов пока нет</h5>
-                <p class="text-muted mb-0">Отзывы появятся после завершения приемов с пациентами</p>
+                <h5 class="text-muted">{{ t('doctor.reviews.none_found_title') }}</h5>
+                <p class="text-muted mb-0">{{ t('doctor.reviews.none_found_subtitle') }}</p>
             </div>
         </div>
     {% endif %}

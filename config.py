@@ -23,3 +23,12 @@ class Config:
     SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'false').lower() == 'true'
     REMEMBER_COOKIE_SECURE = SESSION_COOKIE_SECURE
     REMEMBER_COOKIE_HTTPONLY = True
+    
+    # Babel configuration for i18n
+    LANGUAGES = {
+        'ru': 'Русский',
+        'kz': 'Қазақша',
+        'en': 'English'
+    }
+    BABEL_DEFAULT_LOCALE = 'ru'
+    BABEL_DEFAULT_TIMEZONE = 'UTC'

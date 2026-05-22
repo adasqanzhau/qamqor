@@ -1,36 +1,36 @@
 {% extends 'base.html' %}
 
-{% block title %}Пользователи платформы{% endblock %}
+{% block title %}{{ t('admin.users.title') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
-    <h2 class="mb-4"><i class="fas fa-users me-2"></i>Пользователи платформы</h2>
+    <h2 class="mb-4"><i class="fas fa-users me-2"></i>{{ t('admin.users.title') }}</h2>
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" action="{{ url_for('admin.users') }}">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-4">
-                        <label class="form-label">Роль</label>
+                        <label class="form-label">{{ t('common.role') }}</label>
                         <select name="role" class="form-select">
-                            <option value="">Все роли</option>
-                            <option value="superadmin" {% if request.args.get('role') == 'superadmin' %}selected{% endif %}>Суперадмин</option>
-                            <option value="clinic_admin" {% if request.args.get('role') == 'clinic_admin' %}selected{% endif %}>Администратор клиники</option>
-                            <option value="doctor" {% if request.args.get('role') == 'doctor' %}selected{% endif %}>Врач</option>
-                            <option value="patient" {% if request.args.get('role') == 'patient' %}selected{% endif %}>Пациент</option>
+                            <option value="">{{ t('roles.all') }}</option>
+                            <option value="superadmin" {% if request.args.get('role') == 'superadmin' %}selected{% endif %}>{{ t('roles.superadmin') }}</option>
+                            <option value="clinic_admin" {% if request.args.get('role') == 'clinic_admin' %}selected{% endif %}>{{ t('roles.clinic_admin') }}</option>
+                            <option value="doctor" {% if request.args.get('role') == 'doctor' %}selected{% endif %}>{{ t('roles.doctor') }}</option>
+                            <option value="patient" {% if request.args.get('role') == 'patient' %}selected{% endif %}>{{ t('roles.patient') }}</option>
                         </select>
                     </div>
                     <div class="col-md-5">
-                        <label class="form-label">Поиск</label>
+                        <label class="form-label">{{ t('buttons.search') }}</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
-                            <input type="text" name="search" class="form-control" placeholder="Имя или email..." value="{{ request.args.get('search', '') }}">
+                            <input type="text" name="search" class="form-control" placeholder="{{ t('admin.users.search_placeholder') }}" value="{{ request.args.get('search', '') }}">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-grow-1">
-                                <i class="fas fa-filter me-1"></i>Применить
+                                <i class="fas fa-filter me-1"></i>{{ t('admin.users.apply') }}
                             </button>
                             {% if request.args.get('role') or request.args.get('search') %}
                                 <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
@@ -51,13 +51,13 @@
                     <thead class="table-light">
                         <tr>
                             <th style="width: 50px;"></th>
-                            <th>Имя</th>
-                            <th>Email</th>
-                            <th>Роль</th>
-                            <th>Клиника</th>
-                            <th class="text-center">Статус</th>
-                            <th>Дата регистрации</th>
-                            <th class="text-center">Действия</th>
+                            <th>{{ t('admin.users.name') }}</th>
+                            <th>{{ t('auth.email') }}</th>
+                            <th>{{ t('common.role') }}</th>
+                            <th>{{ t('admin.users.clinic') }}</th>
+                            <th class="text-center">{{ t('common.status') }}</th>
+                            <th>{{ t('admin.users.registration_date') }}</th>
+                            <th class="text-center">{{ t('admin.users.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,19 +79,19 @@
                             <td>
                                 {% if user.role == 'superadmin' %}
                                     <span class="badge" style="background-color: #6f42c1;">
-                                        <i class="fas fa-crown me-1"></i>Суперадмин
+                                        <i class="fas fa-crown me-1"></i>{{ t('roles.superadmin') }}
                                     </span>
                                 {% elif user.role == 'clinic_admin' %}
                                     <span class="badge bg-primary">
-                                        <i class="fas fa-user-tie me-1"></i>Админ клиники
+                                        <i class="fas fa-user-tie me-1"></i>{{ t('roles.clinic_admin') }}
                                     </span>
                                 {% elif user.role == 'doctor' %}
                                     <span class="badge bg-success">
-                                        <i class="fas fa-user-md me-1"></i>Врач
+                                        <i class="fas fa-user-md me-1"></i>{{ t('roles.doctor') }}
                                     </span>
                                 {% elif user.role == 'patient' %}
                                     <span class="badge bg-info">
-                                        <i class="fas fa-user me-1"></i>Пациент
+                                        <i class="fas fa-user me-1"></i>{{ t('roles.patient') }}
                                     </span>
                                 {% else %}
                                     <span class="badge bg-secondary">{{ user.role }}</span>
@@ -106,9 +106,9 @@
                             </td>
                             <td class="text-center">
                                 {% if user.is_active %}
-                                    <span class="badge bg-success">Активен</span>
+                                    <span class="badge bg-success">{{ t('admin.users.active') }}</span>
                                 {% else %}
-                                    <span class="badge bg-secondary">Неактивен</span>
+                                    <span class="badge bg-secondary">{{ t('admin.users.inactive') }}</span>
                                 {% endif %}
                             </td>
                             <td>{{ user.created_at.strftime('%d.%m.%Y') }}</td>
@@ -118,20 +118,20 @@
                                     <form method="POST" action="{{ url_for('admin.toggle_user', user_id=user.id) }}" class="d-inline">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         {% if user.is_active %}
-                                            <button type="submit" class="btn btn-outline-warning" title="Деактивировать">
+                                            <button type="submit" class="btn btn-outline-warning" title="{{ t('admin.users.deactivate') }}">
                                                 <i class="fas fa-ban"></i>
                                             </button>
                                         {% else %}
-                                            <button type="submit" class="btn btn-outline-success" title="Активировать">
+                                            <button type="submit" class="btn btn-outline-success" title="{{ t('admin.users.activate') }}">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         {% endif %}
                                     </form>
                                     <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" class="d-inline"
                                           data-confirm-delete-form
-                                          data-confirm-message="Вы уверены, что хотите удалить пользователя &quot;{{ user.first_name }} {{ user.last_name }}&quot; ({{ user.email }})? Это действие нельзя отменить.">
+                                                                                    data-confirm-message="{{ t('admin.users.confirm_delete') % {'name': user.first_name ~ ' ' ~ user.last_name, 'email': user.email} }}">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button type="submit" class="btn btn-outline-danger" title="Удалить">
+                                                                                <button type="submit" class="btn btn-outline-danger" title="{{ t('buttons.delete') }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -145,7 +145,7 @@
                         <tr>
                             <td colspan="8" class="text-center text-muted py-4">
                                 <i class="fas fa-user-slash fa-2x mb-2 d-block"></i>
-                                Пользователи не найдены
+                                {{ t('admin.users.none_found') }}
                             </td>
                         </tr>
                         {% endfor %}
