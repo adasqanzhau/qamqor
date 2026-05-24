@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from app import db
 from app.models import (User, Clinic, Appointment, VideoCall, Prescription,
                         MedicalRecord, ChatMessage, Notification, Review)
+import app.i18n as i18n
 from app.forms import AppointmentForm, ProfileForm, ReviewForm
 
 patient_bp = Blueprint('patient', __name__, url_prefix='/patient')
@@ -254,10 +255,20 @@ def book_appointment():
             status='scheduled',
         )
         db.session.add(appointment)
+        # Localize notification for the doctor recipient
+        doctor = db.session.get(User, doctor_id)
+        doc_lang = (doctor.language if doctor and doctor.language else current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
+        title_doc = i18n.t('notifications.new_appointment', doc_lang, 'Новая запись на приём')
+        msg_doc = i18n.t('notifications.appointment_booked', doc_lang, 'Пациент %(name)s записался на %(dt)s') % {
+            'name': current_user.full_name,
+            'dt': scheduled_dt.strftime('%d.%m.%Y %H:%M')
+        }
         notification = Notification(
             user_id=doctor_id,
-            title='Новая запись на приём',
-            message=f'Пациент {current_user.full_name} записался на {scheduled_dt.strftime("%d.%m.%Y %H:%M")}.',
+            title=title_doc,
+            message=msg_doc,
+            title_i18n={lang: i18n.t('notifications.new_appointment', lang, 'Новая запись на приём') for lang in current_app.config.get('LANGUAGES', {}).keys()},
+            message_i18n={lang: i18n.t('notifications.appointment_booked', lang, 'Пациент %(name)s записался на %(dt)s') % {'name': current_user.full_name, 'dt': scheduled_dt.strftime('%d.%m.%Y %H:%M')} for lang in current_app.config.get('LANGUAGES', {}).keys()},
             type='info',
             link=url_for('doctor.dashboard'),
         )
@@ -479,10 +490,19 @@ def leave_review(appointment_id):
         )
         db.session.add(review)
 
+        doctor = db.session.get(User, appointment.doctor_id)
+        doc_lang = (doctor.language if doctor and doctor.language else current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
+        title_doc = i18n.t('notifications.new_review', doc_lang, 'Новый отзыв')
+        msg_doc = i18n.t('notifications.review_left', doc_lang, 'Пациент %(name)s оставил отзыв (%(rating)s/5).') % {
+            'name': current_user.full_name,
+            'rating': rating,
+        }
         notification = Notification(
             user_id=appointment.doctor_id,
-            title='Новый отзыв',
-            message=f'Пациент {current_user.full_name} оставил отзыв ({rating}/5).',
+            title=title_doc,
+            message=msg_doc,
+            title_i18n={lang: i18n.t('notifications.new_review', lang, 'Новый отзыв') for lang in current_app.config.get('LANGUAGES', {}).keys()},
+            message_i18n={lang: i18n.t('notifications.review_left', lang, 'Пациент %(name)s оставил отзыв (%(rating)s/5).') % {'name': current_user.full_name, 'rating': rating} for lang in current_app.config.get('LANGUAGES', {}).keys()},
             type='info',
         )
         db.session.add(notification)

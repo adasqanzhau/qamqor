@@ -31,6 +31,23 @@
 
             <form method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
+                {% set clinic_labels = {
+                    'name': t('admin.clinic_form.name_label', form.name.label.text),
+                    'description': t('admin.clinic_form.description_label', form.description.label.text),
+                    'address': t('admin.clinic_form.address_label', form.address.label.text),
+                    'phone': t('admin.clinic_form.phone_label', form.phone.label.text),
+                    'email': t('admin.clinic_form.email_label', form.email.label.text),
+                    'website': t('admin.clinic_form.website_label', form.website.label.text),
+                    'primary_color': t('admin.clinic_form.primary_color_label', form.primary_color.label.text),
+                    'secondary_color': t('admin.clinic_form.secondary_color_label', form.secondary_color.label.text),
+                    'working_hours_start': t('admin.clinic_form.working_hours_start_label', form.working_hours_start.label.text),
+                    'working_hours_end': t('admin.clinic_form.working_hours_end_label', form.working_hours_end.label.text),
+                    'logo': t('admin.clinic_form.logo_label', form.logo.label.text),
+                    'admin_email': t('admin.clinic_form.admin_email_label', form.admin_email.label.text),
+                    'admin_password': t('admin.clinic_form.admin_password_label', form.admin_password.label.text),
+                    'admin_first_name': t('admin.clinic_form.admin_first_name_label', form.admin_first_name.label.text),
+                    'admin_last_name': t('admin.clinic_form.admin_last_name_label', form.admin_last_name.label.text),
+                } %}
 
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white">
@@ -39,7 +56,7 @@
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-12">
-                                <label for="{{ form.name.id }}" class="form-label">{{ form.name.label.text }} <span class="text-danger">*</span></label>
+                                <label for="{{ form.name.id }}" class="form-label">{{ clinic_labels.name }} <span class="text-danger">*</span></label>
                                 {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder=t('admin.clinic_form.name_placeholder')) }}
                                 {% for error in form.name.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -47,7 +64,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="{{ form.description.id }}" class="form-label">{{ form.description.label.text }}</label>
+                                <label for="{{ form.description.id }}" class="form-label">{{ clinic_labels.description }}</label>
                                 {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows=3, placeholder=t('admin.clinic_form.description_placeholder')) }}
                                 {% for error in form.description.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -55,7 +72,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="{{ form.address.id }}" class="form-label">{{ form.address.label.text }}</label>
+                                <label for="{{ form.address.id }}" class="form-label">{{ clinic_labels.address }}</label>
                                 {{ form.address(class="form-control" + (" is-invalid" if form.address.errors else ""), placeholder=t('admin.clinic_form.address_placeholder')) }}
                                 {% for error in form.address.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -63,24 +80,24 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="{{ form.phone.id }}" class="form-label">{{ form.phone.label.text }}</label>
-                                {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else ""), placeholder="+7 (XXX) XXX-XX-XX") }}
+                                <label for="{{ form.phone.id }}" class="form-label">{{ clinic_labels.phone }}</label>
+                                {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else ""), placeholder=t('admin.clinic_form.phone_placeholder', '+7 (XXX) XXX-XX-XX')) }}
                                 {% for error in form.phone.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
                                 {% endfor %}
                             </div>
 
                             <div class="col-md-6">
-                                <label for="{{ form.email.id }}" class="form-label">{{ form.email.label.text }}</label>
-                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="clinic@example.com") }}
+                                <label for="{{ form.email.id }}" class="form-label">{{ clinic_labels.email }}</label>
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder=t('admin.clinic_form.email_placeholder', 'clinic@example.com')) }}
                                 {% for error in form.email.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
                                 {% endfor %}
                             </div>
 
                             <div class="col-12">
-                                <label for="{{ form.website.id }}" class="form-label">{{ form.website.label.text }}</label>
-                                {{ form.website(class="form-control" + (" is-invalid" if form.website.errors else ""), placeholder="https://example.com") }}
+                                <label for="{{ form.website.id }}" class="form-label">{{ clinic_labels.website }}</label>
+                                {{ form.website(class="form-control" + (" is-invalid" if form.website.errors else ""), placeholder=t('admin.clinic_form.website_placeholder', 'https://example.com')) }}
                                 {% for error in form.website.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
                                 {% endfor %}
@@ -97,7 +114,7 @@
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="{{ form.primary_color.id }}" class="form-label">{{ form.primary_color.label.text }}</label>
+                                <label for="{{ form.primary_color.id }}" class="form-label">{{ clinic_labels.primary_color }}</label>
                                 <div class="input-group">
                                     {{ form.primary_color(class="form-control form-control-color", type="color") }}
                                     <span class="input-group-text flex-grow-1">{{ t('admin.clinic_form.primary_color') }}</span>
@@ -108,7 +125,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="{{ form.secondary_color.id }}" class="form-label">{{ form.secondary_color.label.text }}</label>
+                                <label for="{{ form.secondary_color.id }}" class="form-label">{{ clinic_labels.secondary_color }}</label>
                                 <div class="input-group">
                                     {{ form.secondary_color(class="form-control form-control-color", type="color") }}
                                     <span class="input-group-text flex-grow-1">{{ t('admin.clinic_form.secondary_color') }}</span>
@@ -119,7 +136,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="{{ form.working_hours_start.id }}" class="form-label">{{ form.working_hours_start.label.text }}</label>
+                                <label for="{{ form.working_hours_start.id }}" class="form-label">{{ clinic_labels.working_hours_start }}</label>
                                 {{ form.working_hours_start(class="form-control" + (" is-invalid" if form.working_hours_start.errors else ""), type="time") }}
                                 {% for error in form.working_hours_start.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -127,7 +144,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="{{ form.working_hours_end.id }}" class="form-label">{{ form.working_hours_end.label.text }}</label>
+                                <label for="{{ form.working_hours_end.id }}" class="form-label">{{ clinic_labels.working_hours_end }}</label>
                                 {{ form.working_hours_end(class="form-control" + (" is-invalid" if form.working_hours_end.errors else ""), type="time") }}
                                 {% for error in form.working_hours_end.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -135,7 +152,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="{{ form.logo.id }}" class="form-label">{{ form.logo.label.text }}</label>
+                                <label for="{{ form.logo.id }}" class="form-label">{{ clinic_labels.logo }}</label>
                                 {{ form.logo(class="form-control" + (" is-invalid" if form.logo.errors else ""), accept="image/*") }}
                                 {% for error in form.logo.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -160,7 +177,7 @@
                         <p class="text-muted small mb-3">{{ t('admin.clinic_form.admin_desc') }}</p>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="{{ form.admin_email.id }}" class="form-label">{{ form.admin_email.label.text }} <span class="text-danger">*</span></label>
+                                <label for="{{ form.admin_email.id }}" class="form-label">{{ clinic_labels.admin_email }} <span class="text-danger">*</span></label>
                                 {{ form.admin_email(class="form-control" + (" is-invalid" if form.admin_email.errors else ""), placeholder=t('admin.clinic_form.admin_email_placeholder')) }}
                                 {% for error in form.admin_email.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -168,7 +185,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="{{ form.admin_password.id }}" class="form-label">{{ form.admin_password.label.text }} <span class="text-danger">*</span></label>
+                                <label for="{{ form.admin_password.id }}" class="form-label">{{ clinic_labels.admin_password }} <span class="text-danger">*</span></label>
                                 {{ form.admin_password(class="form-control" + (" is-invalid" if form.admin_password.errors else ""), placeholder=t('admin.clinic_form.admin_password_placeholder')) }}
                                 {% for error in form.admin_password.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -176,7 +193,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="{{ form.admin_first_name.id }}" class="form-label">{{ form.admin_first_name.label.text }} <span class="text-danger">*</span></label>
+                                <label for="{{ form.admin_first_name.id }}" class="form-label">{{ clinic_labels.admin_first_name }} <span class="text-danger">*</span></label>
                                 {{ form.admin_first_name(class="form-control" + (" is-invalid" if form.admin_first_name.errors else ""), placeholder=t('common.first_name')) }}
                                 {% for error in form.admin_first_name.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
@@ -184,7 +201,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="{{ form.admin_last_name.id }}" class="form-label">{{ form.admin_last_name.label.text }} <span class="text-danger">*</span></label>
+                                <label for="{{ form.admin_last_name.id }}" class="form-label">{{ clinic_labels.admin_last_name }} <span class="text-danger">*</span></label>
                                 {{ form.admin_last_name(class="form-control" + (" is-invalid" if form.admin_last_name.errors else ""), placeholder=t('common.last_name')) }}
                                 {% for error in form.admin_last_name.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>

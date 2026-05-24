@@ -23,12 +23,12 @@
                         </div>
                         <div class="flex-grow-1">
                             <h6 class="mb-1 fw-semibold">
-                                {{ notification.title }}
+                                {{ render_notification_field(notification, 'title') }}
                                 {% if notification.link %}
                                 <i class="fas fa-external-link-alt ms-1 small text-primary"></i>
                                 {% endif %}
                             </h6>
-                            <p class="mb-1 small text-muted">{{ notification.message }}</p>
+                            <p class="mb-1 small text-muted">{{ render_notification_field(notification, 'message') }}</p>
                             <small class="text-muted">
                                 <i class="fas fa-clock me-1"></i>{{ notification.created_at.strftime('%d.%m.%Y %H:%M') }}
                             </small>

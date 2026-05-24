@@ -4,12 +4,13 @@ from datetime import datetime, date, timezone
 from functools import wraps
 
 from flask import (Blueprint, render_template, redirect, url_for, flash,
-                   request, abort, current_app)
+                   request, abort, current_app, session)
 from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 
 from app import db
+import app.i18n as i18n
 from app.models import (
     User, Appointment, VideoCall, Prescription,
     MedicalRecord, Review, Notification,
@@ -53,6 +54,22 @@ def _save_avatar(file_storage):
     os.makedirs(upload_dir, exist_ok=True)
     file_storage.save(os.path.join(upload_dir, unique_name))
     return unique_name
+
+
+def _current_language():
+    if 'language' in session and session['language'] in current_app.config.get('LANGUAGES', {}):
+        return session['language']
+    if current_user.is_authenticated and current_user.language in current_app.config.get('LANGUAGES', {}):
+        return current_user.language
+    return current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru')
+
+
+def _flash_translated(key, category='info', **params):
+    lang = _current_language()
+    message = i18n.t(f'doctor.alerts.{key}', lang, '')
+    if params:
+        message = message % params
+    flash(message, category)
 
 
 @doctor.route('/dashboard')
@@ -141,18 +158,23 @@ def update_appointment_status(appointment_id):
 
     new_status = request.form.get('status')
     if new_status not in ('in_progress', 'awaiting_report', 'completed', 'cancelled'):
-        flash('Недопустимый статус.', 'danger')
+        _flash_translated('invalid_status', 'danger')
         return redirect(url_for('doctor.appointments'))
 
     allowed = VALID_STATUS_TRANSITIONS.get(appointment.status, [])
     if new_status not in allowed:
-        flash(f'Невозможно перевести приём из "{appointment.status}" в "{new_status}".', 'danger')
+        _flash_translated(
+            'invalid_status_transition',
+            'danger',
+            current_status=appointment.status,
+            new_status=new_status,
+        )
         return redirect(url_for('doctor.appointments'))
 
     appointment.status = new_status
     db.session.commit()
 
-    flash('Статус приёма обновлён.', 'success')
+    _flash_translated('appointment_status_updated', 'success')
     return redirect(url_for('doctor.appointments'))
 
 @doctor.route('/patients/<int:patient_id>')
@@ -227,7 +249,7 @@ def create_prescription(appointment_id):
         abort(403)
 
     if appointment.status not in ('in_progress', 'awaiting_report', 'completed'):
-        flash('Рецепт можно создать только для активного или завершённого приёма.', 'warning')
+        _flash_translated('prescription_unavailable', 'warning')
         return redirect(url_for('doctor.appointments'))
 
     existing = appointment.prescription
@@ -238,7 +260,7 @@ def create_prescription(appointment_id):
             existing.diagnosis = form.diagnosis.data
             existing.medications = form.medications.data
             existing.recommendations = form.recommendations.data
-            flash('Рецепт обновлён.', 'success')
+            _flash_translated('prescription_updated', 'success')
         else:
             prescription = Prescription(
                 appointment_id=appointment.id,
@@ -263,13 +285,13 @@ def create_prescription(appointment_id):
                 content=record_content,
             )
             db.session.add(med_record)
-            flash('Рецепт успешно создан.', 'success')
+            _flash_translated('prescription_created', 'success')
 
         try:
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            flash('Для этого приёма уже существует рецепт.', 'warning')
+            _flash_translated('prescription_exists', 'warning')
             return redirect(url_for('doctor.appointments'))
 
         return redirect(url_for('doctor.appointments'))
@@ -318,7 +340,7 @@ def create_medical_record(patient_id):
         db.session.add(record)
         db.session.commit()
 
-        flash('Медицинская запись создана.', 'success')
+        _flash_translated('medical_record_created', 'success')
         return redirect(url_for('doctor.patient_detail', patient_id=patient_id))
 
     return render_template(
@@ -363,7 +385,7 @@ def profile():
                 current_user.avatar = saved
 
         db.session.commit()
-        flash('Профиль обновлён.', 'success')
+        _flash_translated('profile_updated', 'success')
         return redirect(url_for('doctor.profile'))
 
     return render_template('doctor/profile.html', form=form)

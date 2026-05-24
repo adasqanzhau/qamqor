@@ -9,6 +9,7 @@
     "minutes_short": "мин",
     "choose": "Выберите",
     "choose_clinic": "Выберите клинику",
+    "clinic_densaulyq": "Клиника \"Денсаулық\"",
     "first_name": "Имя",
     "last_name": "Фамилия",
     "phone": "Телефон",
@@ -397,6 +398,34 @@
           "bio": "О себе",
           "not_specified": "Не указана",
           "admin_note": "Для изменения профессиональных данных обратитесь к администратору клиники"
+        },
+        "alerts": {
+          "invalid_status": "Недопустимый статус.",
+          "invalid_status_transition": "Невозможно перевести приём из \"%(current_status)s\" в \"%(new_status)s\".",
+          "appointment_status_updated": "Статус приёма обновлён.",
+          "prescription_unavailable": "Рецепт можно создать только для активного или завершённого приёма.",
+          "prescription_updated": "Рецепт обновлён.",
+          "prescription_created": "Рецепт успешно создан.",
+          "prescription_exists": "Для этого приёма уже существует рецепт.",
+          "medical_record_created": "Медицинская запись создана.",
+          "profile_updated": "Профиль обновлён."
+        },
+        "prescription_page": {
+          "title": "Назначение",
+          "back_to_appointments": "Назад к записям",
+          "info_title": "Информация о приеме",
+          "patient_label": "Пациент:",
+          "appointment_date_label": "Дата приема:",
+          "symptoms_label": "Симптомы:",
+          "not_specified": "Не указаны",
+          "form_title": "Форма назначения",
+          "diagnosis_label": "Диагноз",
+          "diagnosis_placeholder": "Введите диагноз...",
+          "medications_label": "Препараты",
+          "medications_placeholder": "Укажите назначенные препараты, дозировки и схему приема...",
+          "recommendations_label": "Рекомендации",
+          "recommendations_placeholder": "Дополнительные рекомендации для пациента...",
+          "save_button": "Сохранить назначение"
         }
       },
       "clinic": {
@@ -491,11 +520,59 @@
           "title": "Мой профиль",
           "edit_profile": "Редактирование профиля",
           "avatar_label": "Фото профиля",
+          "avatar_alt": "Аватар",
           "first_name_placeholder": "Введите имя",
           "last_name_placeholder": "Введите фамилию",
           "phone_placeholder": "+7 (XXX) XXX-XX-XX",
           "info": "Информация",
           "registered_on": "Дата регистрации"
+        },
+        "statistics_page": {
+          "title": "Статистика клиники",
+          "subtitle": "Обзор ключевых показателей",
+          "total_doctors": "Всего врачей",
+          "total_patients": "Всего пациентов",
+          "total_appointments": "Всего записей",
+          "total_revenue": "Общий доход",
+          "average_rating": "Средний рейтинг",
+          "based_on_reviews": "На основе отзывов пациентов",
+          "monthly_revenue": "Доход по месяцам",
+          "no_revenue_data": "Данные о доходах пока отсутствуют",
+          "top_doctors": "Лучшие врачи",
+          "appointments_count": "Количество записей",
+          "no_doctor_data": "Данные о врачах пока отсутствуют",
+          "latest_reviews": "Последние отзывы пациентов",
+          "patient_label": "Пациент:"
+        },
+        "doctor_form": {
+          "edit_title": "Редактировать врача",
+          "add_title": "Добавить врача",
+          "edit_subtitle": "Измените данные врача",
+          "add_subtitle": "Заполните данные нового врача",
+          "avatar_label": "Фото врача",
+          "current_photo_alt": "Текущее фото",
+          "account_section": "Данные аккаунта",
+          "password_label": "Пароль",
+          "password_hint": "(оставьте пустым, чтобы не менять)",
+          "password_placeholder": "Введите пароль",
+          "personal_section": "Личные данные",
+          "first_name_label": "Имя",
+          "first_name_placeholder": "Иван",
+          "last_name_label": "Фамилия",
+          "last_name_placeholder": "Иванов",
+          "phone_label": "Телефон",
+          "professional_section": "Профессиональные данные",
+          "specialization_label": "Специализация",
+          "specialization_placeholder": "Терапевт",
+          "experience_label": "Стаж (лет)",
+          "experience_placeholder": "5",
+          "price_label": "Цена консультации (₸)",
+          "price_placeholder": "2000",
+          "bio_label": "Биография",
+          "bio_placeholder": "Расскажите о враче, его опыте и квалификации...",
+          "cancel_button": "Отмена",
+          "save_changes_button": "Сохранить изменения",
+          "add_button": "Добавить врача"
         }
       },
       "admin": {
@@ -604,5 +681,20 @@
           "admin_password_placeholder": "Минимум 6 символов"
         }
       }
+  },
+  "videocall": {
+    "title": "Результаты видеоконсультации",
+    "back_to_my_appointments": "К моим записям",
+    "back_to_appointments": "К записям",
+    "call_info": "Информация о звонке",
+    "status": "Статус",
+    "completed": "Завершён",
+    "started": "Начало",
+    "duration": "Длительность",
+    "seconds": "сек",
+    "ai_summary": "AI-резюме консультации",
+    "transcription": "Транскрипция разговора",
+    "with_doctor": "с доктором %(name)s",
+    "with_patient": "с пациентом %(name)s"
   }
-}
+  }

@@ -74,14 +74,14 @@
                         <div class="flex-grow-1">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h6 class="mb-1 fw-semibold {% if not notification.is_read %}text-dark{% else %}text-muted{% endif %}">
-                                        {{ notification.title }}
+                                        <h6 class="mb-1 fw-semibold {% if not notification.is_read %}text-dark{% else %}text-muted{% endif %}">
+                                            {{ render_notification_field(notification, 'title') }}
                                         {% if notification.link %}
                                         <i class="fas fa-external-link-alt ms-1 small text-primary"></i>
                                         {% endif %}
                                     </h6>
-                                    <p class="mb-1 small {% if not notification.is_read %}text-dark{% else %}text-muted{% endif %}">
-                                        {{ notification.message }}
+                                        <p class="mb-1 small {% if not notification.is_read %}text-dark{% else %}text-muted{% endif %}">
+                                            {{ render_notification_field(notification, 'message') }}
                                     </p>
                                     <small class="text-muted">
                                         <i class="fas fa-clock me-1"></i>{{ notification.created_at.strftime('%d.%m.%Y %H:%M') }}

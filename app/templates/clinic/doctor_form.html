@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ 'Редактировать врача' if doctor else 'Добавить врача' }} - Qamqor{% endblock %}
+{% block title %}{{ t('clinic.doctor_form.edit_title') if doctor else t('clinic.doctor_form.add_title') }} - Qamqor{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -13,10 +13,10 @@
                 <div>
                     <h2 class="fw-bold mb-1">
                         <i class="fas fa-user-md text-primary me-2"></i>
-                        {{ 'Редактировать врача' if doctor else 'Добавить врача' }}
+                        {{ t('clinic.doctor_form.edit_title') if doctor else t('clinic.doctor_form.add_title') }}
                     </h2>
                     <p class="text-muted mb-0">
-                        {{ 'Измените данные врача' if doctor else 'Заполните данные нового врача' }}
+                        {{ t('clinic.doctor_form.edit_subtitle') if doctor else t('clinic.doctor_form.add_subtitle') }}
                     </p>
                 </div>
             </div>
@@ -27,11 +27,11 @@
                         {{ form.hidden_tag() }}
 
                         <div class="mb-4 text-center">
-                            <label class="form-label fw-semibold d-block">Фото врача</label>
+                            <label class="form-label fw-semibold d-block">{{ t('clinic.doctor_form.avatar_label') }}</label>
                             {% if doctor and doctor.avatar %}
                             <div class="mb-3">
                                 <img src="{{ url_for('static', filename='uploads/avatars/' + doctor.avatar) }}"
-                                     alt="Текущее фото"
+                                     alt="{{ t('clinic.doctor_form.current_photo_alt') }}"
                                      class="rounded-circle"
                                      style="width: 120px; height: 120px; object-fit: cover;">
                             </div>
@@ -54,7 +54,7 @@
                         <hr class="my-4">
 
                         <h5 class="fw-bold mb-3">
-                            <i class="fas fa-key text-muted me-2"></i>Данные аккаунта
+                            <i class="fas fa-key text-muted me-2"></i>{{ t('clinic.doctor_form.account_section') }}
                         </h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
@@ -68,14 +68,14 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="password" class="form-label fw-semibold">
-                                    Пароль
+                                    {{ t('clinic.doctor_form.password_label') }}
                                     {% if doctor %}
-                                    <span class="text-muted fw-normal small">(оставьте пустым, чтобы не менять)</span>
+                                    <span class="text-muted fw-normal small">{{ t('clinic.doctor_form.password_hint') }}</span>
                                     {% else %}
                                     <span class="text-danger">*</span>
                                     {% endif %}
                                 </label>
-                                {{ form.password(class="form-control", placeholder="Введите пароль") }}
+                                {{ form.password(class="form-control", placeholder=t('clinic.doctor_form.password_placeholder')) }}
                                 {% if form.password.errors %}
                                     {% for error in form.password.errors %}
                                     <div class="text-danger small mt-1">{{ error }}</div>
@@ -87,12 +87,12 @@
                         <hr class="my-4">
 
                         <h5 class="fw-bold mb-3">
-                            <i class="fas fa-user text-muted me-2"></i>Личные данные
+                            <i class="fas fa-user text-muted me-2"></i>{{ t('clinic.doctor_form.personal_section') }}
                         </h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label for="first_name" class="form-label fw-semibold">Имя <span class="text-danger">*</span></label>
-                                {{ form.first_name(class="form-control", placeholder="Иван") }}
+                                <label for="first_name" class="form-label fw-semibold">{{ t('clinic.doctor_form.first_name_label') }} <span class="text-danger">*</span></label>
+                                {{ form.first_name(class="form-control", placeholder=t('clinic.doctor_form.first_name_placeholder')) }}
                                 {% if form.first_name.errors %}
                                     {% for error in form.first_name.errors %}
                                     <div class="text-danger small mt-1">{{ error }}</div>
@@ -100,8 +100,8 @@
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="last_name" class="form-label fw-semibold">Фамилия <span class="text-danger">*</span></label>
-                                {{ form.last_name(class="form-control", placeholder="Иванов") }}
+                                <label for="last_name" class="form-label fw-semibold">{{ t('clinic.doctor_form.last_name_label') }} <span class="text-danger">*</span></label>
+                                {{ form.last_name(class="form-control", placeholder=t('clinic.doctor_form.last_name_placeholder')) }}
                                 {% if form.last_name.errors %}
                                     {% for error in form.last_name.errors %}
                                     <div class="text-danger small mt-1">{{ error }}</div>
@@ -109,7 +109,7 @@
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="phone" class="form-label fw-semibold">Телефон</label>
+                                <label for="phone" class="form-label fw-semibold">{{ t('clinic.doctor_form.phone_label') }}</label>
                                 {{ form.phone(class="form-control", placeholder="+7 (999) 123-45-67") }}
                                 {% if form.phone.errors %}
                                     {% for error in form.phone.errors %}
@@ -122,12 +122,12 @@
                         <hr class="my-4">
 
                         <h5 class="fw-bold mb-3">
-                            <i class="fas fa-stethoscope text-muted me-2"></i>Профессиональные данные
+                            <i class="fas fa-stethoscope text-muted me-2"></i>{{ t('clinic.doctor_form.professional_section') }}
                         </h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label for="specialization" class="form-label fw-semibold">Специализация <span class="text-danger">*</span></label>
-                                {{ form.specialization(class="form-control", placeholder="Терапевт") }}
+                                <label for="specialization" class="form-label fw-semibold">{{ t('clinic.doctor_form.specialization_label') }} <span class="text-danger">*</span></label>
+                                {{ form.specialization(class="form-control", placeholder=t('clinic.doctor_form.specialization_placeholder')) }}
                                 {% if form.specialization.errors %}
                                     {% for error in form.specialization.errors %}
                                     <div class="text-danger small mt-1">{{ error }}</div>
@@ -135,7 +135,7 @@
                                 {% endif %}
                             </div>
                             <div class="col-md-3">
-                                <label for="experience_years" class="form-label fw-semibold">Стаж (лет)</label>
+                                <label for="experience_years" class="form-label fw-semibold">{{ t('clinic.doctor_form.experience_label') }}</label>
                                 {{ form.experience_years(class="form-control", placeholder="5") }}
                                 {% if form.experience_years.errors %}
                                     {% for error in form.experience_years.errors %}
@@ -144,7 +144,7 @@
                                 {% endif %}
                             </div>
                             <div class="col-md-3">
-                                <label for="consultation_price" class="form-label fw-semibold">Цена консультации (₸)</label>
+                                <label for="consultation_price" class="form-label fw-semibold">{{ t('clinic.doctor_form.price_label') }}</label>
                                 {{ form.consultation_price(class="form-control", placeholder="2000") }}
                                 {% if form.consultation_price.errors %}
                                     {% for error in form.consultation_price.errors %}
@@ -153,8 +153,8 @@
                                 {% endif %}
                             </div>
                             <div class="col-12">
-                                <label for="bio" class="form-label fw-semibold">Биография</label>
-                                {{ form.bio(class="form-control", rows="4", placeholder="Расскажите о враче, его опыте и квалификации...") }}
+                                <label for="bio" class="form-label fw-semibold">{{ t('clinic.doctor_form.bio_label') }}</label>
+                                {{ form.bio(class="form-control", rows="4", placeholder=t('clinic.doctor_form.bio_placeholder')) }}
                                 {% if form.bio.errors %}
                                     {% for error in form.bio.errors %}
                                     <div class="text-danger small mt-1">{{ error }}</div>
@@ -165,11 +165,11 @@
 
                         <div class="d-flex justify-content-end gap-2 pt-3">
                             <a href="{{ url_for('clinic.doctors') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times me-1"></i> Отмена
+                                <i class="fas fa-times me-1"></i> {{ t('clinic.doctor_form.cancel_button') }}
                             </a>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-1"></i>
-                                {{ 'Сохранить изменения' if doctor else 'Добавить врача' }}
+                                {{ t('clinic.doctor_form.save_changes_button') if doctor else t('clinic.doctor_form.add_button') }}
                             </button>
                         </div>
                     </form>

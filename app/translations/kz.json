@@ -9,6 +9,7 @@
     "minutes_short": "мин",
     "choose": "Таңдаңыз",
     "choose_clinic": "Клиниканы таңдаңыз",
+    "clinic_densaulyq": "\"Денсаулық\" клиникасы",
     "first_name": "Аты",
     "last_name": "Тегі",
     "phone": "Телефон",
@@ -24,20 +25,22 @@
     "all_notifications": "Барлық хабарламалар",
     "role": "Рөл",
     "status": "Статус",
-      "date": "Күн"
+    "date": "Күн"
   },
-    "chatbot": {
-      "title": "AI медициналық ассистент - Qamqor",
-      "header_name": "AI медициналық ассистент",
-      "status": { "online": "Онлайн" },
-      "clear_history": "Тарихты тазалау",
-      "welcome_title": "Сәлем!",
-      "welcome_desc": "Мен - сіздің AI медициналық ассистентіңіз. Дені сау болу, симптомдар немесе медициналық процестер туралы сұрақ қойыңыз.",
-      "input_placeholder": "Хабарлама енгізіңіз...",
-      "send": "Жіберу",
-      "no_response": "Жауап жоқ.",
-      "send_error": "Хабарлама жіберу кезінде қате орын алды. Қайта байқап көріңіз."
+  "chatbot": {
+    "title": "AI медициналық ассистент - Qamqor",
+    "header_name": "AI медициналық ассистент",
+    "status": {
+      "online": "Онлайн"
     },
+    "clear_history": "Тарихты тазалау",
+    "welcome_title": "Сәлем!",
+    "welcome_desc": "Мен - сіздің AI медициналық ассистентіңіз. Дені сау болу, симптомдар немесе медициналық процестер туралы сұрақ қойыңыз.",
+    "input_placeholder": "Хабарлама енгізіңіз...",
+    "send": "Жіберу",
+    "no_response": "Жауап жоқ.",
+    "send_error": "Хабарлама жіберу кезінде қате орын алды. Қайта байқап көріңіз."
+  },
   "landing": {
     "title": "Қазақстан телемедицинасы",
     "features": "Мүмкіндіктер",
@@ -161,9 +164,9 @@
     "next": "Келесі",
     "submit": "Жіберу",
     "search": "Іздеу",
-    "reset": "Тазалау"
-    , "filter": "Сүзгі"
-    , "view": "Толығырақ"
+    "reset": "Тазалау",
+    "filter": "Фильтр",
+    "view": "Толығырақ"
   },
   "messages": {
     "success": "Сәтті!",
@@ -175,13 +178,13 @@
     "select_time": "Уақытты таңдаңыз",
     "no_new_notifications": "Жаңа хабарламалар жоқ",
     "no_notifications": "Хабарламалар жоқ",
-    "clear_history_error": "Тарихты тазалау қатесі."
-    ,"confirm_clear_history": "Чат тарихын тазалау керек пе?"
-    , "confirm_delete_title": "Жоюды растау"
-    , "confirm_delete": "%(name)s жойғыңыз келетініне сенімдісіз бе?"
-    , "confirm_delete_warning": "Бұл әрекетті қайтару мүмкін емес."
-  }
-  ,"patient": {
+    "clear_history_error": "Тарихты тазалау қатесі.",
+    "confirm_clear_history": "Чат тарихын тазалау керек пе?",
+    "confirm_delete_title": "Жоюды растау",
+    "confirm_delete": "%(name)s жойғыңыз келетініне сенімдісіз бе?",
+    "confirm_delete_warning": "Бұл әрекетті қайтару мүмкін емес."
+  },
+  "patient": {
     "panel_title": "Пациент панелі",
     "welcome_name": "Қош келдіңіз, %(name)s!",
     "subtitle": "Сіздің жеке медициналық кабинетіңіз",
@@ -204,21 +207,20 @@
       "personal_entry": "Жеке жазба",
       "none_found_title": "Медициналық жазбалар табылмады",
       "none_found_subtitle": "Жазбалар дәрігерге барудан кейін пайда болады"
-    }
-  ,
-  "doctors": {
-    "title": "Біздің дәрігерлер",
-    "subtitle": "Маманды таңдаңыз және қабылдауға жазылыңыз",
-    "search_label": "Дәрігерді іздеу",
-    "search_placeholder": "Дәрігердің аты немесе фамилиясы...",
-    "specialization_label": "Мамандану",
-    "all_specializations": "Барлық мамандану",
-    "find_button": "Іздеу",
-    "default_specialization": "Дәрігер",
+    },
+    "doctors": {
+      "title": "Біздің дәрігерлер",
+      "subtitle": "Маманды таңдаңыз және қабылдауға жазылыңыз",
+      "search_label": "Дәрігерді іздеу",
+      "search_placeholder": "Дәрігердің аты немесе фамилиясы...",
+      "specialization_label": "Мамандану",
+      "all_specializations": "Барлық мамандану",
+      "find_button": "Іздеу",
+      "default_specialization": "Дәрігер",
       "not_found_title": "Дәрігерлер табылмады",
       "not_found_desc": "Іздеу немесе сүзгілерді өзгертіп көріңіз.",
-    "experience": "Тәжірибе: %(years)s жыл",
-    "book_button": "Жазылу"
+      "experience": "Тәжірибе: %(years)s жыл",
+      "book_button": "Жазылу"
     },
     "health_tracker": {
       "title": "Денсаулық журналы",
@@ -229,10 +231,22 @@
       "notes_placeholder": "Өзіңіздің жағдайыңызды, симптомдарыңызды, қабылдаған дәрілерді сипаттаңыз...",
       "save_entry": "Жазбаны сақтау",
       "tips_title": "Денсаулыққа кеңестер",
-      "tip_nutrition": { "title": "Дұрыс тамақтану", "desc": "Көбірек жемістер мен көкөністерді тұтыныңыз, күніне кемінде 2 литр су ішіңіз" },
-      "tip_activity": { "title": "Дене белсенділігі", "desc": "Күніне кемінде 30 минут орташа физикалық белсенділікпен айналысыңыз" },
-      "tip_sleep": { "title": "Дұрыс ұйқы", "desc": "Күніне 7-8 сағат ұйықтаңыз, ұйықтап, тұру уақытын бірдей ұстаңыз" },
-      "tip_stress": { "title": "Стрессті басқару", "desc": "Медитация, тыныс алу жаттығулары және таза ауада серуендеу практикасын жүргізіңіз" },
+      "tip_nutrition": {
+        "title": "Дұрыс тамақтану",
+        "desc": "Көбірек жемістер мен көкөністерді тұтыныңыз, күніне кемінде 2 литр су ішіңіз"
+      },
+      "tip_activity": {
+        "title": "Дене белсенділігі",
+        "desc": "Күніне кемінде 30 минут орташа физикалық белсенділікпен айналысыңыз"
+      },
+      "tip_sleep": {
+        "title": "Дұрыс ұйқы",
+        "desc": "Күніне 7-8 сағат ұйықтаңыз, ұйықтап, тұру уақытын бірдей ұстаңыз"
+      },
+      "tip_stress": {
+        "title": "Стрессті басқару",
+        "desc": "Медитация, тыныс алу жаттығулары және таза ауада серуендеу практикасын жүргізіңіз"
+      },
       "history_title": "Жазбалар тарихы",
       "none_found_title": "Жазбалар жоқ",
       "none_found_subtitle": "Денсаулық журналыңызды жүргізуді бастаңыз"
@@ -248,7 +262,13 @@
       "appointment_at": "Қабылдау",
       "rating_label": "Сіздің бағаңыз",
       "rating_hint": "Жұлдыздарға басыңыз",
-      "rating_labels": { "1": "Өте нашар", "2": "Жаман", "3": "Қалыпты", "4": "Жақсы", "5": "Өте жақсы" },
+      "rating_labels": {
+        "1": "Өте нашар",
+        "2": "Жаман",
+        "3": "Қалыпты",
+        "4": "Жақсы",
+        "5": "Өте жақсы"
+      },
       "comment_label": "Пікір (міндетті емес)",
       "comment_placeholder": "Қабылдау сапасы, дәрігердің назарлығы, нәтижелер туралы жазыңыз...",
       "submit": "Пікір жіберу",
@@ -284,15 +304,15 @@
       "address_label": "Мекен-жай",
       "address_placeholder": "Қала, көше, үй",
       "save_changes": "Өзгерістерді сақтау"
-      },
+    },
     "doctor": {
-        "medical_record": {
-          "title": "Медициналық жазбаны жасау",
-          "new_title": "Жаңа медициналық жазба",
-          "patient_label": "Пациент:",
-          "title_placeholder": "Жазба атауы",
-          "content_placeholder": "Жазба мазмұны..."
-        },
+      "medical_record": {
+        "title": "Медициналық жазбаны жасау",
+        "new_title": "Жаңа медициналық жазба",
+        "patient_label": "Пациент:",
+        "title_placeholder": "Жазба атауы",
+        "content_placeholder": "Жазба мазмұны..."
+      },
       "dashboard": {
         "title": "Дәрігер панелі",
         "welcome_name": "Қош келдіңіз, %(name)s!",
@@ -318,6 +338,23 @@
         "no_today_appointments": "Бүгін жазбалар жоқ",
         "upcoming_appointments": "Жақын жазбалар",
         "no_upcoming_appointments": "Алдағы жазбалар жоқ"
+      },
+      "prescription_page": {
+        "title": "Тағайындау",
+        "back_to_appointments": "Жазбаларға қайту",
+        "info_title": "Қабылдау туралы ақпарат",
+        "patient_label": "Пациент:",
+        "appointment_date_label": "Қабылдау күні:",
+        "symptoms_label": "Симптомдар:",
+        "not_specified": "Көрсетілмеген",
+        "form_title": "Тағайындау формасы",
+        "diagnosis_label": "Диагноз",
+        "diagnosis_placeholder": "Диагнозды енгізіңіз...",
+        "medications_label": "Дәрілер",
+        "medications_placeholder": "Назначалған дәрілерді, дозаларды және қабылдау тәртібін көрсетіңіз...",
+        "recommendations_label": "Ұсыныстар",
+        "recommendations_placeholder": "Пациент үшін қосымша ұсыныстар...",
+        "save_button": "Тағайындауды сақтау"
       },
       "appointments": {
         "title": "Жазбалар",
@@ -362,6 +399,43 @@
         "bio": "Өзім туралы",
         "not_specified": "Көрсетілмеген",
         "admin_note": "Кәсіби деректерді өзгерту үшін клиника әкімшісіне хабарласыңыз"
+      },
+      "patient_detail": {
+        "page_title": "Пациент - ",
+        "patient_card": "Пациент картасы",
+        "add_med_record": "Мед. жазба қосу",
+        "back": "Артқа",
+        "patient_info": "Пациент туралы ақпарат",
+        "full_name": "Аты-жөні",
+        "phone": "Телефон",
+        "birth_date": "Туған күні",
+        "gender": "Жынысы",
+        "gender_male": "Ер",
+        "gender_female": "Әйел",
+        "not_specified": "Көрсетілмеген",
+        "not_specified_female": "Көрсетілмеген",
+        "address": "Мекенжай",
+        "appointment_history": "Қабылдаулар тарихы",
+        "date": "Күні",
+        "status": "Статус",
+        "symptoms": "Симптомдар",
+        "diagnosis": "Диагноз",
+        "actions": "Әрекеттер",
+        "prescription": "Рецепт",
+        "finish_appointment": "Қабылдауды аяқтау",
+        "no_appointments": "Қабылдаулар жоқ",
+        "medical_records": "Медициналық жазбалар",
+        "add": "Қосу",
+        "type": "Түрі",
+        "name": "Атауы",
+        "content": "Мазмұны",
+        "no_medical_records": "Медициналық жазбалар жоқ",
+        "video_transcriptions": "Бейнеконсультация транскрипциялары",
+        "ai_summary": "AI қысқаша мазмұны",
+        "full_transcription": "Толық транскрипция",
+        "prescriptions_title": "Тағайындаулар",
+        "appointment_date": "Қабылдау күні",
+        "medications": "Дәрілер"
       }
     },
     "clinic": {
@@ -383,85 +457,147 @@
         "quick_actions": "Жылдам әрекеттер",
         "add_doctor": "Дәрігер қосу",
         "settings": "Баптаулар"
+      },
+      "doctors_page": {
+        "subtitle": "Клиникаңыздың дәрігерлерін басқару",
+        "empty_title": "Әзірге дәрігерлер жоқ",
+        "empty_desc": "Клиникаңызға бірінші дәрігерді қосыңыз",
+        "add_doctor": "Дәрігер қосу"
+      },
+      "patients_page": {
+        "subtitle": "Клиниканы қабылдаған пациенттердің тізімі",
+        "search_placeholder": "Аты, email немесе телефон бойынша іздеу...",
+        "not_found_title": "Пациенттер табылмады",
+        "not_found_desc": "Іздеуді немесе сүзгілерді өзгертіп көріңіз.",
+        "empty_title": "Пациенттер әлі жоқ",
+        "empty_desc": "Пациенттер бірінші жазбалардан кейін пайда болады"
+      },
+      "appointments_page": {
+        "title": "Клиниканың жазбалары",
+        "subtitle": "Клиниканың жазбаларын басқару",
+        "pagination": "Бет навигациясы",
+        "record_prefix": "Жазба №",
+        "date_time": "Күні мен уақыты",
+        "patient": "Пациент",
+        "doctor": "Дәрігер",
+        "status": "Статус",
+        "actions": "Әрекеттер",
+        "no_records_title": "Жазбалар табылмады",
+        "filter_no_results": "Сүзгілерді өзгертіп көріңіз",
+        "reset_filters": "Сүзгілерді тазалау",
+        "empty_desc": "Пациенттер жазылғаннан кейін жазбалар пайда болады",
+        "appt_label": "Запись",
+        "duration": "Ұзақтығы",
+        "symptoms": "Симптомдар / шағымдар",
+        "doctor_notes": "Дәрігердің жазбалары",
+        "prescription": "Рецепт",
+        "diagnosis_label": "Диагноз:",
+        "medications_label": "Назначения:",
+        "videocall_summary": "Бейнеконсультация қорытындысы"
+      },
+      "settings_page": {
+        "title": "Клиника баптаулары",
+        "subtitle": "Клиника туралы ақпаратты басқару",
+        "logo_alt": "Клиника логотипі",
+        "basic_info": "Негізгі ақпарат",
+        "name_label": "Клиника атауы",
+        "name_placeholder": "Клиника атауы",
+        "description_label": "Сипаттама",
+        "description_placeholder": "Клиникаңыз туралы жазыңыз...",
+        "address_label": "Мекен-жай",
+        "address_placeholder": "Қала, көше, үй",
+        "contact_info": "Байланыс ақпараты",
+        "phone_placeholder": "+7 (999) 123-45-67",
+        "email_placeholder": "clinic@example.com",
+        "website_label": "Веб-сайт",
+        "website_placeholder": "https://example.com",
+        "logo": "Логотип",
+        "current_logo": "Ағымдағы лого",
+        "change_logo": "Логотипті өзгерту",
+        "upload_logo": "Логотип жүктеу",
+        "logo_hint": "Ұсынылатын өлшем: 300x300. Форматтар: PNG, JPG, SVG.",
+        "appearance": "Көрініс",
+        "primary_color_label": "Негізгі түс",
+        "secondary_color_label": "Қосымша түс",
+        "working_hours": "Жұмыс уақыты",
+        "working_start": "Басталу",
+        "working_end": "Аяқталу",
+        "save": "Баптауларды сақтау"
+      },
+      "profile_page": {
+        "title": "Менің профилім",
+        "edit_profile": "Профильді өңдеу",
+        "avatar_label": "Профиль суреті",
+        "avatar_alt": "Аватар",
+        "first_name_placeholder": "Атыңызды енгізіңіз",
+        "last_name_placeholder": "Тегіңізді енгізіңіз",
+        "phone_placeholder": "+7 (XXX) XXX-XX-XX",
+        "info": "Ақпарат",
+        "registered_on": "Тіркелген күні"
+      },
+      "statistics_page": {
+        "title": "Клиника статистикасы",
+        "subtitle": "Негізгі көрсеткіштердің шолуы",
+        "total_doctors": "Барлық дәрігерлер",
+        "total_patients": "Барлық пациенттер",
+        "total_appointments": "Барлық жазбалар",
+        "total_revenue": "Жалпы табыс",
+        "average_rating": "Орташа баға",
+        "based_on_reviews": "Пациент пікірлеріне негізделген",
+        "monthly_revenue": "Айлық табыс",
+        "no_revenue_data": "Табыс деректері қол жетімсіз",
+        "top_doctors": "Ең жақсы дәрігерлер",
+        "appointments_count": "Жазбалар саны",
+        "no_doctor_data": "Дәрігер деректері қол жетімсіз",
+        "latest_reviews": "Соңғы пациент пікірлері",
+        "patient_label": "Пациент:"
+      },
+      "doctor_form": {
+        "edit_title": "Дәрігерді өңдеу",
+        "add_title": "Дәрігер қосу",
+        "edit_subtitle": "Дәрігер ақпаратын өзгертіңіз",
+        "add_subtitle": "Жаңа дәрігердің ақпаратын толтырыңыз",
+        "avatar_label": "Дәрігердің суреті",
+        "current_photo_alt": "Ағымдағы сурет",
+        "name_label": "Клиника атауы",
+        "account_section": "Есептік ақпарат",
+        "description_label": "Сипаттама",
+        "password_label": "Пароль",
+        "password_placeholder": "Құпия сөзді енгізіңіз",
+        "address_label": "Мекенжай",
+        "phone_label": "Телефон",
+        "phone_placeholder": "+7 (999) 123-45-67",
+        "email_label": "Email",
+        "email_placeholder": "clinic@example.com",
+        "website_label": "Веб-сайт",
+        "website_placeholder": "https://example.com",
+        "password_hint": "(өзгертпеу үшін босс қалдырыңыз)",
+        "primary_color": "Негізгі түс",
+        "primary_color_label": "Негізгі түс",
+        "secondary_color": "Қосымша түс",
+        "secondary_color_label": "Қосымша түс",
+        "working_hours_start_label": "Жұмыстың басталуы",
+        "working_hours_end_label": "Жұмыстың аяқталуы",
+        "logo_label": "Логотип",
+        "personal_section": "Жеке деректер",
+        "first_name_label": "Аты",
+        "first_name_placeholder": "Айдос",
+        "last_name_label": "Тегі",
+        "last_name_placeholder": "Төлегенов",
+        "phone_label": "Телефон",
+        "professional_section": "Кәсіби ақпарат",
+        "specialization_label": "Мамандану",
+        "specialization_placeholder": "Терапевт",
+        "experience_label": "Тәжірибе (жыл)",
+        "experience_placeholder": "5",
+        "price_label": "Консультация бағасы (₸)",
+        "price_placeholder": "2000",
+        "bio_label": "Өмірбаяны",
+        "bio_placeholder": "Дәрігер туралы, оның тәжірибесі және біліктілігі туралы айтыңыз...",
+        "cancel_button": "Бас тарту",
+        "save_changes_button": "Өзгерістерді сақтау",
+        "add_button": "Дәрігер қосу"
       }
-        ,
-        "doctors_page": {
-          "subtitle": "Клиникаңыздың дәрігерлерін басқару",
-          "empty_title": "Әзірге дәрігерлер жоқ",
-          "empty_desc": "Клиникаңызға бірінші дәрігерді қосыңыз",
-          "add_doctor": "Дәрігер қосу"
-        },
-        "patients_page": {
-          "subtitle": "Клиниканы қабылдаған пациенттердің тізімі",
-          "search_placeholder": "Аты, email немесе телефон бойынша іздеу...",
-          "not_found_title": "Пациенттер табылмады",
-          "not_found_desc": "Іздеуді немесе сүзгілерді өзгертіп көріңіз.",
-          "empty_title": "Пациенттер әлі жоқ",
-          "empty_desc": "Пациенттер бірінші жазбалардан кейін пайда болады"
-        }
-        ,
-        "appointments_page": {
-          "title": "Клиниканың жазбалары",
-          "subtitle": "Клиниканың жазбаларын басқару",
-          "pagination": "Бет навигациясы",
-          "record_prefix": "Жазба №",
-          "date_time": "Күні мен уақыты",
-          "patient": "Пациент",
-          "doctor": "Дәрігер",
-          "status": "Статус",
-          "actions": "Әрекеттер",
-          "no_records_title": "Жазбалар табылмады",
-          "filter_no_results": "Сүзгілерді өзгертіп көріңіз",
-          "reset_filters": "Сүзгілерді тазалау",
-          "empty_desc": "Пациенттер жазылғаннан кейін жазбалар пайда болады",
-          "appt_label": "Запись",
-          "duration": "Ұзақтығы",
-          "symptoms": "Симптомдар / шағымдар",
-          "doctor_notes": "Дәрігердің жазбалары",
-          "prescription": "Рецепт",
-          "diagnosis_label": "Диагноз:",
-          "medications_label": "Назначения:",
-          "videocall_summary": "Бейнеконсультация қорытындысы"
-        },
-        "settings_page": {
-          "title": "Клиника баптаулары",
-          "subtitle": "Клиника туралы ақпаратты басқару",
-          "logo_alt": "Клиника логотипі",
-          "basic_info": "Негізгі ақпарат",
-          "name_label": "Клиника атауы",
-          "name_placeholder": "Клиника атауы",
-          "description_label": "Сипаттама",
-          "description_placeholder": "Клиникаңыз туралы жазыңыз...",
-          "address_label": "Мекен-жай",
-          "address_placeholder": "Қала, көше, үй",
-          "contact_info": "Байланыс ақпараты",
-          "phone_placeholder": "+7 (999) 123-45-67",
-          "email_placeholder": "clinic@example.com",
-          "website_label": "Веб-сайт",
-          "website_placeholder": "https://example.com",
-          "logo": "Логотип",
-          "current_logo": "Ағымдағы лого",
-          "change_logo": "Логотипті өзгерту",
-          "upload_logo": "Логотип жүктеу",
-          "logo_hint": "Ұсынылатын өлшем: 300x300. Форматтар: PNG, JPG, SVG.",
-          "appearance": "Көрініс",
-          "primary_color_label": "Негізгі түс",
-          "secondary_color_label": "Қосымша түс",
-          "working_hours": "Жұмыс уақыты",
-          "working_start": "Басталу",
-          "working_end": "Аяқталу",
-          "save": "Баптауларды сақтау"
-        },
-        "profile_page": {
-          "title": "Менің профилім",
-          "edit_profile": "Профильді өңдеу",
-          "avatar_label": "Профиль суреті",
-          "first_name_placeholder": "Атыңызды енгізіңіз",
-          "last_name_placeholder": "Тегіңізді енгізіңіз",
-          "phone_placeholder": "+7 (XXX) XXX-XX-XX",
-          "info": "Ақпарат",
-          "registered_on": "Тіркелген күні"
-        }
     },
     "booking": {
       "title": "Қабылдауға жазылу",
@@ -591,18 +727,66 @@
         "create_button": "Клиника құру",
         "info_title": "Клиника туралы ақпарат",
         "name_placeholder": "Клиника атауы",
+        "name_label": "Клиника атауы",
         "description_placeholder": "Клиника сипаттамасы",
+        "description_label": "Сипаттама",
         "address_placeholder": "Клиника мекенжайы",
+        "address_label": "Мекенжай",
+        "phone_label": "Телефон",
+        "phone_placeholder": "+7 (999) 123-45-67",
+        "email_label": "Email",
+        "email_placeholder": "clinic@example.com",
+        "website_label": "Веб-сайт",
+        "website_placeholder": "https://example.com",
         "branding_title": "Рәсімдеу және кесте",
         "primary_color": "Негізгі түс",
+        "primary_color_label": "Негізгі түс",
         "secondary_color": "Қосымша түс",
+        "secondary_color_label": "Қосымша түс",
+        "working_hours_start_label": "Жұмыстың басталуы",
+        "working_hours_end_label": "Жұмыстың аяқталуы",
+        "logo_label": "Логотип",
         "current_logo": "Ағымдағы логотип:",
         "logo_alt": "Логотип",
         "admin_title": "Клиника әкімшісі",
         "admin_desc": "Клиниканы басқаратын әкімші деректерін көрсетіңіз.",
         "admin_email_placeholder": "admin@clinic.com",
-        "admin_password_placeholder": "Кемінде 6 таңба"
+        "admin_email_label": "Әкімші email",
+        "admin_password_placeholder": "Кемінде 6 таңба",
+        "admin_password_label": "Әкімші құпия сөзі",
+        "admin_first_name_label": "Әкімшінің аты",
+        "admin_last_name_label": "Әкімшінің тегі"
       }
+    },
+    "videocall": {
+      "title": "Бейнеконсультация нәтижелері",
+      "back_to_my_appointments": "Менің жазбаларыма",
+      "back_to_appointments": "Жазбаларға",
+      "call_info": "Қоңырау туралы ақпарат",
+      "status": "Статус",
+      "completed": "Аяқталды",
+      "started": "Басталу",
+      "duration": "Ұзақтығы",
+      "seconds": "сек",
+      "ai_summary": "AI консультациясының қысқаша мазмұны",
+      "transcription": "Әңгіме транскрипциясы",
+      "with_doctor": "дәрігермен %(name)s",
+      "with_patient": "пациентпен %(name)s"
     }
+  },
+  "videocall": {
+    "title": "Бейнеконсультация нәтижелері",
+    "back_to_my_appointments": "Менің жазбаларыма",
+    "back_to_appointments": "Жазбаларға",
+    "call_info": "Қоңырау туралы ақпарат",
+    "status": "Статус",
+    "completed": "Аяқталды",
+    "started": "Басталды",
+    "duration": "Ұзақтығы",
+    "seconds": "сек",
+    "ai_summary": "AI консультациясының қысқаша мазмұны",
+    "transcription": "Әңгіме транскрипциясы",
+    "with_doctor": "дәрігермен %(name)s",
+    "with_patient": "пациентпен %(name)s"
   }
-  }
+}

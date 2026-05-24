@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 def get_translations(language='ru'):
     """Load translations for the given language."""
@@ -245,3 +246,95 @@ def get_dom_translations(language='ru'):
         source: translations.get(language, translations['ru'])
         for source, translations in SOURCE_TEXT_TRANSLATIONS.items()
     }
+
+
+def translate_text_from_ru(value, target_language='ru'):
+    """
+    Try to translate an arbitrary text that was stored in Russian by finding
+    a matching value in the Russian translations and returning the equivalent
+    string in `target_language`. If not found, return the original value.
+    This is a best-effort helper for legacy notifications stored as Russian
+    sentences.
+    """
+    if not value or not isinstance(value, str):
+        return value
+
+    # Load Russian translations
+    ru = get_translations('ru') or {}
+
+    # Walk ru dict to find a key whose value equals `value`.
+    # If found, use t(key, target_language) to get translated variant.
+    def walk(d, path=''):
+        if isinstance(d, dict):
+            for k, v in d.items():
+                new_path = f"{path}.{k}" if path else k
+                if isinstance(v, dict):
+                    res = walk(v, new_path)
+                    if res:
+                        return res
+                else:
+                    # Normalize and compare
+                    if isinstance(v, str) and v.strip() == value.strip():
+                        return new_path
+        return None
+
+    key = walk(ru)
+    if key:
+        # Use t to fetch in target language; fall back to original value
+        return t(key, target_language, value)
+
+    # Best-effort translation for legacy dynamic medical-record texts with
+    # dates/names where exact key lookup is impossible.
+    if target_language in ('en', 'kz'):
+        line_prefixes = {
+            'en': {
+                'Заключение врача — приём ': "Doctor's conclusion — appointment ",
+                'Видеоконсультация — ': 'Video consultation — ',
+                'Диагноз:': 'Diagnosis:',
+                'Рекомендации:': 'Recommendations:',
+            },
+            'kz': {
+                'Заключение врача — приём ': 'Дәрігер қорытындысы — қабылдау ',
+                'Видеоконсультация — ': 'Бейнеконсультация — ',
+                'Диагноз:': 'Диагноз:',
+                'Рекомендации:': 'Ұсыныстар:',
+            },
+        }
+
+        sentence_patterns = {
+            'en': (
+                re.compile(
+                    r'^Видеоконсультация между врачом\s+(.+?)\s+и пациентом\s+(.+?)\s+состоялась\s+(.+?)\.\s+Подробная транскрипция недоступна\.$'
+                ),
+                'Video consultation between doctor {doctor} and patient {patient} took place on {dt}. Detailed transcript is unavailable.'
+            ),
+            'kz': (
+                re.compile(
+                    r'^Видеоконсультация между врачом\s+(.+?)\s+и пациентом\s+(.+?)\s+состоялась\s+(.+?)\.\s+Подробная транскрипция недоступна\.$'
+                ),
+                'Дәрігер {doctor} мен пациент {patient} арасындағы бейнеконсультация {dt} күні өтті. Толық транскрипция қолжетімсіз.'
+            ),
+        }
+
+        # Replace known standalone sentence pattern first.
+        pattern, template = sentence_patterns[target_language]
+        m = pattern.match(value.strip())
+        if m:
+            return template.format(doctor=m.group(1), patient=m.group(2), dt=m.group(3))
+
+        # Translate line-by-line while preserving unknown lines as-is.
+        prefixes = line_prefixes[target_language]
+        translated_lines = []
+        changed = False
+        for line in value.split('\n'):
+            translated_line = line
+            for ru_prefix, tr_prefix in prefixes.items():
+                if line.startswith(ru_prefix):
+                    translated_line = tr_prefix + line[len(ru_prefix):]
+                    changed = True
+                    break
+            translated_lines.append(translated_line)
+        if changed:
+            return '\n'.join(translated_lines)
+
+    return value

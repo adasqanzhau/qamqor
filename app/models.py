@@ -241,6 +241,9 @@ class Notification(db.Model):
     is_read = db.Column(db.Boolean, default=False)
     link = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=_utcnow)
+    # New columns to store multilingual notification texts as a map {lang: text}
+    title_i18n = db.Column(db.JSON, nullable=True)
+    message_i18n = db.Column(db.JSON, nullable=True)
 
     user = db.relationship('User', backref='notifications')
 

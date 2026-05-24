@@ -8,6 +8,8 @@ from flask_login import login_required, current_user
 from flask_socketio import emit, join_room, leave_room
 from app import db, socketio, csrf
 from app.models import User, Appointment, VideoCall, Notification, MedicalRecord
+from app import db as _db
+import app.i18n as i18n
 
 logger = logging.getLogger(__name__)
 
@@ -98,17 +100,42 @@ def end(room_id):
             doctor_name = appointment.doctor.full_name if appointment.doctor else 'Врач'
             room_link = url_for('videocall.room', room_id=room_id)
 
+            # create notification texts in recipient's language
+            doctor = db.session.get(User, appointment.doctor_id)
+            doc_lang = (doctor.language if doctor and doctor.language else current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
+            title_doc = i18n.t('videocall.completed', doc_lang, 'Видеоконсультация завершена')
+            msg_doc = i18n.t('videocall.with_patient', doc_lang, 'Видеоконсультация с пациентом %(name)s') % {'name': patient_name}
             db.session.add(Notification(
                 user_id=appointment.doctor_id,
-                title='Видеоконсультация завершена',
-                message=f'Видеоконсультация с пациентом {patient_name} завершена.',
+                title=title_doc,
+                message=msg_doc,
+                title_i18n={
+                    lang: i18n.t('videocall.completed', lang, 'Видеоконсультация завершена')
+                    for lang in current_app.config.get('LANGUAGES', {}).keys()
+                },
+                message_i18n={
+                    lang: i18n.t('videocall.with_patient', lang, 'Видеоконсультация с пациентом %(name)s') % {'name': patient_name}
+                    for lang in current_app.config.get('LANGUAGES', {}).keys()
+                },
                 type='success',
                 link=room_link,
             ))
+            patient = db.session.get(User, appointment.patient_id)
+            pat_lang = (patient.language if patient and patient.language else current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
+            title_pat = i18n.t('videocall.completed', pat_lang, 'Видеоконсультация завершена')
+            msg_pat = i18n.t('videocall.with_doctor', pat_lang, 'Видеоконсультация с доктором %(name)s') % {'name': doctor_name}
             db.session.add(Notification(
                 user_id=appointment.patient_id,
-                title='Видеоконсультация завершена',
-                message=f'Видеоконсультация с доктором {doctor_name} завершена.',
+                title=title_pat,
+                message=msg_pat,
+                title_i18n={
+                    lang: i18n.t('videocall.completed', lang, 'Видеоконсультация завершена')
+                    for lang in current_app.config.get('LANGUAGES', {}).keys()
+                },
+                message_i18n={
+                    lang: i18n.t('videocall.with_doctor', lang, 'Видеоконсультация с доктором %(name)s') % {'name': doctor_name}
+                    for lang in current_app.config.get('LANGUAGES', {}).keys()
+                },
                 type='success',
                 link=room_link,
             ))
@@ -147,7 +174,17 @@ def transcribe(room_id):
         if appointment.scheduled_time else ''
     )
 
-    videocall.transcription = transcription_text or 'Транскрипция не велась во время звонка.'
+    # Build multilingual transcription + summary. Store as JSON mapping string when possible.
+    import json
+
+    ru_transcription = transcription_text or 'Транскрипция не велась во время звонка.'
+    en_transcription = 'No transcription was recorded during the call.' if not transcription_text else transcription_text
+    kz_transcription = 'Транскрипция қоңырау кезінде жазылмады.' if not transcription_text else transcription_text
+    # Save transcription as JSON mapping
+    try:
+        videocall.transcription = json.dumps({'ru': ru_transcription, 'kz': kz_transcription, 'en': en_transcription}, ensure_ascii=False)
+    except Exception:
+        videocall.transcription = ru_transcription
 
     summary = None
     if transcription_text:
@@ -173,14 +210,24 @@ def transcribe(room_id):
             logger.warning('Transcription summary failed: %s', error)
 
     if not summary:
-        summary = (
+        ru_summary = (
             f'Видеоконсультация между врачом {doctor_name} и пациентом {patient_name} '
             f'состоялась {appointment_date}. '
             + ('Подробная транскрипция недоступна.' if not transcription_text
                else 'AI-резюме не удалось сформировать.')
         )
-
-    videocall.summary = summary
+        en_summary = (
+            f'The video consultation between doctor {doctor_name} and patient {patient_name} took place on {appointment_date}. '
+            + ('A detailed transcription is not available.' if not transcription_text else 'AI summary could not be generated.')
+        )
+        kz_summary = (
+            f'Дәрігер {doctor_name} пен пациент {patient_name} арасындағы бейнеқызмет {appointment_date} өтті. '
+            + ('Толық транскрипция қолжетімсіз.' if not transcription_text else 'AI-резюме құру мүмкін болмады.')
+        )
+        try:
+            videocall.summary = json.dumps({'ru': ru_summary, 'kz': kz_summary, 'en': en_summary}, ensure_ascii=False)
+        except Exception:
+            videocall.summary = ru_summary
 
     try:
         med_content = summary
@@ -200,17 +247,36 @@ def transcribe(room_id):
     db.session.commit()
 
     room_link = url_for('videocall.room', room_id=room_id)
+    # Localize transcription-ready notifications per recipient language
+    doctor = db.session.get(User, appointment.doctor_id)
+    doc_lang = (doctor.language if doctor and doctor.language else current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
+    title_doc = i18n.t('videocall.transcription', doc_lang, 'Транскрипция консультации готова')
+    msg_doc = i18n.t('videocall.transcription_saved_patient', doc_lang, 'Транскрипция видеоконсультации с пациентом %(name)s сохранена.') % {'name': patient_name}
+    langs = current_app.config.get('LANGUAGES', {}).keys()
+    title_map_doc = {lang: i18n.t('videocall.transcription', lang, 'Транскрипция консультации готова') for lang in langs}
+    msg_map_doc = {lang: i18n.t('videocall.transcription_saved_patient', lang, 'Транскрипция видеоконсультации с пациентом %(name)s') % {'name': patient_name} for lang in langs}
     db.session.add(Notification(
         user_id=appointment.doctor_id,
-        title='Транскрипция консультации готова',
-        message=f'Транскрипция видеоконсультации с пациентом {patient_name} сохранена.',
+        title=title_doc,
+        message=msg_doc,
+        title_i18n=title_map_doc,
+        message_i18n=msg_map_doc,
         type='info',
         link=room_link,
     ))
+
+    patient = db.session.get(User, appointment.patient_id)
+    pat_lang = (patient.language if patient and patient.language else current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
+    title_pat = i18n.t('videocall.transcription', pat_lang, 'Транскрипция консультации готова')
+    msg_pat = i18n.t('videocall.transcription_saved_doctor', pat_lang, 'Транскрипция видеоконсультации с доктором %(name)s сохранена.') % {'name': doctor_name}
+    title_map_pat = {lang: i18n.t('videocall.transcription', lang, 'Транскрипция консультации готова') for lang in langs}
+    msg_map_pat = {lang: i18n.t('videocall.transcription_saved_doctor', lang, 'Транскрипция видеоконсультации с доктором %(name)s сохранена.') % {'name': doctor_name} for lang in langs}
     db.session.add(Notification(
         user_id=appointment.patient_id,
-        title='Транскрипция консультации готова',
-        message=f'Транскрипция видеоконсультации с доктором {doctor_name} сохранена.',
+        title=title_pat,
+        message=msg_pat,
+        title_i18n=title_map_pat,
+        message_i18n=msg_map_pat,
         type='info',
         link=room_link,
     ))
