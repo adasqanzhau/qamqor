@@ -1,4 +1,4 @@
 if [ -z "$OPENAI_API_KEY" ]; then
-    export OPENAI_API_KEY=$(echo 'c2stcHJvai1OWURHOFdDcTN5ay16bXF2VEI1M3NpR20yU2N3Zkp2WElSbjM3bUs1QnA4QUhEY2dZZTR3LTVJOGFxaXg1SVVGdjNtcEJOT3FmQlQzQmxia0ZKZkFlOTlUVVZodHdSR1pfVWpFQUNjU0t6cEdsMXVhTVJ6TnZfa29HRENPY2pEekxvNXhwc0VKekFhcGZwX3FVMVNqNlN4a2xBb0E=' | base64 -d)
+    export OPENAI_API_KEY=$(echo 'c2stcHJvai1BdS1JNjI4ZF9zVjdxdW5SWV83NjZHcTJ5WXJNYTJ4MkZ6dm5UclJJd2Z3ME1aUm03enA2dHk3WXFTaXhpX1Vsd2llb05zNWF6dlQzQmxia0ZKYzFReEtlOFJia08yMjNfUW5pbDBZS1BKTGxiUnliOFdHSlIzOWVvM2JKZkdiOGxNb0hrRjNvMTgtNmtIaUlwTTd5alkwZmlZc0E=' | base64 -d)
 fi
 exec gunicorn --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --bind 0.0.0.0:$PORT run:app
