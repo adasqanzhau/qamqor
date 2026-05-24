@@ -48,10 +48,19 @@ class PatientRegistrationForm(FlaskForm):
     def validate_phone(self, field):
         if field.data:
             phone = field.data.strip()
-            if phone and not phone.startswith('+7'):
-                raise ValidationError('Телефон должен начинаться с +7.')
-            if phone and (len(phone) < 11 or len(phone) > 16):
+            digits = ''.join(ch for ch in phone if ch.isdigit())
+
+            if not digits:
+                field.data = ''
+                return
+
+            if len(digits) == 11 and digits.startswith('8'):
+                digits = '7' + digits[1:]
+
+            if len(digits) != 11 or not digits.startswith('7'):
                 raise ValidationError('Некорректная длина номера телефона.')
+
+            field.data = f'+{digits}'
 
     def validate_birth_date(self, field):
         if field.data:

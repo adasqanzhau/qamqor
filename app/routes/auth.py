@@ -5,6 +5,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app import db
 from app.models import User, Clinic
 from app.forms import LoginForm, PatientRegistrationForm
+from app.i18n import t
 
 
 def _is_safe_url(target):
@@ -26,7 +27,8 @@ ROLE_REDIRECTS = {
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
+    force_auth_page = request.args.get('force_auth') == '1' or request.args.get('force_login') == '1'
+    if current_user.is_authenticated and not force_auth_page:
         return redirect(url_for(ROLE_REDIRECTS.get(current_user.role, 'auth.login')))
 
     form = LoginForm()
@@ -34,7 +36,7 @@ def login():
         user = User.query.filter_by(email=form.email.data.lower().strip()).first()
 
         if user is None or not user.check_password(form.password.data):
-            flash('Неверный email или пароль.', 'danger')
+            flash(t('auth.invalid_credentials', session.get('language', 'ru'), 'Неверный email или пароль.'), 'danger')
             return render_template('auth/login.html', form=form)
 
         if not user.is_active:
@@ -47,7 +49,8 @@ def login():
             db.session.commit()
 
         login_user(user, remember=True)
-        flash(f'Добро пожаловать, {user.first_name}!', 'success')
+        welcome_text = t('auth.welcome_user', session.get('language', 'ru'), 'Добро пожаловать, %(name)s!')
+        flash(welcome_text % {'name': user.first_name}, 'success')
 
         next_page = request.args.get('next')
         if next_page and _is_safe_url(next_page):
@@ -60,7 +63,8 @@ def login():
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if current_user.is_authenticated:
+    force_auth_page = request.args.get('force_auth') == '1'
+    if current_user.is_authenticated and not force_auth_page:
         return redirect(url_for(ROLE_REDIRECTS.get(current_user.role, 'auth.login')))
 
     form = PatientRegistrationForm()
@@ -105,5 +109,5 @@ def register():
 @login_required
 def logout():
     logout_user()
-    flash('Вы вышли из системы.', 'success')
+    flash(t('auth.logged_out', session.get('language', 'ru'), 'Вы вышли из системы.'), 'success')
     return redirect(url_for('auth.login'))

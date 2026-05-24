@@ -111,8 +111,8 @@
         .lang-switcher {
             min-width: 118px;
             border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.18);
             color: #fff;
             padding: 0.42rem 0.85rem;
             font-weight: 600;
@@ -683,11 +683,6 @@
                     <option value="{{ url_for('set_language', language=lang_code) }}" {% if current_language == lang_code %}selected{% endif %}>{{ lang_name }}</option>
                     {% endfor %}
                 </select>
-                {% if current_user.is_authenticated %}
-                <a href="{{ url_for('index') }}" class="btn btn-nav-login">{{ t('landing.dashboard', 'В кабинет') }}</a>
-                {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-nav-login">{{ t('auth.login') }}</a>
-                {% endif %}
             </div>
             <button class="btn d-md-none" style="color: #fff; font-size: 1.25rem;" onclick="document.getElementById('mobileMenu').classList.toggle('d-none')">
                 <i class="fas fa-bars"></i>
@@ -704,12 +699,6 @@
                     {% endfor %}
                 </select>
             </div>
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('index') }}" class="btn btn-nav-login mt-2 d-block">{{ t('landing.dashboard', 'В кабинет') }}</a>
-            {% else %}
-            <a href="{{ url_for('auth.login') }}" class="btn btn-nav-login mt-2 d-block">{{ t('auth.login') }}</a>
-            <a href="{{ url_for('auth.register') }}" class="btn btn-nav-login mt-2 d-block">{{ t('auth.register') }}</a>
-            {% endif %}
         </div>
     </div>
 </nav>
@@ -727,10 +716,10 @@
                     {{ t('landing.hero_subtitle', 'Консультации с лучшими врачами онлайн, запись на прием, электронные рецепты и AI-помощник — все в одной платформе.') }}
                 </p>
                 <div class="d-flex flex-wrap gap-3 mt-2">
-                    <a href="{{ url_for('auth.register') }}" class="btn-hero-primary">
+                    <a href="{{ url_for('auth.register', force_auth=1) }}" class="btn-hero-primary">
                         <i class="fas fa-user-plus me-2"></i>{{ t('auth.register') }}
                     </a>
-                    <a href="{{ url_for('auth.login') }}" class="btn-hero-secondary">
+                    <a href="{{ url_for('auth.login', force_auth=1) }}" class="btn-hero-secondary">
                         <i class="fas fa-sign-in-alt me-2"></i>{{ t('auth.login') }}
                     </a>
                 </div>

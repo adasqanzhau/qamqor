@@ -150,7 +150,11 @@
     "sign_up": "Sign up",
     "sign_in": "Sign in",
     "no_account": "Don't have an account?",
-    "have_account": "Already have an account?"
+    "have_account": "Already have an account?",
+    "login_required": "Please sign in to continue.",
+    "invalid_credentials": "Invalid email or password.",
+    "logged_out": "You have been logged out.",
+    "welcome_user": "Welcome, %(name)s!"
   },
   "buttons": {
     "save": "Save",

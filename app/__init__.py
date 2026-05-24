@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, session, request
+from flask import Flask, redirect, url_for, render_template, session, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
@@ -49,6 +49,13 @@ def create_app(config_class=Config):
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Пожалуйста, войдите в систему.'
     login_manager.login_message_category = 'warning'
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        from app.i18n import t
+        current_lang = session.get('language', app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
+        flash(t('auth.login_required', current_lang, 'Пожалуйста, войдите в систему.'), 'warning')
+        return redirect(url_for('auth.login', next=request.full_path))
 
     # Locale selector for Babel
     def get_locale():

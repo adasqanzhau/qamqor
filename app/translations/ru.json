@@ -150,7 +150,11 @@
     "sign_up": "Зарегистрироваться",
     "sign_in": "Войти",
     "no_account": "Нет аккаунта?",
-    "have_account": "Уже есть аккаунт?"
+    "have_account": "Уже есть аккаунт?",
+    "login_required": "Пожалуйста, войдите в систему.",
+    "invalid_credentials": "Неверный email или пароль.",
+    "logged_out": "Вы вышли из системы.",
+    "welcome_user": "Добро пожаловать, %(name)s!"
   },
   "buttons": {
     "save": "Сохранить",

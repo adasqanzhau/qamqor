@@ -103,6 +103,30 @@ class TestRegister:
         }, follow_redirects=True)
         assert 'уже зарегистрирован' in resp.data.decode()
 
+    def test_register_phone_with_mask_is_valid(self, client, clinic):
+        resp = client.post('/register', data={
+            'email': 'maskedphone@test.kz',
+            'password': 'secure123',
+            'confirm_password': 'secure123',
+            'first_name': 'Mask',
+            'last_name': 'Phone',
+            'phone': '+7 (771) 616-59-66',
+            'clinic_id': clinic,
+        }, follow_redirects=False)
+        assert resp.status_code == 302
+
+    def test_register_force_auth_for_logged_user_loads_page(self, client, patient_user):
+        login(client, 'patient@test.kz', 'password123')
+        resp = client.get('/register?force_auth=1')
+        assert resp.status_code == 200
+
+
+class TestAuthPageForceOpen:
+    def test_login_force_auth_for_logged_user_loads_page(self, client, patient_user):
+        login(client, 'patient@test.kz', 'password123')
+        resp = client.get('/login?force_auth=1')
+        assert resp.status_code == 200
+
 
 class TestLogout:
     def test_logout_redirects(self, client, patient_user):
