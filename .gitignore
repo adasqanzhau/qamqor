@@ -6,6 +6,7 @@ __pycache__/
 *.db
 app/static/uploads/*
 !app/static/uploads/.gitkeep
+app/translations/*.bak
 .DS_Store
 *.egg-info/
 dist/
