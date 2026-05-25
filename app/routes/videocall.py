@@ -174,17 +174,8 @@ def transcribe(room_id):
         if appointment.scheduled_time else ''
     )
 
-    # Build multilingual transcription + summary. Store as JSON mapping string when possible.
-    import json
-
-    ru_transcription = transcription_text or 'Транскрипция не велась во время звонка.'
-    en_transcription = 'No transcription was recorded during the call.' if not transcription_text else transcription_text
-    kz_transcription = 'Транскрипция қоңырау кезінде жазылмады.' if not transcription_text else transcription_text
-    # Save transcription as JSON mapping
-    try:
-        videocall.transcription = json.dumps({'ru': ru_transcription, 'kz': kz_transcription, 'en': en_transcription}, ensure_ascii=False)
-    except Exception:
-        videocall.transcription = ru_transcription
+    # Store the raw transcription text so downstream consumers can use it directly.
+    videocall.transcription = transcription_text or 'Транскрипция не велась во время звонка.'
 
     summary = None
     if transcription_text:
@@ -210,6 +201,8 @@ def transcribe(room_id):
             logger.warning('Transcription summary failed: %s', error)
 
     if not summary:
+        import json
+
         ru_summary = (
             f'Видеоконсультация между врачом {doctor_name} и пациентом {patient_name} '
             f'состоялась {appointment_date}. '
@@ -224,13 +217,17 @@ def transcribe(room_id):
             f'Дәрігер {doctor_name} пен пациент {patient_name} арасындағы бейнеқызмет {appointment_date} өтті. '
             + ('Толық транскрипция қолжетімсіз.' if not transcription_text else 'AI-резюме құру мүмкін болмады.')
         )
+        summary = ru_summary
         try:
+            import json
             videocall.summary = json.dumps({'ru': ru_summary, 'kz': kz_summary, 'en': en_summary}, ensure_ascii=False)
         except Exception:
             videocall.summary = ru_summary
+    else:
+        videocall.summary = summary
 
     try:
-        med_content = summary
+        med_content = summary or videocall.summary or ''
         if transcription_text:
             med_content += '\n\n--- Транскрипция ---\n' + transcription_text
         med_record = MedicalRecord(
@@ -250,8 +247,8 @@ def transcribe(room_id):
     # Localize transcription-ready notifications per recipient language
     doctor = db.session.get(User, appointment.doctor_id)
     doc_lang = (doctor.language if doctor and doctor.language else current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
-    title_doc = i18n.t('videocall.transcription', doc_lang, 'Транскрипция консультации готова')
-    msg_doc = i18n.t('videocall.transcription_saved_patient', doc_lang, 'Транскрипция видеоконсультации с пациентом %(name)s сохранена.') % {'name': patient_name}
+    title_doc = 'Транскрипция консультации готова'
+    msg_doc = f'Транскрипция видеоконсультации с пациентом {patient_name} сохранена.'
     langs = current_app.config.get('LANGUAGES', {}).keys()
     title_map_doc = {lang: i18n.t('videocall.transcription', lang, 'Транскрипция консультации готова') for lang in langs}
     msg_map_doc = {lang: i18n.t('videocall.transcription_saved_patient', lang, 'Транскрипция видеоконсультации с пациентом %(name)s') % {'name': patient_name} for lang in langs}
@@ -267,8 +264,8 @@ def transcribe(room_id):
 
     patient = db.session.get(User, appointment.patient_id)
     pat_lang = (patient.language if patient and patient.language else current_app.config.get('BABEL_DEFAULT_LOCALE', 'ru'))
-    title_pat = i18n.t('videocall.transcription', pat_lang, 'Транскрипция консультации готова')
-    msg_pat = i18n.t('videocall.transcription_saved_doctor', pat_lang, 'Транскрипция видеоконсультации с доктором %(name)s сохранена.') % {'name': doctor_name}
+    title_pat = 'Транскрипция консультации готова'
+    msg_pat = f'Транскрипция видеоконсультации с доктором {doctor_name} сохранена.'
     title_map_pat = {lang: i18n.t('videocall.transcription', lang, 'Транскрипция консультации готова') for lang in langs}
     msg_map_pat = {lang: i18n.t('videocall.transcription_saved_doctor', lang, 'Транскрипция видеоконсультации с доктором %(name)s сохранена.') % {'name': doctor_name} for lang in langs}
     db.session.add(Notification(
