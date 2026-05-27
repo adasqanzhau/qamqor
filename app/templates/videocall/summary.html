@@ -3,7 +3,7 @@
 {% block title %}{{ t('videocall.title') }}{% endblock %}
 
 {% block content %}
-<div class="app-shell app-page py-4">
+<div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="mb-4">
@@ -29,7 +29,7 @@
                 </p>
             </div>
 
-            <div class="card panel-card mb-4">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white">
                     <h5 class="mb-0"><i class="fas fa-video me-2 text-primary"></i>{{ t('videocall.call_info') }}</h5>
                 </div>
@@ -56,7 +56,7 @@
             </div>
 
             {% if videocall.summary %}
-            <div class="card panel-card mb-4">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white">
                     <h5 class="mb-0"><i class="fas fa-brain me-2 text-success"></i>{{ t('videocall.ai_summary') }}</h5>
                 </div>
@@ -67,7 +67,7 @@
             {% endif %}
 
             {% if videocall.transcription %}
-            <div class="card panel-card mb-4">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-closed-captioning me-2 text-info"></i>{{ t('videocall.transcription') }}</h5>
                 </div>
