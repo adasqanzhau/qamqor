@@ -12,7 +12,7 @@
     .auth-wrapper {
         position: relative;
         min-height: 100vh;
-        background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 50%, #6610f2 100%);
+        background: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -32,7 +32,7 @@
     .auth-icon {
         width: 72px;
         height: 72px;
-        background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+        background: #ffffff;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -45,7 +45,7 @@
         color: #fff;
     }
     .btn-gradient {
-        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        background: #111827;
         border: none;
         color: #fff;
         padding: 0.75rem 1.5rem;
@@ -99,7 +99,7 @@
     <div class="card auth-card">
         <div class="card-body">
             <div class="auth-icon">
-                <i class="bi bi-person-plus"></i>
+                <i class="fas fa-user-plus"></i>
             </div>
             <h3 class="text-center fw-bold mb-4">{{ t('auth.register') }}</h3>
 
@@ -232,7 +232,7 @@
 
                 <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-gradient">
-                        <i class="bi bi-person-check me-2"></i>{{ t('auth.sign_up') }}
+                        <i class="fas fa-user-check me-2"></i>{{ t('auth.sign_up') }}
                     </button>
                 </div>
             </form>

@@ -23,8 +23,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="app-shell app-page py-4">
+    <div class="page-header page-header-card d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1"><i class="fas fa-calendar-check me-2 text-primary"></i>{{ t('patient.appointments.title') }}</h2>
             <p class="text-muted mb-0">{{ t('patient.appointments.subtitle') }}</p>
@@ -34,7 +34,7 @@
         </a>
     </div>
 
-    <div class="card shadow-sm mb-4">
+    <div class="card panel-card mb-4">
         <div class="card-body py-2">
             <div class="d-flex flex-wrap gap-2">
                 <a href="{{ url_for('patient.appointments') }}"
@@ -61,11 +61,11 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card panel-card">
         <div class="card-body p-0">
             <div class="list-group list-group-flush">
                 {% for appointment in appointments.items %}
-                <div class="list-group-item appointment-item border-status-{{ appointment.status }} py-3 px-4">
+                <div class="list-group-item widget-list-item appointment-item border-status-{{ appointment.status }} py-3 px-4">
                     <div class="row align-items-center">
                         <div class="col-md-1 text-center d-none d-md-block">
                             <div class="bg-light rounded-circle p-2 d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
@@ -133,7 +133,7 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="list-group-item text-center py-5">
+                <div class="list-group-item widget-list-item text-center py-5">
                     <i class="fas fa-calendar-times fa-4x text-muted mb-3 d-block opacity-50"></i>
                     <h5 class="text-muted">{{ t('patient.appointments.none_found_title') }}</h5>
                     <p class="text-muted">{{ t('patient.appointments.none_found_subtitle') }}</p>

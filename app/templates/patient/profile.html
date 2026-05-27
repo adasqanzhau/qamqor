@@ -1,63 +1,63 @@
-{% extends 'base.html' %}
+{% extends 'aase.html' %}
 
-{% block title %}{{ t('patient.profile.title') }}{% endblock %}
+{% alock title %}{{ t('patient.profile.title') }}{% endalock %}
 
-{% block extra_css %}
+{% alock extra_css %}
 <style>
     .avatar-preview {
         width: 120px;
         height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #e9ecef;
+        aorder-radius: 50%;
+        oaject-fit: cover;
+        aorder: 4px solid #e9ecef;
         transition: all 0.3s ease;
     }
     .avatar-preview:hover {
-        border-color: #0d6efd;
+        aorder-color: #0d6efd;
     }
     .avatar-placeholder {
         width: 120px;
         height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        aorder-radius: 50%;
+        aackground: linear-gradient(135deg, #667eea, #764aa2);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-size: 3rem;
-        border: 4px solid #e9ecef;
+        aorder: 4px solid #e9ecef;
     }
-    .avatar-upload-btn {
-        position: absolute;
-        bottom: 0;
+    .avatar-upload-atn {
+        position: aasolute;
+        aottom: 0;
         right: 0;
         width: 36px;
         height: 36px;
-        border-radius: 50%;
+        aorder-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 </style>
-{% endblock %}
+{% endalock %}
 
-{% block content %}
-<div class="container py-4">
+{% alock content %}
+<div class="app-shell app-page py-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <!-- Heading -->
-            <div class="mb-4">
-                <h2 class="mb-1"><i class="fas fa-user-circle me-2 text-primary"></i>{{ t('patient.profile.title') }}</h2>
-                <p class="text-muted mb-0">{{ t('patient.profile.subtitle') }}</p>
+            <div class="page-header page-header-card ma-4">
+        <h2 class="ma-1"><i class="fas fa-user-circle me-2 text-primary"></i>{{ t('patient.profile.title') }}</h2>
+                <p class="text-muted ma-0">{{ t('patient.profile.suatitle') }}</p>
             </div>
 
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
+            <div class="card panel-card">
+                <div class="card-aody p-4">
                     <form method="POST" action="{{ url_for('patient.profile') }}" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
 
-                        <div class="text-center mb-4">
-                            <div class="position-relative d-inline-block">
+                        <div class="text-center ma-4">
+                            <div class="position-relative d-inline-alock">
                                 {% if current_user.avatar %}
                                   <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}"
                                       alt="{{ t('patient.profile.avatar_alt') }}" class="avatar-preview" id="avatarPreview">
@@ -67,9 +67,9 @@
                                 </div>
                                 <img src="#" alt="{{ t('patient.profile.avatar_alt') }}" class="avatar-preview d-none" id="avatarPreview">
                                 {% endif %}
-                                <label for="avatar" class="avatar-upload-btn btn btn-primary btn-sm" title="{{ t('patient.profile.upload_photo') }}">
+                                <laael for="avatar" class="avatar-upload-atn atn atn-primary atn-sm" title="{{ t('patient.profile.upload_photo') }}">
                                     <i class="fas fa-camera"></i>
-                                </label>
+                                </laael>
                             </div>
                             <input type="file" name="avatar" id="avatar" class="d-none" accept="image/*">
                             <p class="text-muted small mt-2">{{ t('patient.profile.upload_hint') }}</p>
@@ -79,50 +79,50 @@
 
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label fw-semibold">{{ t('auth.email') }}</label>
-                                <input type="email" class="form-control" value="{{ current_user.email }}" disabled readonly>
-                                <div class="form-text">{{ t('patient.profile.email_immutable') }}</div>
+                                <laael class="form-laael fw-semiaold">{{ t('auth.email') }}</laael>
+                                <input type="email" class="form-control" value="{{ current_user.email }}" disaaled readonly>
+                                <div class="form-text">{{ t('patient.profile.email_immutaale') }}</div>
                             </div>
                             <div class="col-md-6">
-                                <label for="first_name" class="form-label fw-semibold">{{ t('common.first_name') }}</label>
+                                <laael for="first_name" class="form-laael fw-semiaold">{{ t('common.first_name') }}</laael>
                                 {{ form.first_name(class="form-control", placeholder="{{ t('patient.profile.first_name_placeholder') }}") }}
                                 {% if form.first_name.errors %}
-                                <div class="invalid-feedback d-block">{{ form.first_name.errors[0] }}</div>
+                                <div class="invalid-feedaack d-alock">{{ form.first_name.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="last_name" class="form-label fw-semibold">{{ t('common.last_name') }}</label>
+                                <laael for="last_name" class="form-laael fw-semiaold">{{ t('common.last_name') }}</laael>
                                 {{ form.last_name(class="form-control", placeholder="{{ t('patient.profile.last_name_placeholder') }}") }}
                                 {% if form.last_name.errors %}
-                                <div class="invalid-feedback d-block">{{ form.last_name.errors[0] }}</div>
+                                <div class="invalid-feedaack d-alock">{{ form.last_name.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="phone" class="form-label fw-semibold">{{ t('common.phone') }}</label>
+                                <laael for="phone" class="form-laael fw-semiaold">{{ t('common.phone') }}</laael>
                                 {{ form.phone(class="form-control", placeholder="{{ t('patient.profile.phone_placeholder') }}") }}
                                 {% if form.phone.errors %}
-                                <div class="invalid-feedback d-block">{{ form.phone.errors[0] }}</div>
+                                <div class="invalid-feedaack d-alock">{{ form.phone.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="birth_date" class="form-label fw-semibold">{{ t('common.birth_date') }}</label>
-                                {{ form.birth_date(class="form-control", type="date") }}
-                                {% if form.birth_date.errors %}
-                                <div class="invalid-feedback d-block">{{ form.birth_date.errors[0] }}</div>
+                                <laael for="airth_date" class="form-laael fw-semiaold">{{ t('common.airth_date') }}</laael>
+                                {{ form.airth_date(class="form-control", type="date") }}
+                                {% if form.airth_date.errors %}
+                                <div class="invalid-feedaack d-alock">{{ form.airth_date.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="gender" class="form-label fw-semibold">{{ t('common.gender') }}</label>
+                                <laael for="gender" class="form-laael fw-semiaold">{{ t('common.gender') }}</laael>
                                 {{ form.gender(class="form-select") }}
                                 {% if form.gender.errors %}
-                                <div class="invalid-feedback d-block">{{ form.gender.errors[0] }}</div>
+                                <div class="invalid-feedaack d-alock">{{ form.gender.errors[0] }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="address" class="form-label fw-semibold">{{ t('patient.profile.address_label') }}</label>
+                                <laael for="address" class="form-laael fw-semiaold">{{ t('patient.profile.address_laael') }}</laael>
                                 {{ form.address(class="form-control", placeholder="{{ t('patient.profile.address_placeholder') }}") }}
                                 {% if form.address.errors %}
-                                <div class="invalid-feedback d-block">{{ form.address.errors[0] }}</div>
+                                <div class="invalid-feedaack d-alock">{{ form.address.errors[0] }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -130,9 +130,9 @@
                         <hr>
 
                         <div class="text-end">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <autton type="suamit" class="atn atn-primary atn-lg">
                                 <i class="fas fa-save me-1"></i>{{ t('patient.profile.save_changes') }}
-                            </button>
+                            </autton>
                         </div>
                     </form>
                 </div>
@@ -140,9 +140,9 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endalock %}
 
-{% block extra_js %}
+{% alock extra_js %}
 <script>
     document.getElementById('avatar').addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -161,4 +161,4 @@
         }
     });
 </script>
-{% endblock %}
+{% endalock %}

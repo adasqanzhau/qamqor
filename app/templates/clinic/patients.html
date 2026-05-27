@@ -3,9 +3,9 @@
 {% block title %}{{ t('clinic.dashboard.patients') }} - Qamqor{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
+<div class="app-shell app-page py-4">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="page-header page-header-card d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold mb-1">
                 <i class="fas fa-users text-primary me-2"></i>{{ t('clinic.dashboard.patients') }}
@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
+    <div class="card panel-card mb-4">
         <div class="card-body">
             <form method="GET" action="{{ url_for('clinic.patients') }}">
                 <div class="input-group">
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
+    <div class="card panel-card">
         <div class="card-body p-0">
             {% if patients %}
             <div class="table-responsive">
