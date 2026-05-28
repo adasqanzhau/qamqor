@@ -2087,3 +2087,1119 @@ body {
         border-radius: 24px !important;
     }
 }
+
+.app-page {
+    width: min(100% - 48px, 1320px);
+    margin-inline: auto;
+}
+
+.app-grid {
+    align-items: stretch;
+}
+
+.metric-card,
+.stat-card.metric-card,
+.app-grid .metric-card,
+.dashboard-stats .metric-card {
+    background: #ffffff !important;
+    border: 1px solid #111827 !important;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08) !important;
+}
+
+.metric-card::after {
+    background: #111827 !important;
+    opacity: 0.12;
+}
+
+.metric-card .fa-2x,
+.metric-card .rounded-circle,
+.panel-card .rounded-circle.bg-primary,
+.panel-card .rounded-circle.bg-success,
+.panel-card .rounded-circle.bg-warning,
+.panel-card .rounded-circle.bg-info,
+.panel-card .rounded-circle.bg-light,
+.bg-primary.bg-opacity-10,
+.bg-success.bg-opacity-10,
+.bg-warning.bg-opacity-10,
+.bg-info.bg-opacity-10 {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #111827 !important;
+}
+
+.metric-card .text-primary,
+.metric-card .text-success,
+.metric-card .text-warning,
+.metric-card .text-info,
+.panel-card .text-primary,
+.panel-card .text-success,
+.panel-card .text-warning,
+.panel-card .text-info {
+    color: #111827 !important;
+}
+
+.widget-list-item,
+.notification-item,
+.appointment-item,
+.medication-item,
+.pending-review-card,
+.doctor-info-row {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+}
+
+.widget-list-item:hover,
+.notification-item:hover,
+.appointment-item:hover,
+.pending-review-card:hover {
+    background: #fafafa !important;
+    box-shadow: inset 3px 0 0 #111827;
+}
+
+.appointment-card.widget-list-item::before {
+    background: #111827 !important;
+}
+
+.card.panel-card,
+.review-card.panel-card,
+.prescription-card.panel-card,
+.doctor-card.panel-card,
+.review-form-card.panel-card {
+    border-color: rgba(17, 24, 39, 0.16) !important;
+}
+
+.badge.bg-primary,
+.badge.bg-success,
+.badge.bg-info,
+.badge.bg-warning,
+.badge.bg-danger,
+.badge.bg-secondary {
+    border: 1px solid rgba(17, 24, 39, 0.12);
+}
+
+.lang-switcher {
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 142px !important;
+    height: 42px;
+    padding: 0 42px 0 16px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(17, 24, 39, 0.14) !important;
+    background-color: rgba(255, 255, 255, 0.92) !important;
+    background-image: linear-gradient(45deg, transparent 50%, #111827 50%), linear-gradient(135deg, #111827 50%, transparent 50%);
+    background-position: calc(100% - 20px) 18px, calc(100% - 14px) 18px;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    color: #111827 !important;
+    font-weight: 700;
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
+}
+
+.lang-switcher:hover,
+.lang-switcher:focus {
+    border-color: #111827 !important;
+    box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.08), 0 16px 34px rgba(15, 23, 42, 0.12);
+}
+
+.lang-switcher option {
+    color: #111827;
+    background: #ffffff;
+    font-weight: 600;
+}
+
+#bookingForm .step-content h5,
+.review-form-card .card-body > h5 {
+    font-weight: 780;
+    letter-spacing: -0.035em;
+}
+
+.step-indicator {
+    background: #ffffff;
+    border: 1px solid rgba(17, 24, 39, 0.14);
+    border-radius: 28px;
+    padding: 16px 20px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+.step {
+    color: var(--text-muted) !important;
+    font-weight: 700;
+}
+
+.step.active,
+.step.completed {
+    color: #111827 !important;
+}
+
+.step-number {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 14px !important;
+    border: 1px solid #111827 !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    box-shadow: none !important;
+}
+
+.step.active .step-number,
+.step.completed .step-number {
+    background: #111827 !important;
+    color: #ffffff !important;
+    border-color: #111827 !important;
+}
+
+.step-line {
+    width: 72px !important;
+    height: 1px !important;
+    background: rgba(17, 24, 39, 0.18) !important;
+}
+
+#bookingForm .panel-card,
+#bookingForm .form-control,
+#bookingForm .form-select {
+    border-color: rgba(17, 24, 39, 0.16);
+}
+
+#bookingForm select[size] {
+    min-height: 260px;
+    border-radius: 22px;
+    padding: 10px;
+    background: #fafafa;
+}
+
+#bookingForm select[size] option {
+    padding: 12px 14px;
+    border-radius: 14px;
+    margin-bottom: 6px;
+    color: #111827;
+}
+
+#bookingForm select[size] option:checked {
+    background: #111827 linear-gradient(#111827, #111827) !important;
+    color: #ffffff !important;
+}
+
+.time-slot-btn {
+    min-width: 92px;
+    border: 1px solid #111827 !important;
+    border-radius: 16px !important;
+    padding: 0.75rem 1rem !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.time-slot-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
+}
+
+.time-slot-btn.selected {
+    background: #111827 !important;
+    border-color: #111827 !important;
+    color: #ffffff !important;
+}
+
+#timeSlotsContainer {
+    border: 1px dashed rgba(17, 24, 39, 0.18);
+    border-radius: 24px;
+    padding: 18px;
+    background: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .app-page {
+        width: min(100% - 24px, 1320px);
+    }
+
+    .step-indicator {
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .step-line {
+        width: 36px !important;
+        flex: 0 0 auto;
+    }
+}
+
+/* ============================================================
+   FINAL UNIFIED DESIGN OVERRIDES — fixes color, shadows, icons
+   ============================================================ */
+
+/* Unify Bootstrap primary/success/info/warning to the teal theme */
+:root {
+    --bs-primary: #0f766e;
+    --bs-primary-rgb: 15, 118, 110;
+    --bs-link-color: #0f766e;
+    --bs-link-hover-color: #115e59;
+}
+
+/* All blue text-primary -> teal */
+.text-primary,
+.text-info,
+a.text-primary,
+.btn-link {
+    color: #0f766e !important;
+}
+
+/* Bootstrap bg-primary / btn-primary -> teal */
+.bg-primary {
+    background-color: #0f766e !important;
+}
+.btn-primary {
+    background-color: #0f766e !important;
+    border-color: #0f766e !important;
+    color: #fff !important;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #115e59 !important;
+    border-color: #115e59 !important;
+}
+
+.btn-info {
+    background-color: #0f766e !important;
+    border-color: #0f766e !important;
+    color: #fff !important;
+}
+.btn-info:hover {
+    background-color: #115e59 !important;
+    border-color: #115e59 !important;
+}
+
+.btn-outline-primary,
+.btn-outline-info {
+    color: #0f766e !important;
+    border-color: rgba(15, 118, 110, 0.4) !important;
+    background: #fff !important;
+}
+.btn-outline-primary:hover,
+.btn-outline-info:hover {
+    background: #ecfdf5 !important;
+    border-color: #0f766e !important;
+    color: #115e59 !important;
+}
+
+/* Soft-tinted icon containers — replace colored bg-opacity-10 with neutral.
+   Keep .text-* colors intact via overrides below. */
+.bg-primary.bg-opacity-10,
+.bg-success.bg-opacity-10,
+.bg-warning.bg-opacity-10,
+.bg-info.bg-opacity-10,
+.bg-danger.bg-opacity-10,
+.bg-secondary.bg-opacity-10 {
+    background: #f0fdfa !important;
+    border: none !important;
+    color: #0f766e !important;
+}
+
+/* Remove dark black border + bottom stripe from metric cards (clinic dashboard fix) */
+.metric-card,
+.stat-card.metric-card,
+.app-grid .metric-card,
+.dashboard-stats .metric-card {
+    background: #ffffff !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+.metric-card::after {
+    display: none !important;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.10) !important;
+}
+
+/* Metric card icon: clean tinted circle, no dark border, fixed aspect */
+.metric-card .fa-2x,
+.metric-card .rounded-circle,
+.panel-card .rounded-circle.bg-primary,
+.panel-card .rounded-circle.bg-success,
+.panel-card .rounded-circle.bg-warning,
+.panel-card .rounded-circle.bg-info,
+.panel-card .rounded-circle.bg-light {
+    background: #ecfdf5 !important;
+    color: #0f766e !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    opacity: 1 !important;
+}
+
+/* Panel-card .text-success/.text-warning/.text-info — keep some semantic tone but soften */
+.metric-card .text-primary,
+.metric-card .text-success,
+.metric-card .text-warning,
+.metric-card .text-info {
+    color: #0f766e !important;
+}
+
+/* Card body and panel-card: softer border, real elevation */
+.card.panel-card,
+.review-card.panel-card,
+.prescription-card.panel-card,
+.doctor-card.panel-card,
+.review-form-card.panel-card {
+    border-color: var(--border) !important;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05) !important;
+    border-radius: 24px !important;
+}
+
+.card.panel-card:hover,
+.review-card.panel-card:hover {
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* All circular avatar/icon placeholders: enforce square aspect, no horizontal squish */
+.rounded-circle {
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+}
+
+/* Buttons: subtle shadow + smooth lift on hover */
+.btn {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.04) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
+}
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.10), 0 2px 4px rgba(15, 23, 42, 0.06) !important;
+}
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.10) !important;
+}
+.btn-primary,
+.btn-success,
+.btn-info {
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.18) !important;
+}
+.btn-primary:hover,
+.btn-success:hover,
+.btn-info:hover {
+    box-shadow: 0 6px 18px rgba(15, 118, 110, 0.28) !important;
+}
+.btn-danger {
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.18) !important;
+}
+.btn-warning {
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.18) !important;
+}
+
+/* Remove the underline / bottom stripe from widget rows on hover */
+.widget-list-item:hover,
+.notification-item:hover,
+.appointment-item:hover,
+.pending-review-card:hover {
+    background: #f8fafc !important;
+    box-shadow: none !important;
+}
+
+/* Hover marker uses brand teal instead of black */
+.appointment-card.widget-list-item::before {
+    background: #0f766e !important;
+}
+
+/* Dropdown menu unified design (notifications, language, user, etc.) */
+.dropdown-menu {
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    padding: 8px !important;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12) !important;
+    background: #ffffff;
+    min-width: 220px;
+    animation: dropdown-fade-in 0.15s ease;
+}
+
+@keyframes dropdown-fade-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+    border-radius: 10px !important;
+    padding: 9px 12px !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.dropdown-item:hover,
+.dropdown-item:focus,
+.dropdown-item.active {
+    background: #ecfdf5 !important;
+    color: #0f766e !important;
+}
+.dropdown-item i {
+    width: 18px;
+    text-align: center;
+    color: #0f766e;
+}
+.dropdown-divider {
+    margin: 6px 0 !important;
+    border-color: var(--border-light);
+}
+
+/* Modal unified design */
+.modal-content {
+    border: none;
+    border-radius: 22px;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
+}
+.modal-header {
+    border-bottom: 1px solid var(--border-light);
+    padding: 20px 24px;
+}
+.modal-body { padding: 22px 24px; }
+.modal-footer {
+    border-top: 1px solid var(--border-light);
+    padding: 16px 24px;
+}
+
+/* Filter button group polish (used on appointments/reviews/medical_records) */
+.btn-sm.rounded-pill {
+    padding: 0.4rem 0.95rem !important;
+    font-weight: 600;
+    font-size: 0.82rem;
+}
+.btn-outline-secondary {
+    color: var(--text-light) !important;
+    border-color: var(--border) !important;
+    background: #fff !important;
+}
+.btn-outline-secondary:hover {
+    background: var(--border-light) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+/* Notification dropdown specifically — nicer width and look */
+.notification-dropdown {
+    width: 380px;
+    padding: 0 !important;
+    border-radius: 18px !important;
+    overflow: hidden;
+}
+.notification-header,
+.notification-footer {
+    background: #f8fafc !important;
+    border-radius: 0 !important;
+}
+
+/* Step indicator soft theme (book_appointment) */
+.step-number {
+    border-color: var(--border) !important;
+    color: var(--text-light) !important;
+}
+.step.active .step-number,
+.step.completed .step-number {
+    background: #0f766e !important;
+    color: #fff !important;
+    border-color: #0f766e !important;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25) !important;
+}
+.step-line {
+    background: var(--border) !important;
+}
+
+/* Time slots use teal */
+.time-slot-btn {
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+    background: #fff !important;
+    font-weight: 600;
+}
+.time-slot-btn:hover {
+    border-color: #0f766e !important;
+    color: #0f766e !important;
+}
+.time-slot-btn.selected {
+    background: #0f766e !important;
+    border-color: #0f766e !important;
+    color: #fff !important;
+}
+
+/* Booking form selected option teal */
+#bookingForm select[size] option:checked {
+    background: #0f766e linear-gradient(#0f766e, #0f766e) !important;
+    color: #fff !important;
+}
+
+/* Lang switcher uses teal accent on focus */
+.lang-switcher:hover,
+.lang-switcher:focus {
+    border-color: #0f766e !important;
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1), 0 8px 22px rgba(15, 23, 42, 0.10) !important;
+}
+
+/* page-header-card: icon teal not blue */
+.page-header-card h1 i,
+.page-header-card h2 i {
+    background: #ecfdf5 !important;
+    color: #0f766e !important;
+}
+
+/* Generic FA icons inside h2/h5 in panel-card headers — teal */
+.panel-card > .card-header h5 i {
+    background: #ecfdf5 !important;
+    color: #0f766e !important;
+}
+
+/* Avatar placeholder (used on doctor cards): use teal not indigo */
+.doctor-avatar-placeholder,
+.clinic-avatar-placeholder,
+.avatar-placeholder,
+.doctor-avatar-circle {
+    background: #ecfdf5 !important;
+    color: #0f766e !important;
+    border-color: var(--border) !important;
+}
+
+/* Remove blue glow from form focus, use teal */
+.form-control:focus,
+.form-select:focus {
+    border-color: #14b8a6 !important;
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12) !important;
+}
+
+/* Remove blue link colors in body of cards */
+a {
+    color: #0f766e;
+}
+a:hover {
+    color: #115e59;
+}
+
+/* Patient/clinic profile circular avatars: ensure square */
+.user-avatar,
+.navbar-brand i {
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+}
+
+/* Inline icon next to header text (text-primary me-2) — keep teal not blue */
+h1 i.text-primary,
+h2 i.text-primary,
+h3 i.text-primary,
+h4 i.text-primary,
+h5 i.text-primary,
+h6 i.text-primary,
+p i.text-primary,
+.text-primary i {
+    color: #0f766e !important;
+}
+
+/* Review card ratings retain warning yellow, override .text-warning to original */
+.star-rating .fas.fa-star,
+.star-rating .fas.fa-star-half-alt,
+i.text-warning.fa-star,
+.text-warning.fa-star {
+    color: #f59e0b !important;
+}
+
+/* ============================================================
+   PREMIUM LANGUAGE DROPDOWN (navbar)
+   ============================================================ */
+.navbar .lang-dropdown {
+    position: relative;
+}
+
+.navbar .lang-dropdown-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px 7px 12px !important;
+    border-radius: 999px !important;
+    background: rgba(15, 118, 110, 0.06) !important;
+    border: 1px solid rgba(15, 118, 110, 0.15) !important;
+    color: #115e59 !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    line-height: 1;
+    transition: all 0.18s ease;
+}
+
+.navbar .lang-dropdown-toggle:hover,
+.navbar .lang-dropdown.show .lang-dropdown-toggle {
+    background: #0f766e !important;
+    border-color: #0f766e !important;
+    color: #fff !important;
+    box-shadow: 0 6px 18px rgba(15, 118, 110, 0.28);
+}
+
+.navbar .lang-dropdown-toggle::after {
+    display: none !important;
+}
+
+.navbar .lang-dropdown-toggle .fa-globe {
+    font-size: 0.95rem;
+}
+
+.navbar .lang-dropdown-toggle .lang-code {
+    letter-spacing: 0.05em;
+}
+
+.navbar .lang-dropdown-toggle .lang-caret {
+    font-size: 0.65rem;
+    opacity: 0.85;
+    transition: transform 0.18s ease;
+}
+
+.navbar .lang-dropdown.show .lang-caret {
+    transform: rotate(180deg);
+}
+
+.lang-dropdown-menu {
+    min-width: 240px !important;
+    padding: 8px !important;
+    border-radius: 18px !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.16) !important;
+    margin-top: 10px !important;
+    background: #ffffff;
+}
+
+.lang-dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    color: var(--text) !important;
+    transition: all 0.15s ease;
+}
+
+.lang-dropdown-item .lang-flag {
+    font-size: 1.25rem;
+    line-height: 1;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.lang-dropdown-item .lang-name {
+    flex: 1;
+    font-size: 0.92rem;
+}
+
+.lang-dropdown-item .lang-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--border-light);
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+    transition: all 0.15s ease;
+}
+
+.lang-dropdown-item .lang-check {
+    color: #0f766e;
+    font-size: 0.8rem;
+}
+
+.lang-dropdown-item:hover,
+.lang-dropdown-item:focus {
+    background: #ecfdf5 !important;
+    color: #0f766e !important;
+    transform: translateX(2px);
+}
+
+.lang-dropdown-item:hover .lang-badge {
+    background: rgba(15, 118, 110, 0.12);
+    color: #0f766e;
+}
+
+.lang-dropdown-item.active {
+    background: linear-gradient(135deg, #0f766e, #14b8a6) !important;
+    color: #ffffff !important;
+}
+
+.lang-dropdown-item.active .lang-badge {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+.lang-dropdown-item.active .lang-check {
+    color: #ffffff;
+}
+
+/* ============================================================
+   BOOKING FILTERS (doctor search + specialization)
+   ============================================================ */
+.booking-filters {
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%);
+    border: 1px solid rgba(15, 118, 110, 0.12);
+    border-radius: 20px;
+    padding: 14px;
+    margin-bottom: 18px;
+}
+
+.booking-filters .input-group-text {
+    background: #ffffff;
+    border-color: var(--border);
+    color: #0f766e;
+}
+
+.booking-filters .form-control,
+.booking-filters .form-select {
+    border-color: var(--border) !important;
+    background: #ffffff;
+    font-weight: 500;
+}
+
+.booking-filters .form-control:focus,
+.booking-filters .form-select:focus {
+    border-color: #0f766e !important;
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1) !important;
+}
+
+/* Doctor selection list (large select) */
+#bookingForm #doctor_id.form-select[size] {
+    min-height: 260px !important;
+    border-radius: 18px !important;
+    padding: 8px !important;
+    background: #ffffff !important;
+    border: 1px solid var(--border) !important;
+}
+
+#bookingForm #doctor_id.form-select[size] option {
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+    margin-bottom: 4px !important;
+    color: var(--text) !important;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+#bookingForm #doctor_id.form-select[size] option:hover {
+    background: #ecfdf5 !important;
+}
+
+#bookingForm #doctor_id.form-select[size] option:checked {
+    background: linear-gradient(135deg, #0f766e, #14b8a6) !important;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+/* ============================================================
+   FLATPICKR CALENDAR THEMING
+   ============================================================ */
+.flatpickr-input.form-control {
+    background-color: #ffffff !important;
+    cursor: pointer;
+}
+
+.flatpickr-calendar {
+    border-radius: 20px !important;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18) !important;
+    border: 1px solid var(--border) !important;
+    padding: 8px !important;
+    background: #ffffff !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.flatpickr-calendar.arrowTop::before,
+.flatpickr-calendar.arrowTop::after {
+    border-bottom-color: #ffffff !important;
+}
+
+.flatpickr-months {
+    padding: 10px 4px 4px 4px;
+    align-items: center;
+}
+
+.flatpickr-month {
+    color: var(--text) !important;
+    background: transparent !important;
+    height: 44px;
+}
+
+.flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+    color: var(--text) !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+}
+
+.flatpickr-monthDropdown-months {
+    appearance: none;
+    background: transparent !important;
+    border: none !important;
+    padding: 4px 8px !important;
+    border-radius: 8px;
+    transition: background 0.15s ease;
+}
+
+.flatpickr-monthDropdown-months:hover {
+    background: #ecfdf5 !important;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    color: #0f766e !important;
+    fill: #0f766e !important;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    background: #ecfdf5 !important;
+    color: #115e59 !important;
+    fill: #115e59 !important;
+}
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+    fill: currentColor !important;
+}
+
+.flatpickr-weekdays {
+    background: transparent !important;
+    margin-top: 4px;
+}
+
+span.flatpickr-weekday {
+    color: var(--text-light) !important;
+    font-weight: 600 !important;
+    font-size: 0.78rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: transparent !important;
+}
+
+.dayContainer {
+    padding: 4px !important;
+}
+
+.flatpickr-day {
+    border-radius: 10px !important;
+    color: var(--text) !important;
+    font-weight: 500 !important;
+    border: none !important;
+    margin: 1px;
+    height: 38px;
+    line-height: 38px;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.flatpickr-day:hover {
+    background: #ecfdf5 !important;
+    color: #0f766e !important;
+}
+
+.flatpickr-day.today {
+    border: 1.5px solid #0f766e !important;
+    color: #0f766e !important;
+    background: transparent !important;
+    font-weight: 700 !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: linear-gradient(135deg, #0f766e, #14b8a6) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(15, 118, 110, 0.32);
+    transform: scale(1.04);
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+    color: rgba(148, 163, 184, 0.5) !important;
+    background: transparent !important;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: var(--text-muted) !important;
+    opacity: 0.5;
+}
+
+/* date input visually as flatpickr (when JS active) */
+input[type="date"].form-control,
+input.flatpickr-input.form-control {
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f766e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 18px 18px;
+}
+
+/* ─── PREMIUM LANGUAGE DROPDOWN ─────────────────────────────────────── */
+.lang-dropdown { position: relative; }
+
+.lang-dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+}
+
+.lang-dropdown-toggle:hover,
+.lang-dropdown-toggle:focus {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.45);
+    outline: none;
+}
+
+/* On light backgrounds (auth pages, landing) */
+.auth-language-switcher .lang-dropdown-toggle,
+.navbar-landing .lang-dropdown-toggle {
+    background: rgba(15, 118, 110, 0.1);
+    border-color: rgba(15, 118, 110, 0.35);
+    color: #0f766e;
+}
+
+.auth-language-switcher .lang-dropdown-toggle:hover,
+.navbar-landing .lang-dropdown-toggle:hover {
+    background: rgba(15, 118, 110, 0.18);
+    border-color: rgba(15, 118, 110, 0.55);
+}
+
+.lang-code { font-weight: 700; letter-spacing: 0.04em; font-size: 0.82rem; }
+.lang-caret { font-size: 0.65rem; opacity: 0.75; transition: transform 0.2s; }
+.lang-dropdown.show .lang-caret { transform: rotate(180deg); }
+
+.lang-dropdown-menu {
+    min-width: 160px;
+    padding: 0.4rem;
+    border-radius: 14px;
+    border: 1px solid rgba(15, 118, 110, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.13);
+    background: #fff;
+    margin-top: 0.35rem !important;
+}
+
+.lang-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 9px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1e293b;
+    transition: background 0.15s;
+    text-decoration: none;
+}
+
+.lang-dropdown-item:hover { background: #f0f9f8; color: #0f766e; }
+.lang-dropdown-item.active { background: #e6f7f5; color: #0f766e; font-weight: 700; }
+
+.lang-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 22px;
+    border-radius: 5px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    color: #fff;
+}
+
+.lang-chip-ru { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+.lang-chip-en { background: linear-gradient(135deg, #047857, #10b981); }
+.lang-chip-kz { background: linear-gradient(135deg, #b45309, #f59e0b); }
+
+.lang-name { flex: 1; }
+.lang-check { font-size: 0.75rem; color: #0f766e; }
+
+/* ─── OVERFLOW FIX for dropdowns inside cards ───────────────────────── */
+/* Tom Select and Bootstrap dropdowns render absolutely — parents must not clip them */
+.panel-card,
+.panel-card .card-body,
+.panel-card .card-header,
+.card.shadow-sm,
+.card.shadow-sm .card-body {
+    overflow: visible !important;
+}
+/* But keep table overflow for horizontal scrolling */
+.panel-card .table-responsive,
+.card.shadow-sm .table-responsive {
+    overflow-x: auto !important;
+}
+
+/* ─── TOM SELECT OVERRIDES ───────────────────────────────────────────── */
+.ts-wrapper.single .ts-control,
+.ts-wrapper .ts-control {
+    border-radius: var(--radius-sm, 8px) !important;
+    border: 1.5px solid var(--border, #e2e8f0) !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    padding: 0.45rem 0.75rem !important;
+    font-size: 0.9rem;
+    color: var(--text, #1e293b);
+    transition: border-color 0.18s, box-shadow 0.18s;
+    min-height: 2.5rem;
+}
+
+.ts-wrapper.single.focus .ts-control,
+.ts-wrapper .ts-control:focus-within {
+    border-color: var(--primary, #2563eb) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+.ts-wrapper .ts-dropdown {
+    border-radius: var(--radius-sm, 8px) !important;
+    border: 1.5px solid var(--border, #e2e8f0) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden;
+    margin-top: 3px;
+}
+
+.ts-wrapper .ts-dropdown .option {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.875rem;
+    color: var(--text, #1e293b);
+    transition: background 0.12s;
+}
+
+.ts-wrapper .ts-dropdown .option:hover,
+.ts-wrapper .ts-dropdown .option.active {
+    background: #eff6ff !important;
+    color: var(--primary, #2563eb) !important;
+}
+
+.ts-wrapper .ts-dropdown .option.selected {
+    background: #eff6ff !important;
+    color: var(--primary, #2563eb) !important;
+    font-weight: 600;
+}

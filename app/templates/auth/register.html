@@ -76,25 +76,11 @@
         right: 1rem;
         z-index: 10;
     }
-    .auth-language-switcher select {
-        min-width: 118px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        background: rgba(255, 255, 255, 0.18);
-        color: #fff;
-        padding: 0.42rem 0.85rem;
-        font-weight: 600;
-        outline: none;
-    }
 </style>
 
 <div class="auth-wrapper">
     <div class="auth-language-switcher">
-        <select onchange="window.location.href=this.value">
-            {% for lang_code, lang_name in languages.items() %}
-            <option value="{{ url_for('set_language', language=lang_code) }}" {% if current_language == lang_code %}selected{% endif %}>{{ lang_name }}</option>
-            {% endfor %}
-        </select>
+        {% include 'partials/_lang_dropdown.html' %}
     </div>
     <div class="card auth-card">
         <div class="card-body">

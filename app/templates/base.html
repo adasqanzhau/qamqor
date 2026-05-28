@@ -15,6 +15,9 @@
 
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+
     <script>
         window.QAMQOR_CURRENT_LANGUAGE = {{ current_language|tojson }};
         window.QAMQOR_DOM_TRANSLATIONS = {{ dom_translations|tojson }};
@@ -25,7 +28,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" href="{% if current_user.is_authenticated %}{% if current_user.role == 'superadmin' %}{{ url_for('admin.dashboard') }}{% elif current_user.role == 'clinic_admin' %}{{ url_for('clinic.dashboard') }}{% elif current_user.role == 'doctor' %}{{ url_for('doctor.dashboard') }}{% elif current_user.role == 'patient' %}{{ url_for('patient.index') }}{% else %}{{ url_for('landing') }}{% endif %}{% else %}{{ url_for('landing') }}{% endif %}">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('landing') }}" title="{{ t('nav.go_to_landing', 'На главную') }}">
                 <i class="fas fa-heartbeat me-2"></i>
                 <span class="fw-bold">Qamqor</span>
             </a>
@@ -144,20 +147,8 @@
 
                 <ul class="navbar-nav ms-auto align-items-center">
                     <!-- Language Selector -->
-                    <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-globe me-1"></i>
-                            <span class="d-none d-md-inline">{{ current_language.upper() }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                            {% for lang_code, lang_name in languages.items() %}
-                            <li>
-                                <a class="dropdown-item {% if current_language == lang_code %}active{% endif %}" href="{{ url_for('set_language', language=lang_code) }}">
-                                    {{ lang_name }}
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
+                    <li class="nav-item me-3 d-flex align-items-center">
+                        {% include 'partials/_lang_dropdown.html' %}
                     </li>
 
                     <li class="nav-item dropdown me-3">
@@ -208,7 +199,10 @@
                 </ul>
 
                 {% else %}
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3 d-flex align-items-center">
+                        {% include 'partials/_lang_dropdown.html' %}
+                    </li>
                     <li class="nav-item me-2">
                         <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('auth.login') }}">
                             <i class="fas fa-sign-in-alt me-1"></i> {{ t('auth.login') }}
@@ -266,6 +260,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/ru.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/kz.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
