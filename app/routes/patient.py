@@ -367,7 +367,46 @@ def medical_records():
 
     records = query.order_by(MedicalRecord.created_at.desc()).all()
 
-    return render_template('patient/medical_records.html', records=records, record_type=record_type)
+    record_videocalls = {}
+    consultation_doctor_ids = {
+        r.doctor_id for r in records
+        if r.record_type == 'consultation' and r.doctor_id
+    }
+    if consultation_doctor_ids:
+        videocalls = (
+            VideoCall.query
+            .join(Appointment, VideoCall.appointment_id == Appointment.id)
+            .filter(
+                Appointment.patient_id == current_user.id,
+                Appointment.doctor_id.in_(consultation_doctor_ids),
+                VideoCall.transcription.isnot(None),
+            )
+            .all()
+        )
+        for record in records:
+            if record.record_type != 'consultation' or not record.doctor_id:
+                continue
+            best = None
+            best_delta = None
+            for vc in videocalls:
+                if vc.appointment.doctor_id != record.doctor_id:
+                    continue
+                vc_time = vc.ended_at or vc.started_at
+                if not vc_time:
+                    continue
+                delta = abs((vc_time - record.created_at).total_seconds())
+                if best is None or delta < best_delta:
+                    best = vc
+                    best_delta = delta
+            if best and best_delta is not None and best_delta < 86400:
+                record_videocalls[record.id] = best
+
+    return render_template(
+        'patient/medical_records.html',
+        records=records,
+        record_type=record_type,
+        record_videocalls=record_videocalls,
+    )
 
 
 @patient_bp.route('/prescriptions')
@@ -409,15 +448,27 @@ def profile():
                 if ext not in ('jpg', 'jpeg', 'png'):
                     flash('Допустимы только изображения (jpg, png).', 'danger')
                     return redirect(url_for('patient.profile'))
-                unique_name = f'{uuid.uuid4().hex}.{ext}'
-                upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
-                os.makedirs(upload_dir, exist_ok=True)
-                filepath = os.path.join(upload_dir, unique_name)
-                form.avatar.data.save(filepath)
-                current_user.avatar = unique_name
+                try:
+                    unique_name = f'{uuid.uuid4().hex}.{ext}'
+                    upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'avatars')
+                    os.makedirs(upload_dir, exist_ok=True)
+                    filepath = os.path.join(upload_dir, unique_name)
+                    form.avatar.data.save(filepath)
+                    current_user.avatar = unique_name
+                except Exception as e:
+                    current_app.logger.error(f"Error saving patient avatar: {e}")
+                    flash('Ошибка при сохранении фото. Проверьте формат файла.', 'danger')
+                    return redirect(url_for('patient.profile'))
 
-        db.session.commit()
-        flash('Профиль успешно обновлён.', 'success')
+        try:
+            db.session.commit()
+            flash('Профиль успешно обновлён.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error updating patient profile: {e}")
+            flash('Ошибка при сохранении профиля. Попробуйте снова.', 'danger')
+            return redirect(url_for('patient.profile'))
+
         return redirect(url_for('patient.profile'))
 
     return render_template('patient/profile.html', form=form)
