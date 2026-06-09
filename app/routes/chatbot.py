@@ -1,8 +1,9 @@
 import logging
 
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from app import db, csrf
+from app.i18n import flash_message as flash_i18n
 from app.models import ChatMessage
 from app.ai import chat_completion
 
@@ -29,7 +30,7 @@ MAX_HISTORY_MESSAGES = 50
 @login_required
 def chat():
     if current_user.role != 'patient':
-        flash('Чат-бот доступен только для пациентов.', 'warning')
+        flash_i18n('Чат-бот доступен только для пациентов.', 'warning')
         from app.routes.auth import ROLE_REDIRECTS
         return redirect(url_for(ROLE_REDIRECTS.get(current_user.role, 'auth.login')))
 

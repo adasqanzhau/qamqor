@@ -3,12 +3,14 @@ import uuid
 from datetime import datetime, date, timedelta
 from functools import wraps
 
-from flask import (Blueprint, render_template, redirect, url_for, flash,
+from flask import (Blueprint, render_template, redirect, url_for,
                    request, abort, current_app)
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
 from app import db
+from app.avatar_utils import remove_user_avatar, replace_user_avatar
+from app.i18n import flash_message as flash_i18n
 from app.models import User, Clinic, Appointment, VideoCall, ClinicSpecialization, Review, Notification
 from app.forms import DoctorForm, ClinicForm, ProfileForm
 
@@ -25,7 +27,7 @@ def clinic_admin_required(f):
     return decorated_function
 
 
-ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png'}
+ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'img'}
 ALLOWED_LOGO_EXTENSIONS = {'jpg', 'jpeg', 'png', 'svg'}
 
 
@@ -44,11 +46,6 @@ def _save_image(file, subdir, allowed):
     os.makedirs(upload_dir, exist_ok=True)
     file.save(os.path.join(upload_dir, unique_name))
     return unique_name
-
-
-def save_avatar(file):
-    """Save a doctor avatar and return the bare filename."""
-    return _save_image(file, 'avatars', ALLOWED_IMAGE_EXTENSIONS)
 
 
 def save_logo(file):
@@ -138,9 +135,10 @@ def doctors():
 def add_doctor():
     form = DoctorForm()
     if form.validate_on_submit():
+        remove_avatar = request.form.get('remove_avatar') == '1'
         existing = User.query.filter_by(email=form.email.data).first()
         if existing:
-            flash('Пользователь с таким email уже существует.', 'danger')
+            flash_i18n('Пользователь с таким email уже существует.', 'danger')
             return render_template('clinic/doctor_form.html', form=form, title='Добавить врача')
 
         doctor = User(
@@ -157,20 +155,21 @@ def add_doctor():
         )
         doctor.set_password(form.password.data)
 
-        if form.avatar.data and getattr(form.avatar.data, 'filename', ''):
-            saved = save_avatar(form.avatar.data)
-            if saved:
-                doctor.avatar = saved
+        if remove_avatar and doctor.avatar:
+            remove_user_avatar(doctor)
+            flash_i18n('Фото профиля удалено.', 'success')
+        elif form.avatar.data and getattr(form.avatar.data, 'filename', ''):
+            replace_user_avatar(doctor, form.avatar.data)
 
         try:
             db.session.add(doctor)
             db.session.commit()
-            flash('Врач успешно добавлен.', 'success')
+            flash_i18n('Врач успешно добавлен.', 'success')
             return redirect(url_for('clinic.doctors'))
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error adding doctor: {e}")
-            flash('Ошибка при добавлении врача. Попробуйте снова.', 'danger')
+            flash_i18n('Ошибка при добавлении врача. Попробуйте снова.', 'danger')
             return render_template('clinic/doctor_form.html', form=form, title='Добавить врача')
 
     return render_template('clinic/doctor_form.html', form=form, title='Добавить врача')
@@ -186,10 +185,11 @@ def edit_doctor(doctor_id):
 
     form = DoctorForm(obj=doctor)
     if form.validate_on_submit():
+        remove_avatar = request.form.get('remove_avatar') == '1'
         if form.email.data != doctor.email:
             existing = User.query.filter_by(email=form.email.data).first()
             if existing:
-                flash('Пользователь с таким email уже существует.', 'danger')
+                flash_i18n('Пользователь с таким email уже существует.', 'danger')
                 return render_template('clinic/doctor_form.html', form=form,
                                        title='Редактировать врача', doctor=doctor)
 
@@ -205,19 +205,20 @@ def edit_doctor(doctor_id):
         if form.password.data:
             doctor.set_password(form.password.data)
 
-        if form.avatar.data and getattr(form.avatar.data, 'filename', ''):
-            saved = save_avatar(form.avatar.data)
-            if saved:
-                doctor.avatar = saved
+        if remove_avatar and doctor.avatar:
+            remove_user_avatar(doctor)
+            flash_i18n('Фото профиля удалено.', 'success')
+        elif form.avatar.data and getattr(form.avatar.data, 'filename', ''):
+            replace_user_avatar(doctor, form.avatar.data)
 
         try:
             db.session.commit()
-            flash('Данные врача обновлены.', 'success')
+            flash_i18n('Данные врача обновлены.', 'success')
             return redirect(url_for('clinic.doctors'))
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error updating doctor: {e}")
-            flash('Ошибка при обновлении врача. Попробуйте снова.', 'danger')
+            flash_i18n('Ошибка при обновлении врача. Попробуйте снова.', 'danger')
             return render_template('clinic/doctor_form.html', form=form,
                            title='Редактировать врача', doctor=doctor)
 
@@ -235,7 +236,7 @@ def delete_doctor(doctor_id):
 
     doctor.is_active = False
     db.session.commit()
-    flash('Врач удалён.', 'success')
+    flash_i18n('Врач удалён.', 'success')
     return redirect(url_for('clinic.doctors'))
 
 @clinic.route('/patients')
@@ -312,12 +313,12 @@ def settings():
                     clinic_obj.logo = new_logo
 
             db.session.commit()
-            flash('Настройки клиники обновлены.', 'success')
+            flash_i18n('Настройки клиники обновлены.', 'success')
             return redirect(url_for('clinic.settings'))
         except Exception as exc:
             db.session.rollback()
             current_app.logger.exception('Failed to update clinic settings')
-            flash(f'Не удалось обновить настройки: {exc}', 'danger')
+            flash_i18n('Не удалось обновить настройки: %(exc)s', 'danger', exc=exc)
 
     return render_template('clinic/settings.html', form=form, clinic=clinic_obj)
 
@@ -454,23 +455,26 @@ def profile():
     form = ProfileForm(obj=current_user)
 
     if form.validate_on_submit():
+        remove_avatar = request.form.get('remove_avatar') == '1'
         current_user.first_name = form.first_name.data.strip()
         current_user.last_name = form.last_name.data.strip()
         current_user.phone = form.phone.data.strip() if form.phone.data else None
 
-        if form.avatar.data and getattr(form.avatar.data, 'filename', ''):
-            saved = save_avatar(form.avatar.data)
-            if saved:
-                current_user.avatar = saved
+        if remove_avatar and current_user.avatar:
+            remove_user_avatar(current_user)
+            flash_i18n('Фото профиля удалено.', 'success')
+
+        if not remove_avatar and form.avatar.data and getattr(form.avatar.data, 'filename', ''):
+            replace_user_avatar(current_user, form.avatar.data)
 
         try:
             db.session.commit()
-            flash('Профиль обновлён.', 'success')
+            flash_i18n('Профиль обновлён.', 'success')
             return redirect(url_for('clinic.profile'))
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error updating clinic admin profile: {e}")
-            flash('Ошибка при сохранении профиля. Попробуйте снова.', 'danger')
+            flash_i18n('Ошибка при сохранении профиля. Попробуйте снова.', 'danger')
             return render_template('clinic/profile.html', form=form)
 
     return render_template('clinic/profile.html', form=form)

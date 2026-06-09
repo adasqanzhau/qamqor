@@ -2,11 +2,13 @@ import os
 import uuid
 from datetime import datetime, timedelta, timezone, date
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, abort
+from flask import Blueprint, render_template, redirect, url_for, request, current_app, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
 from app import db
+from app.avatar_utils import remove_user_avatar, replace_user_avatar
+from app.i18n import flash_message as flash_i18n
 from app.models import (
     User, Clinic, Appointment, VideoCall, ClinicSpecialization, Notification,
     Prescription, MedicalRecord, Review, ChatMessage,
@@ -143,11 +145,11 @@ def create_clinic():
 
     if form.validate_on_submit():
         if not form.admin_email.data or not form.admin_password.data:
-            flash('Укажите email и пароль администратора клиники.', 'danger')
+            flash_i18n('Укажите email и пароль администратора клиники.', 'danger')
             return render_template('admin/clinic_form.html', form=form, title='Создание клиники')
 
         if User.query.filter_by(email=form.admin_email.data).first():
-            flash('Пользователь с таким email уже существует.', 'danger')
+            flash_i18n('Пользователь с таким email уже существует.', 'danger')
             return render_template('admin/clinic_form.html', form=form, title='Создание клиники')
 
         clinic = Clinic(
@@ -183,7 +185,7 @@ def create_clinic():
         db.session.add(clinic_admin)
 
         db.session.commit()
-        flash(f'Клиника "{clinic.name}" успешно создана.', 'success')
+        flash_i18n('Клиника "%(name)s" успешно создана.', 'success', name=clinic.name)
         return redirect(url_for('admin.clinics'))
 
     return render_template('admin/clinic_form.html', form=form, title='Создание клиники')
@@ -214,12 +216,12 @@ def edit_clinic(clinic_id):
                     clinic.logo = saved_logo
 
             db.session.commit()
-            flash(f'Клиника "{clinic.name}" обновлена.', 'success')
+            flash_i18n('Клиника "%(name)s" обновлена.', 'success', name=clinic.name)
             return redirect(url_for('admin.clinics'))
         except Exception as exc:
             db.session.rollback()
             current_app.logger.exception('Failed to update clinic %s', clinic_id)
-            flash(f'Не удалось обновить клинику: {exc}', 'danger')
+            flash_i18n('Не удалось обновить клинику: %(exc)s', 'danger', exc=exc)
 
     return render_template('admin/clinic_form.html', form=form, title='Редактирование клиники', clinic=clinic)
 
@@ -242,11 +244,11 @@ def delete_clinic(clinic_id):
 
         db.session.delete(clinic)
         db.session.commit()
-        flash(f'Клиника "{name}" удалена.', 'warning')
+        flash_i18n('Клиника "%(name)s" удалена.', 'warning', name=name)
     except Exception as exc:
         db.session.rollback()
         current_app.logger.exception('Failed to delete clinic %s', clinic_id)
-        flash(f'Не удалось удалить клинику: {exc}', 'danger')
+        flash_i18n('Не удалось удалить клинику: %(exc)s', 'danger', exc=exc)
     return redirect(url_for('admin.clinics'))
 
 @admin.route('/clinics/<int:clinic_id>/toggle', methods=['POST'])
@@ -256,8 +258,10 @@ def toggle_clinic(clinic_id):
     clinic = db.session.get(Clinic, clinic_id) or abort(404)
     clinic.is_active = not clinic.is_active
     db.session.commit()
-    status = 'активирована' if clinic.is_active else 'деактивирована'
-    flash(f'Клиника "{clinic.name}" {status}.', 'info')
+    if clinic.is_active:
+        flash_i18n('Клиника "%(name)s" активирована.', 'info', name=clinic.name)
+    else:
+        flash_i18n('Клиника "%(name)s" деактивирована.', 'info', name=clinic.name)
     return redirect(url_for('admin.clinics'))
 
 @admin.route('/users')
@@ -382,12 +386,14 @@ def analytics():
 def toggle_user(user_id):
     user = db.session.get(User, user_id) or abort(404)
     if user.role == 'superadmin':
-        flash('Нельзя изменить статус суперадмина.', 'danger')
+        flash_i18n('Нельзя изменить статус суперадмина.', 'danger')
         return redirect(url_for('admin.users'))
     user.is_active = not user.is_active
     db.session.commit()
-    status = 'активирован' if user.is_active else 'деактивирован'
-    flash(f'Пользователь "{user.full_name}" {status}.', 'info')
+    if user.is_active:
+        flash_i18n('Пользователь "%(name)s" активирован.', 'info', name=user.full_name)
+    else:
+        flash_i18n('Пользователь "%(name)s" деактивирован.', 'info', name=user.full_name)
     return redirect(url_for('admin.users'))
 
 @admin.route('/users/<int:user_id>/delete', methods=['POST'])
@@ -396,18 +402,18 @@ def toggle_user(user_id):
 def delete_user(user_id):
     user = db.session.get(User, user_id) or abort(404)
     if user.role == 'superadmin':
-        flash('Нельзя удалить суперадмина.', 'danger')
+        flash_i18n('Нельзя удалить суперадмина.', 'danger')
         return redirect(url_for('admin.users'))
     name = user.full_name
     try:
         _wipe_user(user)
         db.session.delete(user)
         db.session.commit()
-        flash(f'Пользователь "{name}" удалён.', 'warning')
+        flash_i18n('Пользователь "%(name)s" удалён.', 'warning', name=name)
     except Exception as exc:
         db.session.rollback()
         current_app.logger.exception('Failed to delete user %s', user_id)
-        flash(f'Не удалось удалить пользователя: {exc}', 'danger')
+        flash_i18n('Не удалось удалить пользователя: %(exc)s', 'danger', exc=exc)
     return redirect(url_for('admin.users'))
 
 @admin.route('/profile', methods=['GET', 'POST'])
@@ -421,32 +427,25 @@ def profile():
         current_user.last_name = form.last_name.data
         current_user.phone = form.phone.data
 
-        if form.avatar.data and getattr(form.avatar.data, 'filename', ''):
-            original = secure_filename(form.avatar.data.filename) or ''
-            if '.' in original:
-                ext = original.rsplit('.', 1)[-1].lower()
-                if ext in ALLOWED_IMAGE_EXTENSIONS:
-                    try:
-                        avatar_filename = f"{uuid.uuid4().hex}.{ext}"
-                        upload_dir = os.path.join(
-                            current_app.config.get('UPLOAD_FOLDER')
-                            or os.path.join(current_app.root_path, 'static', 'uploads'),
-                            'avatars',
-                        )
-                        os.makedirs(upload_dir, exist_ok=True)
-                        form.avatar.data.save(os.path.join(upload_dir, avatar_filename))
-                        current_user.avatar = avatar_filename
-                    except Exception as e:
-                        current_app.logger.error(f"Error saving admin avatar: {e}")
-                        flash('Ошибка при сохранении фото. Проверьте формат файла.', 'danger')
+        remove_avatar = request.form.get('remove_avatar') == '1'
+        if remove_avatar and current_user.avatar:
+            remove_user_avatar(current_user)
+            flash_i18n('Фото профиля удалено.', 'success')
+
+        if not remove_avatar and form.avatar.data and getattr(form.avatar.data, 'filename', ''):
+            try:
+                replace_user_avatar(current_user, form.avatar.data)
+            except Exception as e:
+                current_app.logger.error(f"Error saving admin avatar: {e}")
+                flash_i18n('Ошибка при сохранении фото. Проверьте формат файла.', 'danger')
 
         try:
             db.session.commit()
-            flash('Профиль обновлен.', 'success')
+            flash_i18n('Профиль обновлен.', 'success')
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error updating admin profile: {e}")
-            flash('Ошибка при сохранении профиля. Попробуйте снова.', 'danger')
+            flash_i18n('Ошибка при сохранении профиля. Попробуйте снова.', 'danger')
             return render_template('admin/profile.html', form=form)
 
         return redirect(url_for('admin.profile'))

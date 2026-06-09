@@ -1850,6 +1850,16 @@ body {
     box-shadow: 0 26px 70px rgba(15, 23, 42, 0.13) !important;
 }
 
+.dashboard-stats > [class*='col-'] > a.text-decoration-none {
+    display: block;
+    color: inherit;
+    cursor: pointer;
+}
+
+.dashboard-stats > [class*='col-'] > a.text-decoration-none:hover {
+    color: inherit;
+}
+
 .panel-card {
     border: 1px solid rgba(226, 232, 240, 0.95) !important;
     border-radius: 30px !important;
